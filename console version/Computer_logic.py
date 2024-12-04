@@ -183,6 +183,7 @@ while 1:
     out_num = int(basis_update[1][0])
 
     data_table = truth_table(int(number_of_arguments), sets_number)
+
     normal_result = normal(sets_number, type_of, int(number_of_arguments), (basis_update[0][1], basis_update[1][1]), False)
     for line in normal_result[0]: args.append(conver_to_normal(line, int(number_of_arguments)))
     operator_result = operator_form(normal_result[1], in_num, out_num)

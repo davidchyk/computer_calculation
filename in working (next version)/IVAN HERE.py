@@ -9,7 +9,6 @@ from formula_generator import generate
 db = [['І', 'АБО'], ['І-НЕ', 'І-НЕ'], ['АБО', 'І-НЕ'], ['АБО-НЕ', 'АБО'],
       ['АБО', 'І'], ['АБО-НЕ', 'АБО-НЕ'], ['І', 'АБО-НЕ'], ['І-НЕ', 'І']]
 
-
 class LaTeXFormulaApp(QMainWindow):
 
     def __init__(self):
