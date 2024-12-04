@@ -1,5 +1,5 @@
 from PySide6.QtGui import QIcon, QAction, QKeyEvent
-import sys
+from sys import argv, exit
 from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QScrollArea, QSizePolicy, QFormLayout, QMessageBox 
 from PySide6.QtCore import Qt, QEvent, QPoint
 from PySide6.QtWebEngineWidgets import QWebEngineView
@@ -483,7 +483,7 @@ class LaTeXFormulaApp(QMainWindow):
         return super().eventFilter(source, event)
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = QApplication(argv)
     window = LaTeXFormulaApp()
     window.show()
-    sys.exit(app.exec())
+    exit(app.exec())
