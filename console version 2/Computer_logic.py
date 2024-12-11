@@ -135,8 +135,63 @@ def conver_to_normal_operator(string, num_of_args):
 
     return result  
 
-print("Beta version 0.9")
-print("\nДеякі нотатки: дужки в виводі означають певну групу, яку описує певний логічний елемент.\nПри запереченнях вгорі групи формуюються не дужками, а запереченнями.\nЯкщо над певним термом розташовані 3 заперечення, то 2 з них можна проігнорувати.")
+def validate(data, type, optinal = False):
+
+    if type == "number_of_arguments":
+
+        try:
+
+            number_of_arguments = float(data)
+
+            if number_of_arguments.is_integer() == False or number_of_arguments <= 0:
+
+                print("Неправильне значення кількості аргументів"); return False
+
+        except: print("Неправильне значення кількості аргументів"); return False
+
+    elif type == "num_functions":
+
+        try:
+
+            if int(float(data)) <= 0 or float(data).is_integer() == False:
+                print("Неправильне значення кількості функцій"); return False
+
+        except: print("Неправильне значення кількості функцій"); return False
+
+    elif type == "input_data":
+
+        try:
+
+            temp = [float(x) for x in data.split(',')]
+
+            if any(x.is_integer() == False for x in temp):
+                print("Неправильне значення наборів"); return False
+
+            temp = [int(x) for x in temp]
+
+            if any((x >= optinal) or (x < 0) for x in temp):
+                print("Неправильний номер набору"); return False
+
+        except: print("Неправильне введення наборів"); return False
+
+    elif type == "basis":
+
+        try:
+
+            temp = [(int(data[0][0]), data[0][1:]), (int(data[1][0]), data[1][1:])]
+
+            if not temp[1][1] in ["АБО", "І", "АБО-НЕ", "І-НЕ"]:
+                print("Неправильний базис. Приклад: 3І/2АБО"); return False
+            
+            if [temp[0][1], temp[1][1]] not in db:
+                print("Неправильний базис. Приклад: 3І/2АБО"); return False
+
+        except: print("Неправильний базис. Приклад: 3І/2АБО"); return False
+
+    return True
+
+print("Version 1.0")
+print("Головний розробник: Давидчук Артем\nІнші розробники: Білий Іван, Троценко Максим")
 
 while 1:
 
@@ -147,113 +202,67 @@ while 1:
     minimum_list = []
     normal_minimum_list = []
     operator_minimum_list = []
-
-    try:
-
-        number_of_arguments = float(input("\nНабери кількість аргументів функції: "))
-
-        if number_of_arguments.is_integer() == False or number_of_arguments <= 0:
-
-            print("Неправильний кількість аргументів. Спробуй ще раз."); continue
-
-        number_of_sets = 2**int(number_of_arguments)
-
-    except:
-
-        print("Неправильне введення кількості аргументів")
-        continue
+    i = 1
 
     basis_update = []
     args = []
 
-    #Старт системи
+    number_of_arguments = input("\nНаберіть кількість аргументів функції: ")
+    if not validate(number_of_arguments, "number_of_arguments"): continue
+    number_of_arguments = int(float(number_of_arguments))
+    number_of_sets = 2**number_of_arguments
+
     print("\nВведіть кількість функцій, які потрібно мінімізувати:")
+    num_functions = input("Кількість функцій: ")
+    if not validate(num_functions, "num_functions"): continue
+    num_functions = int(float(num_functions))
 
-    try:
+    while i <= num_functions:
 
-        num_functions = int(input("Кількість функцій: "))
+        print("---------")
 
-        if num_functions <= 0:
-            print("Кількість функцій має бути додатною. Спробуйте ще раз.")
-            continue
-        
-        for i in range(num_functions):
-            print(f"\nОбробка функції №{i + 1}:")
+        print(f"Ввід даних для функції y{i}:")
 
-        while True:
-            try:
-                
-                input_data = input("Набери числа наборів, при яких функція набуває одиниці (через кому): ").strip()
+        input_data = input("Набери числа наборів, при яких функція набуває одиниці (через кому): ").strip()
+        if not validate(input_data, "input_data", number_of_sets): continue
+        sets_number = [int(float(x)) for x in input_data.split(',')]
 
-                if not input_data:
-                    print("Ви не ввели жодного числа. Спробуйте ще раз.")
-                    continue
+        basis = input("Наберіть елементний базис через '/': ").split('/')
+        if not validate(basis, "basis"): continue
 
-                sets_number = [int(x) for x in input_data.split(',')]
-                break
+        basis_update = [(int(basis[0][0]), basis[0][1:]), (int(basis[1][0]), basis[1][1:])]
 
-            except ValueError:
-                print("Неправильне введення наборів. Спробуйте ще раз.")
+        if basis_update[1][1] in ['АБО', 'І-НЕ']: type_of = 1
+        else: type_of = 0
 
-            if any((x >= number_of_sets) or (x < 0) for x in sets_number):
-                print("Неправильний номер набору. Спробуйте ще раз.")
-                continue
+        in_num = int(basis_update[0][0])
+        out_num = int(basis_update[1][0])
 
-            basis = input("Набери елементний базис через '/': ").split('/')
+        data_table = truth_table(number_of_arguments, sets_number)
+        normal_result = normal(sets_number, type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), False)
+        operator_result = operator_form(normal_result[1], in_num, out_num)
 
-            if len(basis) != 2 or ([basis[0][1:], basis[1][1:]] not in db):
-                print("Неправильний базис. Приклад: 3І/2АБО. Спробуйте ще раз.")
-                continue
+        ddnf_list.append("\\text{ДДНФ" "} " f"y_{i}: {conver_to_normal(normal_result[0][0], number_of_arguments)}")
+        dknf_list.append("\\text{ДКНФ" "} " f"y_{i}: {conver_to_normal(normal_result[0][1], number_of_arguments)}")
+        normal_list.append("\\text{Нормальна форма" "} " f"y_{i}: {conver_to_normal(normal_result[0][2], number_of_arguments)}")
 
-            basis_update = [
-                (int(basis[0][0]), basis[0][1:]),
-                (int(basis[1][0]), basis[1][1:])
-            ]
+        operator_list.append("\\text{Операторна форма" "} " f"y_{i}: {conver_to_normal(operator_result, number_of_arguments)}")
 
-            if basis_update[1][1] in ['АБО', 'І-НЕ']:
-                type_of = 1
-            elif basis_update[1][1] in ['І', 'АБО-НЕ']:
-                type_of = 0
-            else:
-                print("Неправильний тип базису. Пропускаємо цю функцію.")
-                continue
+        if type_of:
+            minimize_result = minimize_dnf_as_implicants(number_of_arguments, sets_number)
+        else:
+            minimize_result = minimize_cnf_as_implicants(number_of_arguments, [x for x in range(number_of_sets) if x not in sets_number])
 
-            in_num = int(basis_update[0][0])
-            out_num = int(basis_update[1][0])
+        if minimize_result[2]: minimum_list.append("\\text{МДНФ" "} " f"y_{i}: {conver_to_normal(minimize_result[0], number_of_arguments)}")
+        else: minimum_list.append("\\text{МКНФ" "} " f"y_{i}: {conver_to_normal(minimize_result[0], number_of_arguments)}")
 
-            data_table = truth_table(int(number_of_arguments), sets_number)
-            normal_result = normal(sets_number, type_of, int(number_of_arguments), (basis_update[0][1], basis_update[1][1]), False)
+        minimize_normal_result = normal(minimize_result[1], type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), True)[1]
+        normal_minimum_list.append("\\text{Нормальна форма мінімізованої функції" "} " f"y_{i}: {conver_to_normal(str(minimize_normal_result), number_of_arguments)}")
 
-            ddnf_list.append(f"ДДНФ f{i+1}: {conver_to_normal(normal_result[0][0], int(number_of_arguments))}")
-            dknf_list.append(f"ДКНФ f{i+1}: {conver_to_normal(normal_result[0][1], int(number_of_arguments))}")
-            normal_list.append(f"Нормальна форма f{i+1}: {conver_to_normal(normal_result[0][2], int(number_of_arguments))}")
+        minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
+        operator_minimum_list.append("\\text{Операторна форма мінімізованої функції" "} " f"y_{i}: {conver_to_normal_operator(minimize_operator_result, number_of_arguments)}")
 
-            operator_result = operator_form(normal_result[1], in_num, out_num)
-            operator_list.append(f"Операторна форма f{i+1}: {conver_to_normal(operator_result, int(number_of_arguments))}")
+        i += 1
 
-            if type_of:
-                minimize_result = minimize_dnf_as_implicants(int(number_of_arguments), sets_number)
-            else:
-                minimize_result = minimize_cnf_as_implicants(int(number_of_arguments), [x for x in range(2**int(number_of_arguments)) if x not in sets_number])
-
-            if minimize_result[2]: minimum_list.append(f"МДНФ f{i+1}: {conver_to_normal(minimize_result[0], int(number_of_arguments))}")
-            else: minimum_list.append(f"МКНФ f{i+1}: {conver_to_normal(minimize_result[0], int(number_of_arguments))}")
-
-            minimize_normal_result = normal(minimize_result[1], type_of, int(number_of_arguments), (basis_update[0][1], basis_update[1][1]), True)[1]
-            normal_minimum_list.append(f"Нормальна форма мінімізованої функції f{i+1}: {conver_to_normal(str(minimize_normal_result), int(number_of_arguments))}")
-
-            minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
-            operator_minimum_list.append(f"Операторна форма мінімізованої функції f{i+1}: {conver_to_normal_operator(minimize_operator_result, int(number_of_arguments))}")
-
-        args = ddnf_list + dknf_list + normal_list + operator_list + [r" \ "]+ minimum_list + normal_minimum_list + operator_minimum_list
-
-        for _ in range(6): args.append(r" \ ")
-        args.append("Розробник: Давидчук Артем")
-        args.append("Розробник: Білий Іван")
-
-        graph(args, data_table)
-
-    except Exception as e:
-        print(e)
-        print("Заново нахуй")
-        continue
+    args = ddnf_list + dknf_list + normal_list + operator_list + [r" \ "]+ minimum_list + normal_minimum_list + operator_minimum_list
+    graph(args, data_table)

@@ -42,7 +42,7 @@ def render_latex_formula(latex_str, data_table):
     latex_str = replace_not_with_overline(latex_str)
 
     plt.figure(figsize=(20, 8))
-    plt.text(0, 1, f"{latex_str}", fontsize=20, ha='left', va='top')
+    plt.text(0, 1, f"{latex_str}", fontsize=20, ha='left', va='top', fontdict={'family': 'Times New Roman'})
     plt.axis('off')
 
     fig, ax = plt.subplots(figsize=(8, 6))
