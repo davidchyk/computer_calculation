@@ -176,17 +176,24 @@ while 1:
         if num_functions <= 0:
             print("Кількість функцій має бути додатною. Спробуйте ще раз.")
             continue
-
+        
         for i in range(num_functions):
-
             print(f"\nОбробка функції №{i + 1}:")
 
+        while True:
             try:
-                sets_number = [int(x) for x in input("Набери числа наборів, при яких функція набуває одиниці: ").split(',')]
+                
+                input_data = input("Набери числа наборів, при яких функція набуває одиниці (через кому): ").strip()
 
-            except:
+                if not input_data:
+                    print("Ви не ввели жодного числа. Спробуйте ще раз.")
+                    continue
+
+                sets_number = [int(x) for x in input_data.split(',')]
+                break
+
+            except ValueError:
                 print("Неправильне введення наборів. Спробуйте ще раз.")
-                continue
 
             if any((x >= number_of_sets) or (x < 0) for x in sets_number):
                 print("Неправильний номер набору. Спробуйте ще раз.")
