@@ -241,10 +241,9 @@ while 1:
         data_table = truth_table(number_of_arguments, sets_number)
         normal_result = normal(sets_number, type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), False)
 
-        print(f"Нормальна форма: {normal_result}")
-        print(f"Нормальна форма: {normal_result[1].structure}")
-
         operator_result = operator_form(normal_result[1], in_num, out_num)
+
+        print(f"operator_result: {operator_result}")
 
         ddnf_list.append("\\text{ДДНФ" "} " f"y_{i}: {conver_to_normal(normal_result[0][0], number_of_arguments)}")
         dknf_list.append("\\text{ДКНФ" "} " f"y_{i}: {conver_to_normal(normal_result[0][1], number_of_arguments)}")
