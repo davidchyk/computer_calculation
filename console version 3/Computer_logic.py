@@ -2,6 +2,7 @@ from normal_forms import normal
 from operator_form2 import operator_form
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
 from graphic import graph
+from class_function import class_define
 
 db = [['І', 'АБО'], ['І-НЕ', 'І-НЕ'], ['АБО', 'І-НЕ'], ['АБО-НЕ', 'АБО'],
       ['АБО', 'І'], ['АБО-НЕ', 'АБО-НЕ'], ['І', 'АБО-НЕ'], ['І-НЕ', 'І']]
@@ -202,6 +203,7 @@ while 1:
     minimum_list = []
     normal_minimum_list = []
     operator_minimum_list = []
+    class_list = []
     i = 1
 
     basis_update = []
@@ -243,8 +245,6 @@ while 1:
 
         operator_result = operator_form(normal_result[1], in_num, out_num)
 
-        print(f"operator_result: {operator_result}")
-
         ddnf_list.append("\\text{ДДНФ" "} " f"y_{i}: {conver_to_normal(normal_result[0][0], number_of_arguments)}")
         dknf_list.append("\\text{ДКНФ" "} " f"y_{i}: {conver_to_normal(normal_result[0][1], number_of_arguments)}")
         normal_list.append("\\text{Нормальна форма" "} " f"y_{i}: {conver_to_normal(normal_result[0][2], number_of_arguments)}")
@@ -265,7 +265,9 @@ while 1:
         minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
         operator_minimum_list.append("\\text{Операторна форма мінімізованої функції" "} " f"y_{i}: {conver_to_normal_operator(minimize_operator_result, number_of_arguments)}")
 
+        class_list.extend(class_define(sets_number, number_of_arguments, i))
+
         i += 1
 
-    args = ddnf_list + dknf_list + normal_list + operator_list + [r" \ "]+ minimum_list + normal_minimum_list + operator_minimum_list
+    args = ddnf_list + dknf_list + normal_list + operator_list + [r" \ "] + minimum_list + normal_minimum_list + operator_minimum_list + [r" \ "] + class_list
     graph(args, data_table)
