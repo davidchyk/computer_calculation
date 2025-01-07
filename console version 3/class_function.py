@@ -44,20 +44,11 @@ def conver_to_normal(string, num_of_args):
 
     return result  
 
-def KM_function(sets_number, num_of_args):
+def KM_function(sets_number, num_of_args, num_of_function):
 
     def differ_by_one_bit(x, y):
         xor = x ^ y
         return xor > 0 and (xor & (xor - 1)) == 0
-
-    """
-    Перевіряє монотонність булевої функції.
-    
-    sets_number: список номерів наборів, при яких функція істинна.
-    num_of_args: кількість аргументів (змінних) функції.
-    
-    Повертає True, якщо функція монотонна, інакше False.
-    """
 
     n = 2 ** num_of_args  # Кількість наборів
     truth_table = [1 if i in sets_number else 0 for i in range(n)]  # Генерація таблиці істинності
@@ -80,22 +71,16 @@ def KM_function(sets_number, num_of_args):
         x_bit_string = ', '.join(list(format(x, f'0{num_of_args}b')))
         y_bit_string = ', '.join(list(format(y, f'0{num_of_args}b')))
 
-        return f"Не монотонна: f({x_bit_string}) > f({y_bit_string}) => не входить в клас KM", False
+        return "\\text{Не монотонна: }" + f"y_{num_of_function}({x_bit_string}) > y_{num_of_function}({y_bit_string}) \\rightarrow " + "\\text{не входить в клас KM}", False
 
-    return "Монотонна => входить в клас KM", True
+    return "\\text{Монотонна" "}" "\\rightarrow" + "\\text{входить в клас KM}", True
 
-def KL_function(sets_number, num_of_args): #Лінійність функції TODO
+def KL_function(sets_number, num_of_args, num_of_function): #Лінійність функції TODO
 
-    steps = ""
+    steps = []
 
     def final_form_function(indices, num_vars):
-        """
-        Обчислює поліном Жегалкіна для заданої булевої функції.
 
-        :param indices: Список індексів, де функція набуває значення 1
-        :param num_vars: Кількість змінних
-        :return: Строка, що представляє поліном Жегалкіна
-        """
         size = 2 ** num_vars
         # Ініціалізуємо вектор функції
         f = [0] * size
@@ -177,9 +162,9 @@ def KL_function(sets_number, num_of_args): #Лінійність функції 
 
     start_form = conver_to_normal(normal_result[0][0], num_of_args)
 
-    steps += "\nПокрокове знаходження поліному Жегалкіна: \n"
-    steps += f"ДДНФ функції: {start_form}" + "\n"
-    steps += "Заміню ∨ на ⊕ та застосую аксіому алгебри Жегалкіна not(X) = X ⊕ 1: \n"
+    steps.append("\\text{    Покрокове знаходження поліному Жегалкіна:}")
+    steps.append("\\text{    ДДНФ функції:" "} " + f"{start_form}")
+    steps.append("\\text{    Заміню } " "∨ " "\\text{на" "} " "⊕" " \\text{та застосую аксіому алгебри Жегалкіна} " "not(X) = X ⊕ 1:")
 
     for term in normal_result[1].structure:
 
@@ -195,8 +180,8 @@ def KL_function(sets_number, num_of_args): #Лінійність функції 
 
     form = form.rstrip(" ⊕ ")
 
-    steps += form + "\n"
-    steps += "Викреслю парні терми та отримаю фінальну форму поліному Жегалкіна: \n"
+    steps.append("\\text{    }" + form + r" \ ")
+    steps.append("\\text{    Викреслю парні терми та отримаю фінальну форму поліному Жегалкіна:}")
 
     for term in normal_result[1].structure:
 
@@ -220,17 +205,17 @@ def KL_function(sets_number, num_of_args): #Лінійність функції 
 
     for i in range(num_of_args): final_form = final_form.replace(f"x{i+1}", f"X_{i+1}")
 
-    steps += final_form
+    steps.append("\\text{    }" + final_form)
 
     if "∧" in final_form:
 
-        return f"Не лінійна, тому що поліном містить терм, ранг якого більший за 1: {final_form} => не входить в клас КЛ", steps, False
+        return "\\text{Не лінійна, тому що поліном містить терм, ранг якого більший за 1: }" + f"{final_form} \\rightarrow " + "\\text{не входить в клас КЛ}", steps, False
     
     else:
 
-        return f"Лінійна: {final_form} => входить в клас КЛ", steps, True
+        return "\\text{Лінійна:" "} " +  f"{final_form} \\rightarrow " + "\\text{входить в клас КЛ}", steps, True
 
-def KC_function(sets_number, num_of_args): #Самодвоїстість функції
+def KC_function(sets_number, num_of_args, num_of_function): #Самодвоїстість функції
 
     temp = False
 
@@ -255,13 +240,13 @@ def KC_function(sets_number, num_of_args): #Самодвоїстість фун�
 
         if temp[2]:
 
-            return f"Не самодвоїста: f({num_bit_string}) = 1 та not(f({anti_num_bit_string})) = 1 => не входить в клас КС", False
+            return "\\text{Не самодвоїста: }" + f"y_{num_of_function}({num_bit_string}) = 1" + " \\text{та " "} " f"not(y_{num_of_function}({anti_num_bit_string})) = 1" + " \\rightarrow " "\\text{не входить в клас КС}", False
         
         else:
 
-            return f"Не самодвоїста: f({num_bit_string}) = 0 та not(f({anti_num_bit_string})) = 0 => не входить в клас KC", False
+            return "\\text{Не самодвоїста: }" + f"y_{num_of_function}({num_bit_string}) = 0" + " \\text{та " "} " f"not(y_{num_of_function}({anti_num_bit_string})) = 0" + " \\rightarrow " "\\text{не входить в клас КС}", False
 
-    return "Самодвоїста => входить в клас КС", True
+    return r"Самодвоїста \rightarrow входить в клас КС", True
 
 def class_define(sets_number, num_of_args, num_of_function):
 
@@ -271,74 +256,71 @@ def class_define(sets_number, num_of_args, num_of_function):
 
     if K0:
 
-        K0 = f"Зберігає нуль: f(" + "0, "*num_of_args
-        K0 = K0[::-2] + ") = 0"
-        K0 = f"{K0} => входить в клас K0", True 
+        K0 = "\\text{" "Зберігає нуль: }" + f"y_{num_of_function}(" + "0, "*num_of_args
+        K0 = K0[:-2] + ") = 0"
+        K0 = rf"{K0} \rightarrow " "\\text{входить в клас K0}", True
 
     else:
 
-        K0 = f"Не зберігає нуль: f(" + "0, "*num_of_args
+        K0 = "\\text{" "Не зберігає нуль: }" + f"y_{num_of_function}(" + "0, "*num_of_args
         K0 = K0[:-2] + ") = 1"
-        K0 = f"{K0} => не входить в клас K0", False 
+        K0 = rf"{K0} \rightarrow " "\\text{не входить в клас K0}", False
 
     K1 = 2**num_of_args - 1 in sets_number #Зберігкає одиницю
 
     if K1:
 
-        K1 = f"Зберігає одиницю: f(" + "1, "*num_of_args
-        K1 = K1[::-2] + ") = 1"
-        K1 = f"{K1} => входить в клас K1", True 
+        K1 = "\\text{" "Зберігає одиницю: }" + f"y_{num_of_function}(" + "1, "*num_of_args
+        K1 = K1[:-2] + ") = 1"
+        K1 = rf"{K1} \rightarrow " "\\text{входить в клас K1}", True 
 
     else:
 
-        K1 = f"Не зберігає одиницю: f(" + "1, "*num_of_args
+        K1 = "\\text{" "Не зберігає одиницю: }" + f"y_{num_of_function}(" + "1, "*num_of_args
         K1 = K1[:-2] + ") = 0"
-        K1 = f"{K1} => не входить в клас K1", False 
+        K1 = rf"{K1} \rightarrow " "\\text{не входить в клас K1}", False 
 
-    KC = KC_function(sets_number, num_of_args)
-    KL = KL_function(sets_number, num_of_args)
-    KM = KM_function(sets_number, num_of_args)
+    KC = KC_function(sets_number, num_of_args, num_of_function)
+    KL = KL_function(sets_number, num_of_args, num_of_function)
+    KM = KM_function(sets_number, num_of_args, num_of_function)
 
-    result += "\nРезюме:\n"
-    result += f"Функція y_{num_of_function} "
+    result += "\\text{Функція }"+ f"y_{num_of_function}: "
 
     for x in [(K0[1], 0), (K1[1], 1), (KC[1], 2), (KM[1], 3), (KL[2], 4)]:
 
         if x[1] == 0:
 
-            string = "входить в клас K0" if x[0] else "не входить в клас K0"
+            string = "\\text{входить в клас K0}" if x[0] else "\\text{не входить в клас K0}"
             result += f"{string}, "
 
         elif x[1] == 1:
 
-            string = "входить в клас K1" if x[0] else "не входить в клас K1"
+            string = "\\text{входить в клас K1}" if x[0] else "\\text{не входить в клас K1}"
             result += f"{string}, "
 
         elif x[1] == 2:
 
-            string = "входить в клас KC" if x[0] else "не входить в клас KC"
+            string = "\\text{входить в клас KC}" if x[0] else "\\text{не входить в клас KC}"
             result += f"{string}, "
 
         elif x[1] == 3:
 
-            string = "входить в клас KM" if x[0] else "не входить в клас KM"
+            string = "\\text{входить в клас KM}" if x[0] else "\\text{не входить в клас KM}"
             result += f"{string}, "
 
         elif x[1] == 4:
 
-            string = "входить в клас КЛ" if x[0] else "не входить в клас КЛ"
+            string = "\\text{входить в клас КЛ}" if x[0] else "\\text{не входить в клас КЛ}"
             result += f"{string}, "
 
-    result += f"тому за теоремою Поста-Яблонського функція y_{num_of_function} "
+    result += "\\text{тому за теоремою Поста-Яблонського функція} " f"y_{num_of_function} "
 
     if all(not(x) for x in [K0[1], K1[1], KC[1], KM[1], KL[2]]):
 
-        result += "ЯВЛЯЄТЬСЯ функціонально повною"
+        result += "\\text{ЯВЛЯЄТЬСЯ функціонально повною}"
 
     else:
 
-        result += "НЕ ЯВЛЯЄТЬСЯ функціонально повною"
+        result += "\\text{НЕ ЯВЛЯЄТЬСЯ функціонально повною}"
 
-    return f"K0: {K0[0]}\nK1: {K1[0]}\nKC: {KC[0]}\nKM: {KM[0]}\nKL: {KL[0]} {KL[1]}\n{result}"
-
-print(class_define([1], 3, 1))
+    return ["\\text{" + "-"*100 + "}", "\\text{Дослідження функції} " f"y_{num_of_function}: ","\\text{K0: " "}" + K0[0], "\\text{K1: " "}" + K1[0], "\\text{KC: " "}" + KC[0], "\\text{KM: " "}" + KM[0], "\\text{KL: " "}" + KL[0]] + [r" \ "] + KL[1] + [r" \ ", "\\text{Резюме " "}", result]

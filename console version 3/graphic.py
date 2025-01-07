@@ -38,6 +38,7 @@ def render_latex_formula(latex_str, data_table):
 
     latex_str = latex_str.replace('∧', '\\wedge')
     latex_str = latex_str.replace('V', '\\vee')
+    latex_str = latex_str.replace('⊕', '\\oplus')
 
     latex_str = replace_not_with_overline(latex_str)
 
