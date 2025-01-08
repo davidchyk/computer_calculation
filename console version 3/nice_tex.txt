@@ -1,42 +1,59 @@
 \documentclass{article}
 
-% Encoding and Language Settings
-\usepackage[utf8]{inputenc}   % Input encoding
-\usepackage[T1]{fontenc}      % Font encoding
-\usepackage[english, ukrainian]{babel}   % Language selection
-
-% Scalable Fonts
-\usepackage{lmodern}          % Latin Modern fonts
-
-% Improved Typography
-\usepackage{microtype}        % Micro-typographic extensions
-
-% Page Geometry for Very Wide Page Area
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english, ukrainian]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
 \usepackage{geometry}
 \geometry{
-    paperwidth=40.0cm,             % Custom paper width
-    paperheight=30cm,            % Custom paper height
-    left=1cm,                    % Left margin
-    right=1cm,                   % Right margin
-    top=1cm,                     % Top margin
-    bottom=1cm,                  % Bottom margin
+    paperwidth=21cm,
+    paperheight=30cm,
+    left=1cm,
+    right=1cm,
+    top=1cm,
+    bottom=1cm,
 }
 
-% Line Spacing
 \usepackage{setspace}
-\onehalfspacing                % 1.5 line spacing
+\onehalfspacing
 
-% Prevent Overfull \hbox Errors
-\emergencystretch=1em          % Allow extra stretching
-\sloppy                         % More flexible spacing
+\pagestyle{empty} % Вимикає нумерацію сторінок
 
-% Mathematical Packages
+\emergencystretch=1em
+\sloppy
+
 \usepackage{amsmath, amsfonts, amssymb}
 
 \begin{document}
 
-\[
-\text{Функція }y_1: \newline \text{входить в клас K0}, \text{не входить в клас K1}, \text{не входить в клас KC}, \text{не входить в клас KM}, \text{не входить в клас КЛ}, \text{тому за теоремою Поста-Яблонського функція} y_1 \text{НЕ ЯВЛЯЄТЬСЯ функціонально повною}
-\]
+    \setlength{\abovedisplayskip}{-2pt}
+    \setlength{\belowdisplayskip}{-2pt}
+
+    x
+
+\end{document}
+
+
+\documentclass{article}
+\usepackage[english]{babel}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage[a4paper, left=1cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+
+\begin{document}
+
+    \begin{flalign*}
+        &
+        \begin{tabular}{|c|c!{\vrule width 1.5pt}c|}
+            \hline
+            $X_1$ & center & right \\
+            \hline
+            1 & 2 & 3 \\
+            A & B & C \\
+            \hline
+        \end{tabular}
+        &
+    \end{flalign*}
 
 \end{document}
