@@ -26,7 +26,7 @@ def compile_latex(latex_str, output_path):
     :return: True, якщо успішно, інакше False
     """
     if not check_pdflatex_installed():
-        messagebox.showerror("Помилка", "pdflatex не встановлено. Будь ласка, встановіть LaTeX-компілятор.")
+        messagebox.showerror("Помилка", "Помилка. Будь ласка, встановіть LaTeX-компілятор.")
         return False
 
     # Створюємо тимчасову папку
