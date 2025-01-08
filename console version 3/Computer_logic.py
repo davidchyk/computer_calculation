@@ -1,34 +1,29 @@
 from normal_forms import normal
 from operator_form2 import operator_form
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
-from graphic import graph
 from class_function import class_define
-from create_pdf import create_pdf_main
+from create_pdf import create_pdf_main, get_true_table
+import numpy as np
 
 db = [['І', 'АБО'], ['І-НЕ', 'І-НЕ'], ['АБО', 'І-НЕ'], ['АБО-НЕ', 'АБО'],
       ['АБО', 'І'], ['АБО-НЕ', 'АБО-НЕ'], ['І', 'АБО-НЕ'], ['І-НЕ', 'І']]
 
-def truth_table(num_of_args, sets_number):
+def truth_table(truth_table_list, sets_number, num_of_function):
 
-    table = []
-    args = []
+    temp = [f"$y_{num_of_function}$"]
 
-    for i in range(num_of_args, 0, -1): args.append(f"X{i}")
-    args.append("Y")
+    for l in range(number_of_sets):
 
-    table.append(args)
+        if l in sets_number: temp.append(1)
+        else: temp.append(0)
 
-    for num in range(2**num_of_args):
+    # Перетворюємо список на масив NumPy
+    np_temp = np.array(temp, dtype = object)
 
-        bin_lst = list(format(num, f"0{num_of_args}b"))
-        if num in sets_number: bin_lst.append("1")
-        else: bin_lst.append("0")
+    # Перетворюємо його на двовимірний масив зі стовпцем (reshape)
+    new_np_temp = np_temp.reshape(-1, 1)
 
-        bin_lst = [int(x) for x in bin_lst]
-
-        table.append(bin_lst)
-
-    return table
+    return np.hstack((truth_table_list, new_np_temp))
 
 def conver_to_normal(string, num_of_args):
 
@@ -160,6 +155,10 @@ def validate(data, type, optinal = False):
 
         except: print("Неправильне значення кількості функцій"); return False
 
+        else:
+
+            if int(num_functions) > 10: return False
+
     elif type == "input_data":
 
         try:
@@ -215,10 +214,19 @@ while 1:
     number_of_arguments = int(float(number_of_arguments))
     number_of_sets = 2**number_of_arguments
 
-    print("\nВведіть кількість функцій, які потрібно мінімізувати:")
-    num_functions = input("Кількість функцій: ")
+    print("\nВведіть кількість функцій, які потрібно порахувати:")
+    num_functions = input("Кількість функцій (до 10): ")
     if not validate(num_functions, "num_functions"): continue
     num_functions = int(float(num_functions))
+
+    truth_table_list = np.empty((number_of_sets+1, number_of_arguments), dtype=object)
+    truth_table_list[0] = [f"$X_{k}$" for k in range(number_of_arguments, 0, -1)]
+
+    for k in range(number_of_sets):
+    
+        bin_lst = list(format(k, f"0{number_of_arguments}b"))
+        bin_lst = [int(x) for x in bin_lst]
+        truth_table_list[k+1] = bin_lst
 
     while i <= num_functions:
 
@@ -241,7 +249,8 @@ while 1:
         in_num = int(basis_update[0][0])
         out_num = int(basis_update[1][0])
 
-        data_table = truth_table(number_of_arguments, sets_number)
+        truth_table_list = truth_table(truth_table_list, sets_number, i)
+
         normal_result = normal(sets_number, type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), False)
 
         operator_result = operator_form(normal_result[1], in_num, out_num)
@@ -275,8 +284,13 @@ while 1:
     
     page_width = int(len(max(args, key=len))*0.144531255)
 
-    print(page_width)
+    table_truth_legend = "\\text{Таблиця істинності для }"
+
+    for i in range(num_functions): table_truth_legend += f"y_{i+1}, "
+    table_truth_legend = table_truth_legend[:-2] + "\\text{: " "}"
+
+    args = [table_truth_legend] + [get_true_table(truth_table_list, number_of_arguments, num_functions)] + ["\\text{ }"] + args
+
+    print(f"Складність функції чи системи функцій за оцінкою теста Давидчука Артема: {page_width/10}")
 
     create_pdf_main(args, page_width)
-
-    #graph(args, data_table)

@@ -84,6 +84,39 @@ def select_save_location():
     else:
         return None
 
+def get_true_table(list_man, num_of_args, num_of_function):
+
+    print("forming true table...")
+
+    table_config = ""
+
+    for i in range(num_of_args): table_config += f"|c"
+    table_config += r"!{\vrule width 1.5pt}"
+    for i in range(num_of_function): table_config += f"c|"
+    table_config = "{" + table_config + "}"
+
+    table_content = """"""
+
+    for x in range(2**num_of_args+1):
+
+        temping = ""
+
+        for item in list_man[x]: temping += f"{item} & "
+
+        temping  = r"""\hline
+        """ + temping[:-2] + r"\\"
+
+        table_content += f"""
+        {temping}"""
+
+    table_content += r"""
+        \hline"""
+
+    final = r"""\begin{tabular}""" + table_config + table_content +r"""
+    \end{tabular}"""
+
+    return final
+
 def get_latex_list(args):
 
     print("getting latex list...")
@@ -149,6 +182,7 @@ def get_latex_formula(latex_list, page_width):
     \usepackage{lmodern}
     \usepackage{microtype}
     \usepackage{geometry}
+    \usepackage{array}
     \geometry{
         paperwidth=""" + f"{page_width}cm," + r"""
         paperheight=30cm,

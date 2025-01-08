@@ -164,7 +164,7 @@ def KL_function(sets_number, num_of_args, num_of_function): #Лінійніст�
 
     steps.append("\\text{\\qquad   Покрокове знаходження поліному Жегалкіна:}")
     steps.append("\\text{\\qquad    ДДНФ функції:" "} " + f"{start_form}")
-    steps.append("\\text{\\qquad    Заміню} " "∨ " "\\text{на" "} " "⊕" " \\text{та застосую аксіому алгебри Жегалкіна }" "not(X) = X ⊕ 1:")
+    steps.append("\\text{\\qquad    Заміню} " "∨ " "\\text{на" "} " "⊕" " \\text{та застосую аксіому алгебри Жегалкіна }" "not(X) = X ⊕ 1" "\\text{:" "}")
 
     for term in normal_result[1].structure:
 
