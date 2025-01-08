@@ -3,6 +3,7 @@ from operator_form2 import operator_form
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
 from graphic import graph
 from class_function import class_define
+from create_pdf import create_pdf_main
 
 db = [['І', 'АБО'], ['І-НЕ', 'І-НЕ'], ['АБО', 'І-НЕ'], ['АБО-НЕ', 'АБО'],
       ['АБО', 'І'], ['АБО-НЕ', 'АБО-НЕ'], ['І', 'АБО-НЕ'], ['І-НЕ', 'І']]
@@ -245,29 +246,37 @@ while 1:
 
         operator_result = operator_form(normal_result[1], in_num, out_num)
 
-        ddnf_list.append("\\text{ДДНФ" "} " f"y_{i}: {conver_to_normal(normal_result[0][0], number_of_arguments)}")
-        dknf_list.append("\\text{ДКНФ" "} " f"y_{i}: {conver_to_normal(normal_result[0][1], number_of_arguments)}")
-        normal_list.append("\\text{Нормальна форма" "} " f"y_{i}: {conver_to_normal(normal_result[0][2], number_of_arguments)}")
+        ddnf_list.append("\\text{ДДНФ }" f"y_{i}" r"\text{: }" f"{conver_to_normal(normal_result[0][0], number_of_arguments)}")
+        dknf_list.append("\\text{ДКНФ }" f"y_{i}" r"\text{: }" f"{conver_to_normal(normal_result[0][1], number_of_arguments)}")
+        normal_list.append("\\text{Нормальна форма }" f"y_{i}" r"\text{: }" f"{conver_to_normal(normal_result[0][2], number_of_arguments)}")
 
-        operator_list.append("\\text{Операторна форма" "} " f"y_{i}: {conver_to_normal(operator_result, number_of_arguments)}")
+        operator_list.append("\\text{Операторна форма }" f"y_{i}" r"\text{: }" f"{conver_to_normal(operator_result, number_of_arguments)}")
 
         if type_of:
             minimize_result = minimize_dnf_as_implicants(number_of_arguments, sets_number)
         else:
             minimize_result = minimize_cnf_as_implicants(number_of_arguments, [x for x in range(number_of_sets) if x not in sets_number])
 
-        if minimize_result[2]: minimum_list.append("\\text{МДНФ" "} " f"y_{i}: {conver_to_normal(minimize_result[0], number_of_arguments)}")
-        else: minimum_list.append("\\text{МКНФ" "} " f"y_{i}: {conver_to_normal(minimize_result[0], number_of_arguments)}")
+        if minimize_result[2]: minimum_list.append("\\text{МДНФ }" f"y_{i}" r"\text{: }" f"{conver_to_normal(minimize_result[0], number_of_arguments)}")
+        else: minimum_list.append("\\text{МКНФ }" f"y_{i}" r"\text{: }" f"{conver_to_normal(minimize_result[0], number_of_arguments)}")
 
         minimize_normal_result = normal(minimize_result[1], type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), True)[1]
-        normal_minimum_list.append("\\text{Нормальна форма мінімізованої функції" "} " f"y_{i}: {conver_to_normal(str(minimize_normal_result), number_of_arguments)}")
+        normal_minimum_list.append("\\text{Нормальна форма мінімізованої функції }" f"y_{i}" r"\text{: }" f"{conver_to_normal(str(minimize_normal_result), number_of_arguments)}")
 
         minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
-        operator_minimum_list.append("\\text{Операторна форма мінімізованої функції" "} " f"y_{i}: {conver_to_normal_operator(minimize_operator_result, number_of_arguments)}")
+        operator_minimum_list.append("\\text{Операторна форма мінімізованої функції }" f"y_{i}" r"\text{: }" f"{conver_to_normal_operator(minimize_operator_result, number_of_arguments)}")
 
         class_list.extend(class_define(sets_number, number_of_arguments, i))
 
         i += 1
 
-    args = ddnf_list + dknf_list + normal_list + operator_list + [r" \ "] + minimum_list + normal_minimum_list + operator_minimum_list + [r" \ "] + class_list
-    graph(args, data_table)
+    args = ddnf_list + dknf_list + normal_list + operator_list  + minimum_list + normal_minimum_list + operator_minimum_list + class_list
+    args = args + ["\\text{ }"] * 10 + ["\\text{ Розробники: Давидчук Артем, Білий Іван, Троценко Максим, Вовк Андрій}"]
+    
+    page_width = int(len(max(args, key=len))*0.144531255)
+
+    print(page_width)
+
+    create_pdf_main(args, page_width)
+
+    #graph(args, data_table)

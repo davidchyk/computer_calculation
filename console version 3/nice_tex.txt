@@ -1,0 +1,42 @@
+\documentclass{article}
+
+% Encoding and Language Settings
+\usepackage[utf8]{inputenc}   % Input encoding
+\usepackage[T1]{fontenc}      % Font encoding
+\usepackage[english, ukrainian]{babel}   % Language selection
+
+% Scalable Fonts
+\usepackage{lmodern}          % Latin Modern fonts
+
+% Improved Typography
+\usepackage{microtype}        % Micro-typographic extensions
+
+% Page Geometry for Very Wide Page Area
+\usepackage{geometry}
+\geometry{
+    paperwidth=40.0cm,             % Custom paper width
+    paperheight=30cm,            % Custom paper height
+    left=1cm,                    % Left margin
+    right=1cm,                   % Right margin
+    top=1cm,                     % Top margin
+    bottom=1cm,                  % Bottom margin
+}
+
+% Line Spacing
+\usepackage{setspace}
+\onehalfspacing                % 1.5 line spacing
+
+% Prevent Overfull \hbox Errors
+\emergencystretch=1em          % Allow extra stretching
+\sloppy                         % More flexible spacing
+
+% Mathematical Packages
+\usepackage{amsmath, amsfonts, amssymb}
+
+\begin{document}
+
+\[
+\text{Функція }y_1: \newline \text{входить в клас K0}, \text{не входить в клас K1}, \text{не входить в клас KC}, \text{не входить в клас KM}, \text{не входить в клас КЛ}, \text{тому за теоремою Поста-Яблонського функція} y_1 \text{НЕ ЯВЛЯЄТЬСЯ функціонально повною}
+\]
+
+\end{document}
