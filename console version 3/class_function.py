@@ -162,9 +162,9 @@ def KL_function(sets_number, num_of_args, num_of_function): #Лінійніст�
 
     start_form = conver_to_normal(normal_result[0][0], num_of_args)
 
-    steps.append("\\text{    Покрокове знаходження поліному Жегалкіна:}")
-    steps.append("\\text{    ДДНФ функції:" "} " + f"{start_form}")
-    steps.append("\\text{    Заміню } " "∨ " "\\text{на" "} " "⊕" " \\text{та застосую аксіому алгебри Жегалкіна} " "not(X) = X ⊕ 1:")
+    steps.append("\\text{\\qquad   Покрокове знаходження поліному Жегалкіна:}")
+    steps.append("\\text{\\qquad    ДДНФ функції:" "} " + f"{start_form}")
+    steps.append("\\text{\\qquad    Заміню} " "∨ " "\\text{на" "} " "⊕" " \\text{та застосую аксіому алгебри Жегалкіна }" "not(X) = X ⊕ 1:")
 
     for term in normal_result[1].structure:
 
@@ -180,8 +180,8 @@ def KL_function(sets_number, num_of_args, num_of_function): #Лінійніст�
 
     form = form.rstrip(" ⊕ ")
 
-    steps.append("\\text{    }" + form + r" \ ")
-    steps.append("\\text{    Викреслю парні терми та отримаю фінальну форму поліному Жегалкіна:}")
+    steps.append("\\text{\\qquad    }" + form + r" \ ")
+    steps.append("\\text{\\qquad    Викреслю парні терми та отримаю фінальну форму поліному Жегалкіна:}")
 
     for term in normal_result[1].structure:
 
@@ -205,7 +205,7 @@ def KL_function(sets_number, num_of_args, num_of_function): #Лінійніст�
 
     for i in range(num_of_args): final_form = final_form.replace(f"x{i+1}", f"X_{i+1}")
 
-    steps.append("\\text{    }" + final_form)
+    steps.append("\\text{\\qquad    }" + final_form)
 
     if "∧" in final_form:
 
@@ -240,11 +240,11 @@ def KC_function(sets_number, num_of_args, num_of_function): #Самодвоїс�
 
         if temp[2]:
 
-            return "\\text{Не самодвоїста: }" + f"y_{num_of_function}({num_bit_string}) = 1" + " \\text{та " "} " f"not(y_{num_of_function}({anti_num_bit_string})) = 1" + " \\rightarrow " "\\text{не входить в клас КС}", False
+            return "\\text{Не самодвоїста: }" + f"y_{num_of_function}({num_bit_string}) = 1" + " \\text{ та }" f"not(y_{num_of_function}({anti_num_bit_string})) = 1" + " \\rightarrow " "\\text{не входить в клас КС}", False
         
         else:
 
-            return "\\text{Не самодвоїста: }" + f"y_{num_of_function}({num_bit_string}) = 0" + " \\text{та " "} " f"not(y_{num_of_function}({anti_num_bit_string})) = 0" + " \\rightarrow " "\\text{не входить в клас КС}", False
+            return "\\text{Не самодвоїста: }" + f"y_{num_of_function}({num_bit_string}) = 0" + " \\text{ та }" f"not(y_{num_of_function}({anti_num_bit_string})) = 0" + " \\rightarrow " "\\text{не входить в клас КС}", False
 
     return r"Самодвоїста \rightarrow входить в клас КС", True
 
@@ -284,7 +284,7 @@ def class_define(sets_number, num_of_args, num_of_function):
     KL = KL_function(sets_number, num_of_args, num_of_function)
     KM = KM_function(sets_number, num_of_args, num_of_function)
 
-    result += "\\text{Функція }"+ f"y_{num_of_function}: "
+    result += "\\text{Функція }"+ f"y_{num_of_function}" + r"\text{: }"
 
     for x in [(K0[1], 0), (K1[1], 1), (KC[1], 2), (KM[1], 3), (KL[2], 4)]:
 
@@ -313,14 +313,14 @@ def class_define(sets_number, num_of_args, num_of_function):
             string = "\\text{входить в клас КЛ}" if x[0] else "\\text{не входить в клас КЛ}"
             result += f"{string}, "
 
-    result += "\\text{тому за теоремою Поста-Яблонського функція} " f"y_{num_of_function} "
+    result += "\\text{тому за теоремою Поста-Яблонського функція } " f"y_{num_of_function} "
 
     if all(not(x) for x in [K0[1], K1[1], KC[1], KM[1], KL[2]]):
 
-        result += "\\text{ЯВЛЯЄТЬСЯ функціонально повною}"
+        result += "\\text{ ЯВЛЯЄТЬСЯ функціонально повною}"
 
     else:
 
-        result += "\\text{НЕ ЯВЛЯЄТЬСЯ функціонально повною}"
+        result += "\\text{ НЕ ЯВЛЯЄТЬСЯ функціонально повною}"
 
-    return ["\\text{" + "-"*100 + "}", "\\text{Дослідження функції} " f"y_{num_of_function}: ","\\text{K0: " "}" + K0[0], "\\text{K1: " "}" + K1[0], "\\text{KC: " "}" + KC[0], "\\text{KM: " "}" + KM[0], "\\text{KL: " "}" + KL[0]] + [r" \ "] + KL[1] + [r" \ ", "\\text{Резюме " "}", result]
+    return ["\\text{Дослідження функції } " f"y_{num_of_function}" r"\text{: }","\\text{K0: " "}" + K0[0], "\\text{K1: " "}" + K1[0], "\\text{KC: " "}" + KC[0], "\\text{KM: " "}" + KM[0], "\\text{KL: " "}" + KL[0]] + KL[1] + ["\\textbf{Резюме по функції }" f"y_{num_of_function}" r"\text{: }", result]
