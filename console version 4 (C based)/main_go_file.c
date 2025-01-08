@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include "input_parser.h"
+#include "get_data.h"
 
 // Функція очищення буфера вводу
 void clearInputBuffer() {
@@ -41,7 +41,7 @@ char *readDynamicString(const char *input_string) {
     return string;
 }
 
-void truth_table(int num_of_args, int sets_number) {
+char *truth_table(int num_of_args, int sets_number) {
     
     return;
 
@@ -117,10 +117,6 @@ int validate(char *data, const int type) {
 
             return (int)number;
 
-        case 3:
-
-
-
         }
 
 }
@@ -132,7 +128,7 @@ int main() {
 
     char *db[][2] = {
         {"AND", "OR"},
-        {"AND-NOT", "ABD-NOT"},
+        {"AND-NOT", "AND-NOT"},
         {"OR", "AND-NOT"},
         {"OR-NOT", "OR"},
         {"OR", "AND"},
@@ -157,14 +153,29 @@ int main() {
 
         printf("Enter the number of arguments: ");
         scanf("%s", &CHAR_number_of_args);
-        temp = validate(CHAR_number_of_args, 1); if (!temp) continue;
+        temp = validate(CHAR_number_of_args, 1);
+
+        if (!temp) {
+
+            clearInputBuffer();
+            continue;
+
+        }
+
         number_of_args = (int)temp;
 
         int number_of_sets = 1 << number_of_args; // number_of_sets = 2^number_of_args
 
         printf("Enter the number of functions: ");
         scanf("%s", &CHAR_number_of_funcs);
-        temp = validate(CHAR_number_of_funcs, 2); if (!temp) continue;
+        temp = validate(CHAR_number_of_funcs, 2);
+        
+        if (!temp) {
+
+            clearInputBuffer();
+            continue;
+
+        }    
 
         number_of_funcs = (int)temp;
         clearInputBuffer();
@@ -177,22 +188,43 @@ int main() {
             char *dynamicString = readDynamicString("Enter num of sets");
             size_t length = strlen(dynamicString);
             int *array = parseDynamicStringToArray(dynamicString, number_of_sets, &length);
-
             if (array == NULL) continue;
 
             /*
-            printf("Int array:\n");
 
             for (size_t i = 0; i < length; i++) {
-
-                printf("%d ", array[i]);
-
+                printf("ARRAY: %d ", array[i]);
             }
+
             */
 
             char *basisString = readDynamicString("Enter basis with '/'");
-            size_t basisLength = strlen(basisString);
-            char **basis = parseDynamicStringToCharArray(basisString, basisLength, &basisLength);
+            char **basis = splitBASIS(basisString);
+            if (basis == NULL) continue;
+
+            for (int i = 0; i < 4; i++) {
+                printf("BASIS #$%d: %s\n", i, basis[i]);
+            }
+
+            int type_of;
+
+            if ((strcmp("AND", basis[1]) == 0) || (strcmp("AND-NOT", basis[1]) == 0)) type_of = 1;
+            else type_of = 0;
+
+            printf("Type of function: %d\n", type_of);
+
+            int in_num = atoi(basis[0]);
+            int out_num = atoi(basis[2]);
+
+            // char *data_table = truth_table(number_of_args, number_of_sets);
+
+
+
+
+
+
+
+
 
             printf("\n");
 
