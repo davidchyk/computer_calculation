@@ -4,6 +4,39 @@ import shutil
 import tempfile
 import tkinter as tk
 from tkinter import filedialog, messagebox
+from schemdraw.parsing import logicparse
+
+def create_logic_diagrams_png(list_to_create, path_to_save):
+
+    def convert_symbols(user_input):
+
+        print(F"processing {user_input}")
+
+        #Замінює символи ∨, ∧, not на відповідні &, |, ~.
+
+        converted_input = (
+            user_input.replace("∧", "&")
+            .replace("∨", "|")
+            .replace("not", "~")
+            .replace("_", "")
+        )
+
+        return converted_input
+
+    #Створює блок-схему на основі логічного виразу.
+
+    counter = 1
+
+    for input_data in list_to_create:
+
+        temp = convert_symbols(input_data)
+        print(f"temp: {temp}")
+
+
+        d = logicparse(temp, outlabel=rf'$Y_{counter}$')
+        temp_path = os.path.join(path_to_save, f"OUTPUT_SCHEMMA_Y_{counter}.png")
+        d.save(temp_path)
+        counter += 1
 
 def check_pdflatex_installed():
 
@@ -14,7 +47,7 @@ def check_pdflatex_installed():
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
-def compile_latex(latex_str, output_path):
+def compile_latex(latex_str, output_path, list_to_create):
 
     print("compiling latex...")
 
@@ -32,6 +65,8 @@ def compile_latex(latex_str, output_path):
     # Створюємо тимчасову папку
     with tempfile.TemporaryDirectory() as temp_dir:
         tex_file_path = os.path.join(temp_dir, "document.tex")
+
+        create_logic_diagrams_png(list_to_create, temp_dir)
         
         # Записуємо LaTeX код у .tex файл
         with open(tex_file_path, 'w', encoding='utf-8') as tex_file:
@@ -49,6 +84,7 @@ def compile_latex(latex_str, output_path):
         except subprocess.CalledProcessError as e:
             error_message = e.stdout.decode() + "\n" + e.stderr.decode()
             messagebox.showerror("Помилка компіляції", f"Сталася помилка під час компіляції LaTeX:\n{error_message}")
+            with open("lahjhjtex.txt", "w", encoding="utf-8") as f: f.write(error_message)
             return False
         
         # Шлях до згенерованого PDF
@@ -169,7 +205,7 @@ def get_latex_list(args):
 
     return new_latex_list
 
-def get_latex_formula(latex_list, page_width):
+def get_latex_formula(latex_list, page_width, num_of_functions):
 
     print("getting latex formula...")
 
@@ -177,12 +213,14 @@ def get_latex_formula(latex_list, page_width):
     \documentclass{article}
 
     \usepackage[utf8]{inputenc}
-    \usepackage[T1]{fontenc}
+    \usepackage[T2A]{fontenc}
     \usepackage[english, ukrainian]{babel}
     \usepackage{lmodern}
     \usepackage{microtype}
+    \usepackage{graphicx}
     \usepackage{geometry}
     \usepackage{array}
+    \usepackage{float} 
     \geometry{
         paperwidth=""" + f"{page_width}cm," + r"""
         paperheight=30cm,
@@ -222,6 +260,24 @@ def get_latex_formula(latex_list, page_width):
 
         final_latex_formula += temp
 
+    for i in range(1, num_of_functions+1):
+
+        temp = r"""
+
+    \section*{Схема функції $y_""" + str(i) + r"""$}
+
+    \begin{figure}[H]
+
+        \raggedright
+        \includegraphics[width=0.2\textwidth]{OUTPUT_SCHEMMA_Y_""" + str(i) + r""".png}
+        \label{fig:left_top_image}
+
+    \end{figure}
+
+    """
+
+        final_latex_formula += temp
+
     ttt = r"""
     \end{document}
     """
@@ -230,17 +286,21 @@ def get_latex_formula(latex_list, page_width):
 
     return final_latex_formula
 
-def create_pdf_main(args, page_width):
+def delete_the_schemma(num_of_functions):
+
+    for i in range(1, num_of_functions+1): os.remove(f"OUTPUT SCHEMMA Y_{i}.png")
+
+def create_pdf_main(args, page_width, num_of_functions, list_to_create):
 
     print("start...")
 
     latex_list = get_latex_list(args)
-    latex_str = get_latex_formula(latex_list, page_width)
+    latex_str = get_latex_formula(latex_list, page_width, num_of_functions)
 
     save_path = select_save_location()
 
     if save_path:
-        success = compile_latex(latex_str, save_path)
+        success = compile_latex(latex_str, save_path, list_to_create)
         if success:
             print(f"PDF збережено за адресою: {save_path}")
         else:

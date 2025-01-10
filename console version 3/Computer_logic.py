@@ -4,6 +4,9 @@ from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
 from class_function import class_define
 from create_pdf import create_pdf_main, get_true_table
 import numpy as np
+import os
+
+from schemdraw.parsing import logicparse
 
 db = [['І', 'АБО'], ['І-НЕ', 'І-НЕ'], ['АБО', 'І-НЕ'], ['АБО-НЕ', 'АБО'],
       ['АБО', 'І'], ['АБО-НЕ', 'АБО-НЕ'], ['І', 'АБО-НЕ'], ['І-НЕ', 'І']]
@@ -146,6 +149,10 @@ def validate(data, type, optinal = False):
 
         except: print("Неправильне значення кількості аргументів"); return False
 
+        else:
+
+            if int(number_of_arguments) >= 10: print("Перевищення ліміту кількості аргументів"); return False
+
     elif type == "num_functions":
 
         try:
@@ -157,7 +164,7 @@ def validate(data, type, optinal = False):
 
         else:
 
-            if int(num_functions) >= 10: print("Перевищення ліміту"); return False
+            if int(num_functions) >= 10: print("Перевищення ліміту кількості функцій"); return False
 
     elif type == "input_data":
 
@@ -191,8 +198,8 @@ def validate(data, type, optinal = False):
 
     return True
 
-print("Version 2.0")
-print("Головний розробник: Давидчук Артем\nІнші розробники: Білий Іван, Троценко Максим")
+print("Version 3.0")
+print("Технічний директор, архітектор програмного забезпечення: Давидчук Артем\nСтарший розробник: Білий Іван\nІнші розробники: Троценко Максим, Вовк Андрій")
 
 while 1:
 
@@ -204,12 +211,13 @@ while 1:
     normal_minimum_list = []
     operator_minimum_list = []
     class_list = []
+    list_to_create = []
     i = 1
 
     basis_update = []
     args = []
 
-    number_of_arguments = input("\nНаберіть кількість аргументів функції: ")
+    number_of_arguments = input("\nНаберіть кількість аргументів функції (до 10): ")
     if not validate(number_of_arguments, "number_of_arguments"): continue
     number_of_arguments = int(float(number_of_arguments))
     number_of_sets = 2**number_of_arguments
@@ -274,13 +282,14 @@ while 1:
 
         minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
         operator_minimum_list.append("\\text{Операторна форма мінімізованої функції }" f"y_{i}" r"\text{: }" f"{conver_to_normal_operator(minimize_operator_result, number_of_arguments)}")
+        list_to_create.append(conver_to_normal(minimize_operator_result, number_of_arguments))
 
         class_list.extend(class_define(sets_number, number_of_arguments, i))
 
         i += 1
 
     args = ddnf_list + dknf_list + normal_list + operator_list  + minimum_list + normal_minimum_list + operator_minimum_list + class_list
-    args = args + ["\\text{ }"] * 10 + ["\\text{ Розробники: Давидчук Артем, Білий Іван, Троценко Максим, Вовк Андрій}"]
+    #args = args + ["\\text{ }"] * 10 + ["\\text{ Розробники: Давидчук Артем, Білий Іван, Троценко Максим, Вовк Андрій}"]
     
     page_width = int(len(max(args, key=len))*0.144531255)
 
@@ -292,5 +301,4 @@ while 1:
     args = [table_truth_legend] + [get_true_table(truth_table_list, number_of_arguments, num_functions)] + ["\\text{ }"] + args
 
     print(f"Складність функції чи системи функцій за оцінкою теста Давидчука Артема: {page_width/10}")
-
-    create_pdf_main(args, page_width)
+    create_pdf_main(args, page_width, num_functions, list_to_create)
