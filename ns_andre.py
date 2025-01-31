@@ -104,6 +104,7 @@ def graph_func():
                 break
 
     print(values_of_Y_coding)
+    print(triggers(type_of_trigger, transition_list))
     # Створення словника переходів
     for i in range(len(transition_list) - 1):
         current_state = transition_list[i]
@@ -128,6 +129,36 @@ def graph_func():
 
     print("\nФорматована таблиця переходів:")
     print(tabulate(table_data, headers=["Стани", "Переход станів", "Y"], tablefmt="github"))
+
+def triggers(type_of_trigger, transition_list):
+    loop_range = len(transition_list)/2
+    coding_trigger = {}
+    if type_of_trigger == "RS":
+        #аааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааа
+        #запис кодування RS тригера
+        if type(loop_range) is float:
+            loop_range += 1
+            loop_range = int(loop_range)
+        
+        for i in range(loop_range):
+            while True:
+                temp = transition_list[i]
+                for i in range(len(temp)):
+                    if temp[i] == 0 and transition_list[i+1] == 0:
+                        coding_trigger[f"R{i+1}"] = "*"
+                        coding_trigger[f"S{i+1}"] = "0"
+                    elif temp[i] == 0 and transition_list[i+1] == 1:
+                        coding_trigger[f"R{i+1}"] = "0"
+                        coding_trigger[f"S{i+1}"] = "1"
+                    elif temp[i] == 1 and transition_list[i+1] == 0:
+                        coding_trigger[f"R{i+1}"] = "1"
+                        coding_trigger[f"S{i+1}"] = "0"
+                    elif temp[i] == 1 and transition_list[i+1] == 1:
+                        coding_trigger[f"R{i+1}"] = "0"
+                        coding_trigger[f"S{i+1}"] = "*"
+                
+                break
+    return coding_trigger
 
 if __name__ == '__main__':
     graph_func()
