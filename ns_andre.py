@@ -134,35 +134,146 @@ def triggers(type_of_trigger, transition_list):
     loop_range = len(transition_list)/2
     coding_trigger = {}
     if type_of_trigger == "RS":
-        #аааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааааа
         #запис кодування RS тригера
         if type(loop_range) is float:
             loop_range += 1
             loop_range = int(loop_range)
         print("is working")
+        for j in range(len(transition_list[0])):
+            coding_trigger[f"R{j+1}"] = []
+            coding_trigger[f"S{j+1}"] = []
         for i in range(loop_range):
+            temp = transition_list[i]
+            temp_next = transition_list[i+1]
             while True:
                 print(f"org:{transition_list}")
-                temp = transition_list[i]
-                temp_next = transition_list[i+1]
                 print(f"len temp: {len(temp)}")
                 print(f"len temp_next: {len(temp_next)}")
                 print(f"range len temp{range(len(temp))}")
-                for j in range(len(temp)-1):
-                    print(f"j: {j}")
-                    print(f"cycle: {temp[j]}, second: {str(transition_list[i+1])[j]}")
-                    if temp[j] == "0" and temp_next[j+1] == "0":
-                        coding_trigger[f"R{i+1}"] = "*"
-                        coding_trigger[f"S{i+1}"] = "0"
-                    elif temp[j] == "0" and temp_next[j+1] == "1":
-                        coding_trigger[f"R{i+1}"] = "0"
-                        coding_trigger[f"S{i+1}"] = "1"
-                    elif temp[j] == "1" and temp_next[j+1] == "0":
-                        coding_trigger[f"R{i+1}"] = "1"
-                        coding_trigger[f"S{i+1}"] = "0"
-                    elif temp[j] == "1" and temp_next[j+1] == "1":
-                        coding_trigger[f"R{i+1}"] = "0"
-                        coding_trigger[f"S{i+1}"] = "*"
+
+                print(f"debug: {coding_trigger}")
+                for j in range(len(temp)):
+                    print(f"index J:{j}")
+                    if temp[j] == "0" and temp_next[j] == "0":
+                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                        coding_trigger[f"R{j+1}"].append("*")
+                        coding_trigger[f"S{j+1}"].append("0")
+                    elif temp[j] == "0" and temp_next[j] == "1":
+                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                        coding_trigger[f"R{j+1}"].append("0")
+                        coding_trigger[f"S{j+1}"].append("1")
+                    elif temp[j] == "1" and temp_next[j] == "0":
+                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                        coding_trigger[f"R{j+1}"].append("1")
+                        coding_trigger[f"S{j+1}"].append("0")
+                    elif temp[j] == "1" and temp_next[j] == "1":
+                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                        coding_trigger[f"R{j+1}"].append("0")
+                        coding_trigger[f"S{j+1}"].append("*")
+                break
+    elif type_of_trigger == "T":
+            #запис кодування T тригера
+            if type(loop_range) is float:
+                loop_range += 1
+                loop_range = int(loop_range)
+            print("is working")
+            for j in range(len(transition_list[0])):
+                coding_trigger[f"T{j+1}"] = []
+            for i in range(loop_range):
+                temp = transition_list[i]
+                temp_next = transition_list[i+1]
+                while True:
+                    print(f"org:{transition_list}")
+                    print(f"len temp: {len(temp)}")
+                    print(f"len temp_next: {len(temp_next)}")
+                    print(f"range len temp{range(len(temp))}")
+
+                    print(f"debug: {coding_trigger}")
+                    for j in range(len(temp)):
+                        print(f"index J:{j}")
+                        if temp[j] == "0" and temp_next[j] == "0":
+                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                            coding_trigger[f"T{j+1}"].append("0")
+                        elif temp[j] == "0" and temp_next[j] == "1":
+                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                            coding_trigger[f"T{j+1}"].append("1")
+                        elif temp[j] == "1" and temp_next[j] == "0":
+                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                            coding_trigger[f"T{j+1}"].append("1")
+                        elif temp[j] == "1" and temp_next[j] == "1":
+                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                            coding_trigger[f"T{j+1}"].append("0")
+                break
+    elif type_of_trigger == "D":
+            #запис кодування D тригера
+            if type(loop_range) is float:
+                loop_range += 1
+                loop_range = int(loop_range)
+            print("is working")
+            for j in range(len(transition_list[0])):
+                coding_trigger[f"D{j+1}"] = []
+            for i in range(loop_range):
+                temp = transition_list[i]
+                temp_next = transition_list[i+1]
+                while True:
+                    print(f"org:{transition_list}")
+                    print(f"len temp: {len(temp)}")
+                    print(f"len temp_next: {len(temp_next)}")
+                    print(f"range len temp{range(len(temp))}")
+
+                    print(f"debug: {coding_trigger}")
+                    for j in range(len(temp)):
+                        print(f"index J:{j}")
+                        if temp[j] == "0" and temp_next[j] == "0":
+                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                            coding_trigger[f"D{j+1}"].append("0")
+                        elif temp[j] == "0" and temp_next[j] == "1":
+                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                            coding_trigger[f"D{j+1}"].append("1")
+                        elif temp[j] == "1" and temp_next[j] == "0":
+                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                            coding_trigger[f"D{j+1}"].append("0")
+                        elif temp[j] == "1" and temp_next[j] == "1":
+                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                            coding_trigger[f"D{j+1}"].append("1")
+                break
+    elif type_of_trigger == "JK":
+        #запис кодування JK тригера
+        if type(loop_range) is float:
+            loop_range += 1
+            loop_range = int(loop_range)
+        print("is working")
+        for j in range(len(transition_list[0])):
+            coding_trigger[f"J{j+1}"] = []
+            coding_trigger[f"K{j+1}"] = []
+        for i in range(loop_range):
+            temp = transition_list[i]
+            temp_next = transition_list[i+1]
+            while True:
+                print(f"org:{transition_list}")
+                print(f"len temp: {len(temp)}")
+                print(f"len temp_next: {len(temp_next)}")
+                print(f"range len temp{range(len(temp))}")
+
+                print(f"debug: {coding_trigger}")
+                for j in range(len(temp)):
+                    print(f"index J:{j}")
+                    if temp[j] == "0" and temp_next[j] == "0":
+                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                        coding_trigger[f"J{j+1}"].append("0")
+                        coding_trigger[f"K{j+1}"].append("*")
+                    elif temp[j] == "0" and temp_next[j] == "1":
+                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                        coding_trigger[f"J{j+1}"].append("1")
+                        coding_trigger[f"K{j+1}"].append("*")
+                    elif temp[j] == "1" and temp_next[j] == "0":
+                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                        coding_trigger[f"J{j+1}"].append("*")
+                        coding_trigger[f"K{j+1}"].append("1")
+                    elif temp[j] == "1" and temp_next[j] == "1":
+                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
+                        coding_trigger[f"J{j+1}"].append("*")
+                        coding_trigger[f"K{j+1}"].append("0")
                 
                 break
          
