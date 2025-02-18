@@ -1,0 +1,11 @@
+# Исключить все тестовые файлы
+*.test.js
+*.test.jsx
+*.test.ts
+*.test.tsx
+
+# Исключить конфигурационные файлы для тестирования
+jest.config.js
+
+# Исключить папку node_modules
+node_modules/
