@@ -53,9 +53,9 @@ def graph_func():
             state_coding[f"{state_prefix}{i}"] = code
             break
 
-    # Введення вихідних значень Y (для автомата Мура)
+    # Введення вихідних значень Y
     if type_of_automat == "МУРА":
-        print("\nВведіть вихідні значення Y (або 1 або 0) для кожного стану:")
+        print("\nВведіть вихідні значення Y (0 або 1) для кожного стану:")
         for key in state_coding:
             while True:
                 temp = input(f"Введіть стан Y (0 або 1) для {state_coding[key]}: ").strip()
@@ -64,18 +64,22 @@ def graph_func():
                     break
                 else:
                     print("Некоректне значення. Введіть 0 або 1.")
+    elif type_of_automat == "МІЛІ":
+        print("\nВведіть вихідні значення Y (0 або 1) для кожного переходу:")
+        # Тут ключ буде у форматі "current > next"
+        # Кількість переходів буде рівна len(transition_list) - 1, але ми поки що не знаємо transition_list
+        # Тому введення Y для Мілі буде здійснюватися пізніше після введення переходів
 
     # Введення переходів
     print("\nВведіть переходи між вершинами у форматі, наприклад: 000>001>010>011")
     while True:
-        temp = input("Переходи: ").strip()
-        if ">" in temp:
-            transition_list = [code.strip() for code in temp.split('>') if code.strip()]
+        temp_input = input("Переходи: ").strip()
+        if ">" in temp_input:
+            transition_list = [code.strip() for code in temp_input.split('>') if code.strip()]
             # Перевірка, чи всі коди існують у state_coding
             invalid_codes = [code for code in transition_list if code not in state_coding.values()]
             if invalid_codes:
-                print(
-                    f"Нижченаведені коди не знайдені серед введених вершин: {', '.join(invalid_codes)}. Спробуйте ще раз.")
+                print(f"Нижченаведені коди не знайдені серед введених вершин: {', '.join(invalid_codes)}. Спробуйте ще раз.")
                 continue
             if len(transition_list) < 2:
                 print("Потрібно принаймні два стани для переходу. Спробуйте ще раз.")
@@ -85,199 +89,143 @@ def graph_func():
             print("Невірний формат. Використовуйте '>' для розділення переходів.")
 
     print(f"\nПорядок кодування переходів: {transition_list}")
-    if type_of_automat == "МІЛІ":
-        print("\nВведіть вихідні значення Y (або 1 або 0) для кожного стану:")
 
-        loop_range = len(transition_list)/2
-        if type(loop_range) is float:
-            loop_range += 1
-            loop_range = int(loop_range)
-        
-        for i in range(loop_range):
+    # Якщо автомат Мілі – введення Y для переходів
+    if type_of_automat == "МІЛІ":
+        for i in range(len(transition_list) - 1):
             while True:
-                temp = input(f"Введіть стан Y (0 або 1) для {transition_list[i]} > {transition_list[i+1]}: ").strip()
+                key_y = transition_list[i] + " > " + transition_list[i+1]
+                temp = input(f"Введіть стан Y (0 або 1) для переходу {transition_list[i]} > {transition_list[i+1]}: ").strip()
                 if temp in ["0", "1"]:
-                    values_of_Y_coding[transition_list[i] + " > " + transition_list[i+1]] = int(temp)
+                    values_of_Y_coding[key_y] = int(temp)
+                    break
                 else:
                     print("Некоректне значення. Введіть 0 або 1.")
-                    continue
-                break
 
-    print(values_of_Y_coding)
-    triggers(type_of_trigger, transition_list)
-    # Створення словника переходів
-    for i in range(len(transition_list) - 1):
-        current_state = transition_list[i]
-        next_state = transition_list[i + 1]
-        transitions.setdefault(current_state, []).append(next_state)
-
-    print("\nСловник переходів між станами:")
-    for state, next_states in transitions.items():
-        print(f"{state} -> {', '.join(next_states)}")
-
-    # Форматований вивід через tabulate у потрібному форматі
+    # Отримання кодування тригера (функція triggers повертає словник з кодами)
+    trigger_transition = triggers(type_of_trigger, transition_list)
+    
+    # Побудова фінальної таблиці
     table_data = []
-    for i in range(len(transition_list) - 1):
+    num_transitions = len(transition_list) - 1
+    for i in range(num_transitions):
         current_state = transition_list[i]
-        next_state = transition_list[i + 1]
-        from_state = list(state_coding.keys())[list(state_coding.values()).index(current_state)]
-        to_state = list(state_coding.keys())[list(state_coding.values()).index(next_state)]
-        transition_string = f"{current_state}>{next_state}"
-        y_value = values_of_Y_coding.get(current_state, "-")  # Якщо немає Y, ставимо "-"
-
-        table_data.append([f"{from_state} -> {to_state}", transition_string, y_value])
+        next_state = transition_list[i+1]
+        # Визначаємо Y для переходу
+        if type_of_automat == "МУРА":
+            y_val = values_of_Y_coding.get(current_state, "-")
+        else:  # МІЛІ
+            y_val = values_of_Y_coding.get(current_state + " > " + next_state, "-")
+        
+        # Формування значення тригера залежно від типу
+        if type_of_trigger == "RS":
+            # Припускаємо, що довжина коду однакова для всіх станів (наприклад, 1 або більше символів)
+            r_val = "".join([trigger_transition[f"R{j+1}"][i] for j in range(len(transition_list[0]))])
+            s_val = "".join([trigger_transition[f"S{j+1}"][i] for j in range(len(transition_list[0]))])
+            row = [current_state, next_state, y_val, r_val, s_val]
+            header = ["Z", "Z(i+1)", "Y", "R", "S"]
+        elif type_of_trigger == "T":
+            t_val = "".join([trigger_transition[f"T{j+1}"][i] for j in range(len(transition_list[0]))])
+            row = [current_state, next_state, y_val, t_val]
+            header = ["Z", "Z(i+1)", "Y", "T"]
+        elif type_of_trigger == "D":
+            d_val = "".join([trigger_transition[f"D{j+1}"][i] for j in range(len(transition_list[0]))])
+            row = [current_state, next_state, y_val, d_val]
+            header = ["Z", "Z(i+1)", "Y", "D"]
+        elif type_of_trigger == "JK":
+            j_val = "".join([trigger_transition[f"J{j+1}"][i] for j in range(len(transition_list[0]))])
+            k_val = "".join([trigger_transition[f"K{j+1}"][i] for j in range(len(transition_list[0]))])
+            row = [current_state, next_state, y_val, j_val, k_val]
+            header = ["Z", "Z(i+1)", "Y", "J", "K"]
+        table_data.append(row)
 
     print("\nФорматована таблиця переходів:")
-    print(tabulate(table_data, headers=["Стани", "Переход станів", "Y"], tablefmt="github"))
+    print(tabulate(table_data, headers=header, tablefmt="github"))
 
 def triggers(type_of_trigger, transition_list):
-    loop_range = len(transition_list)/2
+    # Визначаємо кількість переходів, для яких буде проводитися обчислення кодування тригера.
+    # Ми працюємо з переходами: від transition_list[i] до transition_list[i+1]
+    num_transitions = len(transition_list) - 1
+    # Ініціалізація словника з кодами тригера
     coding_trigger = {}
+    
     if type_of_trigger == "RS":
-        #запис кодування RS тригера
-        if type(loop_range) is float:
-            loop_range += 1
-            loop_range = int(loop_range)
-        print("is working")
+        # Ініціалізуємо ключі для кожного біту (залежить від довжини коду першого стану)
         for j in range(len(transition_list[0])):
             coding_trigger[f"R{j+1}"] = []
             coding_trigger[f"S{j+1}"] = []
-        for i in range(loop_range):
+        # Обчислення для кожного переходу
+        for i in range(num_transitions):
             temp = transition_list[i]
             temp_next = transition_list[i+1]
-            while True:
-                print(f"org:{transition_list}")
-                print(f"len temp: {len(temp)}")
-                print(f"len temp_next: {len(temp_next)}")
-                print(f"range len temp{range(len(temp))}")
-
-                print(f"debug: {coding_trigger}")
-                for j in range(len(temp)):
-                    print(f"index J:{j}")
-                    if temp[j] == "0" and temp_next[j] == "0":
-                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                        coding_trigger[f"R{j+1}"].append("*")
-                        coding_trigger[f"S{j+1}"].append("0")
-                    elif temp[j] == "0" and temp_next[j] == "1":
-                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                        coding_trigger[f"R{j+1}"].append("0")
-                        coding_trigger[f"S{j+1}"].append("1")
-                    elif temp[j] == "1" and temp_next[j] == "0":
-                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                        coding_trigger[f"R{j+1}"].append("1")
-                        coding_trigger[f"S{j+1}"].append("0")
-                    elif temp[j] == "1" and temp_next[j] == "1":
-                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                        coding_trigger[f"R{j+1}"].append("0")
-                        coding_trigger[f"S{j+1}"].append("*")
-                break
+            for j in range(len(temp)):
+                if temp[j] == "0" and temp_next[j] == "0":
+                    coding_trigger[f"R{j+1}"].append("*")
+                    coding_trigger[f"S{j+1}"].append("0")
+                elif temp[j] == "0" and temp_next[j] == "1":
+                    coding_trigger[f"R{j+1}"].append("0")
+                    coding_trigger[f"S{j+1}"].append("1")
+                elif temp[j] == "1" and temp_next[j] == "0":
+                    coding_trigger[f"R{j+1}"].append("1")
+                    coding_trigger[f"S{j+1}"].append("0")
+                elif temp[j] == "1" and temp_next[j] == "1":
+                    coding_trigger[f"R{j+1}"].append("0")
+                    coding_trigger[f"S{j+1}"].append("*")
+                    
     elif type_of_trigger == "T":
-            #запис кодування T тригера
-            if type(loop_range) is float:
-                loop_range += 1
-                loop_range = int(loop_range)
-            print("is working")
-            for j in range(len(transition_list[0])):
-                coding_trigger[f"T{j+1}"] = []
-            for i in range(loop_range):
-                temp = transition_list[i]
-                temp_next = transition_list[i+1]
-                while True:
-                    print(f"org:{transition_list}")
-                    print(f"len temp: {len(temp)}")
-                    print(f"len temp_next: {len(temp_next)}")
-                    print(f"range len temp{range(len(temp))}")
-
-                    print(f"debug: {coding_trigger}")
-                    for j in range(len(temp)):
-                        print(f"index J:{j}")
-                        if temp[j] == "0" and temp_next[j] == "0":
-                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                            coding_trigger[f"T{j+1}"].append("0")
-                        elif temp[j] == "0" and temp_next[j] == "1":
-                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                            coding_trigger[f"T{j+1}"].append("1")
-                        elif temp[j] == "1" and temp_next[j] == "0":
-                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                            coding_trigger[f"T{j+1}"].append("1")
-                        elif temp[j] == "1" and temp_next[j] == "1":
-                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                            coding_trigger[f"T{j+1}"].append("0")
-                break
+        for j in range(len(transition_list[0])):
+            coding_trigger[f"T{j+1}"] = []
+        for i in range(num_transitions):
+            temp = transition_list[i]
+            temp_next = transition_list[i+1]
+            for j in range(len(temp)):
+                if temp[j] == "0" and temp_next[j] == "0":
+                    coding_trigger[f"T{j+1}"].append("0")
+                elif temp[j] == "0" and temp_next[j] == "1":
+                    coding_trigger[f"T{j+1}"].append("1")
+                elif temp[j] == "1" and temp_next[j] == "0":
+                    coding_trigger[f"T{j+1}"].append("1")
+                elif temp[j] == "1" and temp_next[j] == "1":
+                    coding_trigger[f"T{j+1}"].append("0")
+                    
     elif type_of_trigger == "D":
-            #запис кодування D тригера
-            if type(loop_range) is float:
-                loop_range += 1
-                loop_range = int(loop_range)
-            print("is working")
-            for j in range(len(transition_list[0])):
-                coding_trigger[f"D{j+1}"] = []
-            for i in range(loop_range):
-                temp = transition_list[i]
-                temp_next = transition_list[i+1]
-                while True:
-                    print(f"org:{transition_list}")
-                    print(f"len temp: {len(temp)}")
-                    print(f"len temp_next: {len(temp_next)}")
-                    print(f"range len temp{range(len(temp))}")
-
-                    print(f"debug: {coding_trigger}")
-                    for j in range(len(temp)):
-                        print(f"index J:{j}")
-                        if temp[j] == "0" and temp_next[j] == "0":
-                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                            coding_trigger[f"D{j+1}"].append("0")
-                        elif temp[j] == "0" and temp_next[j] == "1":
-                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                            coding_trigger[f"D{j+1}"].append("1")
-                        elif temp[j] == "1" and temp_next[j] == "0":
-                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                            coding_trigger[f"D{j+1}"].append("0")
-                        elif temp[j] == "1" and temp_next[j] == "1":
-                            print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                            coding_trigger[f"D{j+1}"].append("1")
-                break
+        for j in range(len(transition_list[0])):
+            coding_trigger[f"D{j+1}"] = []
+        for i in range(num_transitions):
+            temp = transition_list[i]
+            temp_next = transition_list[i+1]
+            for j in range(len(temp)):
+                if temp[j] == "0" and temp_next[j] == "0":
+                    coding_trigger[f"D{j+1}"].append("0")
+                elif temp[j] == "0" and temp_next[j] == "1":
+                    coding_trigger[f"D{j+1}"].append("1")
+                elif temp[j] == "1" and temp_next[j] == "0":
+                    coding_trigger[f"D{j+1}"].append("0")
+                elif temp[j] == "1" and temp_next[j] == "1":
+                    coding_trigger[f"D{j+1}"].append("1")
+                    
     elif type_of_trigger == "JK":
-        #запис кодування JK тригера
-        if type(loop_range) is float:
-            loop_range += 1
-            loop_range = int(loop_range)
-        print("is working")
         for j in range(len(transition_list[0])):
             coding_trigger[f"J{j+1}"] = []
             coding_trigger[f"K{j+1}"] = []
-        for i in range(loop_range):
+        for i in range(num_transitions):
             temp = transition_list[i]
             temp_next = transition_list[i+1]
-            while True:
-                print(f"org:{transition_list}")
-                print(f"len temp: {len(temp)}")
-                print(f"len temp_next: {len(temp_next)}")
-                print(f"range len temp{range(len(temp))}")
-
-                print(f"debug: {coding_trigger}")
-                for j in range(len(temp)):
-                    print(f"index J:{j}")
-                    if temp[j] == "0" and temp_next[j] == "0":
-                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                        coding_trigger[f"J{j+1}"].append("0")
-                        coding_trigger[f"K{j+1}"].append("*")
-                    elif temp[j] == "0" and temp_next[j] == "1":
-                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                        coding_trigger[f"J{j+1}"].append("1")
-                        coding_trigger[f"K{j+1}"].append("*")
-                    elif temp[j] == "1" and temp_next[j] == "0":
-                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                        coding_trigger[f"J{j+1}"].append("*")
-                        coding_trigger[f"K{j+1}"].append("1")
-                    elif temp[j] == "1" and temp_next[j] == "1":
-                        print(f"elements: {temp[j]}, and {temp_next[j]} ")
-                        coding_trigger[f"J{j+1}"].append("*")
-                        coding_trigger[f"K{j+1}"].append("0")
-                
-                break
-         
-    print(coding_trigger)
+            for j in range(len(temp)):
+                if temp[j] == "0" and temp_next[j] == "0":
+                    coding_trigger[f"J{j+1}"].append("0")
+                    coding_trigger[f"K{j+1}"].append("*")
+                elif temp[j] == "0" and temp_next[j] == "1":
+                    coding_trigger[f"J{j+1}"].append("1")
+                    coding_trigger[f"K{j+1}"].append("*")
+                elif temp[j] == "1" and temp_next[j] == "0":
+                    coding_trigger[f"J{j+1}"].append("*")
+                    coding_trigger[f"K{j+1}"].append("1")
+                elif temp[j] == "1" and temp_next[j] == "1":
+                    coding_trigger[f"J{j+1}"].append("*")
+                    coding_trigger[f"K{j+1}"].append("0")
+                    
+    return coding_trigger
 
 if __name__ == '__main__':
     graph_func()
