@@ -124,6 +124,8 @@ def select_save_location():
         title="Зберегти PDF як"
     )
 
+    root.destroy()
+
     if file_path: return file_path
     return None
 
