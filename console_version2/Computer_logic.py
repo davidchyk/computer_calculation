@@ -190,7 +190,7 @@ def validate(data, type, optinal = False):
 
     return True
 
-print("Version 1.0")
+print("Version 2.0")
 print("Головний розробник: Давидчук Артем\nІнші розробники: Білий Іван, Троценко Максим")
 
 while 1:
