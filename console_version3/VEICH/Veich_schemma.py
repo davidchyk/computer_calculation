@@ -1,5 +1,5 @@
 import numpy as np
-from new_test import process
+from creating_diagram import process
 
 def differ(s1: str, s2: str) -> bool:
 
@@ -23,9 +23,11 @@ def differ(s1: str, s2: str) -> bool:
     return True
 
 term_list = ['01X', '0X1', '100']
+term_list = ['10', '01']
+
 num_of_args = len(term_list[0])
 
-sets_number = [1, 2, 3, 4]
+sets_number = [1, 2]
 bin_sets = []
 
 for set in sets_number: bin_sets.append(format(int(set), f'0{num_of_args}b'))
