@@ -29,7 +29,7 @@ def process(data1, data2):
             for c in range(cols):
                 x = c * cell_size
                 y = (rows - 1 - r) * cell_size  # **Y правильно масштабується**
-                
+
                 # Прямокутник сітки
                 ax.add_patch(Rectangle(
                     (x, y),
@@ -49,11 +49,12 @@ def process(data1, data2):
                     va='center',
                     fontsize=8
                 )
-        
+
         # 2) Обведення групи без виходу за межі
         color_map = ["#640000", "#4A7023"]  # Червоне, Зелене
 
         for group_idx, group_cells in enumerate(groups):
+
             color = color_map[group_idx % len(color_map)]
 
             # Визначаємо точні межі групи
