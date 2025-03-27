@@ -57,6 +57,8 @@ def differ(s1: str, s2: str) -> bool:
 term_list = ['01X', '0X1', '100']
 term_list = ['X101']
 
+num_of_groups = len(term_list)
+
 num_of_args = len(term_list[0])
 
 sets_number = [5, 13]
@@ -88,9 +90,35 @@ if num_of_args == 9:
 
     ]
 
-    num_of_colors = 256
+    line_configurations = [
 
-    # TODO
+        "-",
+        "--",
+        ":",
+        "-."
+
+    ]
+
+    colors = [
+
+        "#4169E1",  # RoyalBlue
+        "#32CD32",  # LimeGreen
+        "#DC143C",  # Crimson
+        "#FFD700",  # Gold
+        "#9400D3",  # DarkViolet
+        "#FF8C00",  # DarkOrange
+        "#00CED1",  # DarkTurquoise
+        "#FF1493",  # DeepPink
+        "#00008B",  # DarkBlue
+        "#90EE90",  # LightGreen
+        "#FF0000",  # Red
+        "#FFFFE0",  # LightYellow
+        "#000000",  # Black
+        "#FF7F50",  # Coral
+        "#20B2AA",  # LightSeaGreen
+        "#C71585"   # MediumVioletRed
+
+    ] # 16
 
 elif num_of_args == 8:
 
@@ -116,239 +144,12 @@ elif num_of_args == 8:
 
     ]
 
-    color_map = [
+    line_configurations = [
 
-        "#4169E1",  # RoyalBlue
-        "#32CD32",  # LimeGreen
-        "#DC143C",  # Crimson
-        "#FFD700",  # Gold
-        "#9400D3",  # DarkViolet
-        "#FF8C00",  # DarkOrange
-        "#00CED1",  # DarkTurquoise
-        "#FF1493",  # DeepPink
-        "#00008B",  # DarkBlue
-        "#90EE90",  # LightGreen
-        "#FF0000",  # Red
-        "#FFFFE0",  # LightYellow
-        "#000000",  # Black
-        "#FF7F50",  # Coral
-        "#20B2AA",  # LightSeaGreen
-        "#C71585",  # MediumVioletRed
-        "#483D8B",  # DarkSlateBlue
-        "#228B22",  # ForestGreen
-        "#FF4500",  # OrangeRed
-        "#EEE8AA",  # PaleGoldenRod
-        "#9932CC",  # DarkOrchid
-        "#FF6347",  # Tomato
-        "#4682B4",  # SteelBlue
-        "#DB7093",  # PaleVioletRed
-        "#40E0D0",  # Turquoise
-        "#FF69B4",  # HotPink
-        "#008B8B",  # DarkCyan
-        "#F08080",  # LightCoral
-        "#DAA520",  # GoldenRod
-        "#DDA0DD",  # Plum
-        "#2E8B57",  # SeaGreen
-        "#B22222",  # FireBrick
-        "#000000",  # Black
-        "#191970",  # MidnightBlue
-        "#00FF00",  # Lime
-        "#8B0000",  # DarkRed
-        "#FFFF00",  # Yellow
-        "#4B0082",  # Indigo
-        "#FFA500",  # Orange
-        "#00FFFF",  # Cyan
-        "#FF00FF",  # Magenta
-        "#1E90FF",  # DodgerBlue
-        "#ADFF2F",  # GreenYellow
-        "#CD5C5C",  # IndianRed
-        "#F0E68C",  # Khaki
-        "#8A2BE2",  # BlueViolet
-        "#CD853F",  # Peru
-        "#5F9EA0",  # CadetBlue
-        "#DA70D6",  # Orchid
-        "#0000CD",  # MediumBlue
-        "#7CFC00",  # LawnGreen
-        "#A52A2A",  # Brown
-        "#F5F5DC",  # Beige
-        "#6A5ACD",  # SlateBlue
-        "#DEB887",  # BurlyWood
-        "#66CDAA",  # MediumAquamarine
-        "#FF00CC",  # HotMagenta
-        "#0000FF",  # Blue
-        "#9ACD32",  # YellowGreen
-        "#8B008B",  # DarkMagenta
-        "#FAFAD2",  # LightGoldenRodYellow
-        "#7B68EE",  # MediumSlateBlue
-        "#F4A460",  # SandyBrown
-        "#48D1CC",  # MediumTurquoise
-        "#FF1A66",  # NeonPink
-        "#87CEEB",  # SkyBlue
-        "#556B2F",  # DarkOliveGreen
-        "#FF4040",  # CoralRed
-        "#FFFACD",  # LemonChiffon
-        "#BA55D3",  # MediumOrchid
-        "#FF8247",  # Sienna
-        "#00FA9A",  # MediumSpringGreen
-        "#FF34B3",  # MaroonPink
-        "#6495ED",  # CornflowerBlue
-        "#98FB98",  # PaleGreen
-        "#FF3030",  # Scarlet
-        "#FFF8DC",  # Cornsilk
-        "#B0C4DE",  # LightSteelBlue
-        "#FF6A6A",  # IndianRedLight
-        "#00FF7F",  # SpringGreen
-        "#FF83FA",  # OrchidPink
-        "#4169E1",  # DeepSkyBlue
-        "#3CB371",  # MediumSeaGreen
-        "#CD2626",  # FireBrickLight
-        "#F0FFF0",  # Honeydew
-        "#9370DB",  # MediumPurple
-        "#FF7F24",  # Chocolate
-        "#00B7EB",  # DeepTurquoise
-        "#FF3E96",  # VioletRed
-        "#1874CD",  # SteelBlueDark
-        "#54FF9F",  # SeaGreenLight
-        "#8B1A1A",  # Maroon
-        "#FFFFF0",  # Ivory
-        "#8968CD",  # DarkSlatePurple
-        "#FF8247",  # DarkSalmon
-        "#00C5CD",  # TurquoiseDark
-        "#FF6EB4",  # HotPinkLight
-        "#104E8B",  # DarkSlateGray
-        "#6E8B3D",  # OliveDrab
-        "#CD5555",  # RosyBrown
-        "#FFF5EE",  # Seashell
-        "#9B30FF",  # Purple
-        "#CD661D",  # SiennaDark
-        "#00E5EE",  # CyanLight
-        "#FF82AB",  # PaleVioletRedLight
-        "#1874CD",  # RoyalBlueDark
-        "#76EE00",  # Chartreuse
-        "#8B2323",  # BrownDark
-        "#F8F8FF",  # GhostWhite
-        "#AB82FF",  # MediumPurpleLight
-        "#CD853F",  # Tan
-        "#00CED1",  # Aqua
-        "#FF4040",  # DeepPinkLight
-        "#27408B",  # NavyBlue
-        "#CAFF70",  # LightLime
-        "#8B2500",  # DarkOrangeRed
-        "#FAEBD7",  # AntiqueWhite
-        "#E066FF",  # Heliotrope
-        "#CD9B1D",  # GoldenBrown
-        "#00B2EE",  # SkyBlueLight
-        "#FF3881",  # Cerise
-        "#36648B",  # SteelBlueMedium
-        "#BCEE68",  # PaleLime
-        "#8B3626",  # SiennaRed
-        "#FDF5E6",  # OldLace
-        "#BF3EFF",  # BrightPurple
-        "#CD8500",  # DarkGoldenRod
-        "#00BFFF",  # DeepSkyBlueLight
-        "#FF3E96"  # MagentaLight
-
-    ] # 128
-
-elif num_of_args == 7:
-
-    veich_structure = np.zeros((8, 16), dtype=int)
-    back_veich_structure = [
-
-        ["0101100", "0101110", "0111110", "0111100", "0110100", "0110110", "0100110", "0100100", "1101100", "1101110", "1111110", "1111100", "1110100", "1110110", "1100110", "1100100"],
-        ["0101101", "0101111", "0111111", "0111101", "0110101", "0110111", "0100111", "0100101", "1101101", "1101111", "1111111", "1111101", "1110101", "1110111", "1100111", "1100101"],
-        ["0101001", "0101011", "0111011", "0111001", "0110001", "0110011", "0100011", "0100001", "1101001", "1101011", "1111011", "1111001", "1110001", "1110011", "1100011", "1100001"],
-        ["0101000", "0101010", "0111010", "0111000", "0110000", "0110010", "0100010", "0100000", "1101000", "1101010", "1111010", "1111000", "1110000", "1110010", "1100010", "1100000"],
-        ["0001100", "0001110", "0011110", "0011100", "0010100", "0010110", "0000110", "0000100", "1001100", "1001110", "1011110", "1011100", "1010100", "1010110", "1000110", "1000100"],
-        ["0001101", "0001111", "0011111", "0011101", "0010101", "0010111", "0000111", "0000101", "1001101", "1001111", "1011111", "1011101", "1010101", "1010111", "1000111", "1000101"],
-        ["0001001", "0001011", "0011011", "0011001", "0010001", "0010011", "0000011", "0000001", "1001001", "1001011", "1011011", "1011001", "1010001", "1010011", "1000011", "1000001"],
-        ["0001000", "0001010", "0011010", "0011000", "0010000", "0010010", "0000010", "0000000", "1001000", "1001010", "1011010", "1011000", "1010000", "1010010", "1000010", "1000000"]
-
-    ]
-
-    color_map = [
-
-        "#4169E1",  # RoyalBlue
-        "#32CD32",  # LimeGreen
-        "#DC143C",  # Crimson
-        "#FFD700",  # Gold
-        "#9400D3",  # DarkViolet
-        "#FF8C00",  # DarkOrange
-        "#00CED1",  # DarkTurquoise
-        "#FF1493",  # DeepPink
-        "#00008B",  # DarkBlue
-        "#90EE90",  # LightGreen
-        "#FF0000",  # Red
-        "#FFFFE0",  # LightYellow
-        "#000000",  # Black
-        "#FF7F50",  # Coral
-        "#20B2AA",  # LightSeaGreen
-        "#C71585",  # MediumVioletRed
-        "#483D8B",  # DarkSlateBlue
-        "#228B22",  # ForestGreen
-        "#FF4500",  # OrangeRed
-        "#EEE8AA",  # PaleGoldenRod
-        "#9932CC",  # DarkOrchid
-        "#FF6347",  # Tomato
-        "#4682B4",  # SteelBlue
-        "#DB7093",  # PaleVioletRed
-        "#40E0D0",  # Turquoise
-        "#FF69B4",  # HotPink
-        "#008B8B",  # DarkCyan
-        "#F08080",  # LightCoral
-        "#DAA520",  # GoldenRod
-        "#DDA0DD",  # Plum
-        "#2E8B57",  # SeaGreen
-        "#B22222",  # FireBrick
-        "#000000",  # Black
-        "#191970",  # MidnightBlue
-        "#00FF00",  # Lime
-        "#8B0000",  # DarkRed
-        "#FFFF00",  # Yellow
-        "#4B0082",  # Indigo
-        "#FFA500",  # Orange
-        "#00FFFF",  # Cyan
-        "#FF00FF",  # Magenta
-        "#1E90FF",  # DodgerBlue
-        "#ADFF2F",  # GreenYellow
-        "#CD5C5C",  # IndianRed
-        "#F0E68C",  # Khaki
-        "#8A2BE2",  # BlueViolet
-        "#CD853F",  # Peru
-        "#5F9EA0",  # CadetBlue
-        "#DA70D6",  # Orchid
-        "#0000CD",  # MediumBlue
-        "#7CFC00",  # LawnGreen
-        "#A52A2A",  # Brown
-        "#F5F5DC",  # Beige
-        "#6A5ACD",  # SlateBlue
-        "#DEB887",  # BurlyWood
-        "#66CDAA",  # MediumAquamarine
-        "#FF00CC",  # HotMagenta
-        "#0000FF",  # Blue
-        "#9ACD32",  # YellowGreen
-        "#8B008B",  # DarkMagenta
-        "#FAFAD2",  # LightGoldenRodYellow
-        "#7B68EE",  # MediumSlateBlue
-        "#F4A460",  # SandyBrown
-        "#48D1CC",  # MediumTurquoise
-        "#FF1A66"  # NeonPink
-
-    ] # 64
-
-elif num_of_args == 6:
-
-    veich_structure = np.zeros((8, 8), dtype=int)
-    back_veich_structure = [
-
-        ["101100", "101110", "111110", "111100", "110100", "110110", "100110", "100100"],
-        ["101101", "101111", "111111", "111101", "110101", "110111", "100111", "100101"],
-        ["101001", "101011", "111011", "111001", "110001", "110011", "100011", "100001"],
-        ["101000", "101010", "111010", "111000", "110000", "110010", "100010", "100000"],
-        ["001100", "001110", "011110", "011100", "010100", "010110", "000110", "000100"],
-        ["001101", "001111", "011111", "011101", "010101", "010111", "000111", "000101"],
-        ["001001", "001011", "011011", "011001", "010001", "010011", "000011", "000001"],
-        ["001000", "001010", "011010", "011000", "010000", "010010", "000010", "000000"]
+        "-",
+        "--",
+        ":",
+        "-."
 
     ]
 
@@ -369,25 +170,99 @@ elif num_of_args == 6:
         "#000000",  # Black
         "#FF7F50",  # Coral
         "#20B2AA",  # LightSeaGreen
-        "#C71585",  # MediumVioletRed
-        "#483D8B",  # DarkSlateBlue
-        "#228B22",  # ForestGreen
-        "#FF4500",  # OrangeRed
-        "#EEE8AA",  # PaleGoldenRod
-        "#9932CC",  # DarkOrchid
-        "#FF6347",  # Tomato
-        "#4682B4",  # SteelBlue
-        "#DB7093",  # PaleVioletRed
-        "#40E0D0",  # Turquoise
-        "#FF69B4",  # HotPink
-        "#008B8B",  # DarkCyan
-        "#F08080",  # LightCoral
-        "#DAA520",  # GoldenRod
-        "#DDA0DD",  # Plum
-        "#2E8B57",  # SeaGreen
-        "#B22222"  # FireBrick
+        "#C71585"   # MediumVioletRed
 
-    ] # 32
+    ] # 16
+
+elif num_of_args == 7:
+
+    veich_structure = np.zeros((8, 16), dtype=int)
+    back_veich_structure = [
+
+        ["0101100", "0101110", "0111110", "0111100", "0110100", "0110110", "0100110", "0100100", "1101100", "1101110", "1111110", "1111100", "1110100", "1110110", "1100110", "1100100"],
+        ["0101101", "0101111", "0111111", "0111101", "0110101", "0110111", "0100111", "0100101", "1101101", "1101111", "1111111", "1111101", "1110101", "1110111", "1100111", "1100101"],
+        ["0101001", "0101011", "0111011", "0111001", "0110001", "0110011", "0100011", "0100001", "1101001", "1101011", "1111011", "1111001", "1110001", "1110011", "1100011", "1100001"],
+        ["0101000", "0101010", "0111010", "0111000", "0110000", "0110010", "0100010", "0100000", "1101000", "1101010", "1111010", "1111000", "1110000", "1110010", "1100010", "1100000"],
+        ["0001100", "0001110", "0011110", "0011100", "0010100", "0010110", "0000110", "0000100", "1001100", "1001110", "1011110", "1011100", "1010100", "1010110", "1000110", "1000100"],
+        ["0001101", "0001111", "0011111", "0011101", "0010101", "0010111", "0000111", "0000101", "1001101", "1001111", "1011111", "1011101", "1010101", "1010111", "1000111", "1000101"],
+        ["0001001", "0001011", "0011011", "0011001", "0010001", "0010011", "0000011", "0000001", "1001001", "1001011", "1011011", "1011001", "1010001", "1010011", "1000011", "1000001"],
+        ["0001000", "0001010", "0011010", "0011000", "0010000", "0010010", "0000010", "0000000", "1001000", "1001010", "1011010", "1011000", "1010000", "1010010", "1000010", "1000000"]
+
+    ]
+
+    line_configurations = [
+
+        "-",
+        "--",
+        ":",
+        "-."
+
+    ]
+
+    colors = [
+
+        "#4169E1",  # RoyalBlue
+        "#32CD32",  # LimeGreen
+        "#DC143C",  # Crimson
+        "#FFD700",  # Gold
+        "#9400D3",  # DarkViolet
+        "#FF8C00",  # DarkOrange
+        "#00CED1",  # DarkTurquoise
+        "#FF1493",  # DeepPink
+        "#00008B",  # DarkBlue
+        "#90EE90",  # LightGreen
+        "#FF0000",  # Red
+        "#FFFFE0",  # LightYellow
+        "#000000",  # Black
+        "#FF7F50",  # Coral
+        "#20B2AA",  # LightSeaGreen
+        "#C71585"   # MediumVioletRed
+
+    ] # 16
+
+elif num_of_args == 6:
+
+    veich_structure = np.zeros((8, 8), dtype=int)
+    back_veich_structure = [
+
+        ["101100", "101110", "111110", "111100", "110100", "110110", "100110", "100100"],
+        ["101101", "101111", "111111", "111101", "110101", "110111", "100111", "100101"],
+        ["101001", "101011", "111011", "111001", "110001", "110011", "100011", "100001"],
+        ["101000", "101010", "111010", "111000", "110000", "110010", "100010", "100000"],
+        ["001100", "001110", "011110", "011100", "010100", "010110", "000110", "000100"],
+        ["001101", "001111", "011111", "011101", "010101", "010111", "000111", "000101"],
+        ["001001", "001011", "011011", "011001", "010001", "010011", "000011", "000001"],
+        ["001000", "001010", "011010", "011000", "010000", "010010", "000010", "000000"]
+
+    ]
+
+    line_configurations = [
+
+        "-",
+        "--"
+
+    ]
+
+    colors = [
+
+        "#4169E1",  # RoyalBlue
+        "#32CD32",  # LimeGreen
+        "#DC143C",  # Crimson
+        "#FFD700",  # Gold
+        "#9400D3",  # DarkViolet
+        "#FF8C00",  # DarkOrange
+        "#00CED1",  # DarkTurquoise
+        "#FF1493",  # DeepPink
+        "#00008B",  # DarkBlue
+        "#90EE90",  # LightGreen
+        "#FF0000",  # Red
+        "#FFFFE0",  # LightYellow
+        "#000000",  # Black
+        "#FF7F50",  # Coral
+        "#20B2AA",  # LightSeaGreen
+        "#C71585"   # MediumVioletRed
+
+    ] # 16
 
 elif num_of_args == 5:
 
@@ -398,6 +273,12 @@ elif num_of_args == 5:
         ["01101", "01111", "11111", "11101", "10101", "10111", "00111", "00101"],
         ["01001", "01011", "11011", "11001", "10001", "10011", "00011", "00001"],
         ["01000", "01010", "11010", "11000", "10000", "10010", "00010", "00000"]
+
+    ]
+
+    line_configurations = [
+
+        "-"
 
     ]
 
@@ -434,11 +315,17 @@ elif num_of_args == 4:
 
     ]
 
+    line_configurations = [
+
+        "-"
+
+    ]
+
     colors = [
 
         "#4169E1",  # RoyalBlue
-        "#32CD32",  # LimeGreen
         "#DC143C",  # Crimson
+        "#32CD32",  # LimeGreen
         "#FFD700",  # Gold
         "#9400D3",  # DarkViolet
         "#FF8C00",  # DarkOrange
@@ -458,11 +345,17 @@ elif num_of_args == 3:
 
     ]
 
+    line_configurations = [
+
+        "-"
+
+    ]
+
     colors = [
 
         "#4169E1",  # RoyalBlue
-        "#32CD32",  # LimeGreen
         "#DC143C",  # Crimson
+        "#32CD32",  # LimeGreen
         "#FFD700"   # Gold
 
     ] # 4
@@ -475,6 +368,12 @@ elif num_of_args == 2:
 
         ["11", "10"],
         ["01", "00"]
+
+    ]
+
+    line_configurations = [
+
+        "-"
 
     ]
 
@@ -492,6 +391,12 @@ elif num_of_args == 1:
 
         ["1"],
         ["0"]
+
+    ]
+
+    line_configurations = [
+
+        "-"
 
     ]
 
