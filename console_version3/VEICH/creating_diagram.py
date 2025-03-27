@@ -1,10 +1,9 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, Rectangle
 
-def process(data1, data2):
+def paint(configuration):
 
-    veich_structure = data1
-    forming_groups = data2
+    veich_structure, forming_groups, line_configurations, colors = configuration
 
     # === ПАРАМЕТРИ ===
     CELL_SIZE = 0.2  # Розмір клітинки
@@ -12,11 +11,15 @@ def process(data1, data2):
     LINE_WIDTH = 1.2  # Товщина обведення
     PADDING = 0.03  # Відступ усередині, щоб рамки не накладались
 
-    def draw_kmap_with_tight_rounded_boxes(kmap, groups, cell_size=CELL_SIZE, gap=GAP, filename="rounded_groups_fixed.png"):
+    def draw_kmap_with_tight_rounded_boxes(kmap, groups, filename="rounded_groups_fixed.png"):
         """
         Малює карту Карно та додає обведення груп із заокругленими прямокутниками.
         Тепер обведення не заходить на сусідні клітинки!
         """
+
+        cell_size=CELL_SIZE
+        gap = GAP
+
         rows, cols = kmap.shape
         fig, ax = plt.subplots()
         ax.set_aspect('equal')
