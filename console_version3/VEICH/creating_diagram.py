@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, Rectangle
 
-def paint(configuration):
+def paint(data: dict):
 
     veich_structure, forming_groups, line_configurations, colors = configuration
 
