@@ -1,7 +1,7 @@
 import numpy as np
 from creating_diagram import paint
 
-def main_function(term_list):
+def main_function(term_list, sets_number):
 
     """
     TODO:
@@ -24,13 +24,11 @@ def main_function(term_list):
 
     ЗАГАЛОМ:
 
-    Потрібно буде враховувати формування координат, коли у нас рядки та ствопці не є одного розміру (це коли ми формуємо списко new_groups). Тобто є не лише число C, а й K.
     Також потрібно продумати виконання, коли ми шукаємо не по 1, а по 0 (МКНФ). 
 
     NOTE:
 
     Використовувати не всі кольори, а типи ліній
-
     """
 
     def differ(s1: str, s2: str) -> bool:
@@ -77,62 +75,122 @@ def main_function(term_list):
 
         return min_x, min_y, max_x, max_y
 
-    def define_matrix(coord, C, K):
+    def generate_add_coordinates(start_coord, C, K):
 
-        x, y = coord
+        def define_matrix(coord, C, K):
 
-        if x == 0 and y == 0:
+            x, y = coord
 
-            return "left_top_corner"
+            if x == 0 and y == 0:
 
-        elif x == 0 and y == K-1:
+                return "left_top_corner"
 
-            return "right_top_corner"
+            elif x == 0 and y == K-1:
 
-        elif x == C-1 and y == 0:
+                return "right_top_corner"
 
-            return "left_bottom_corner"
+            elif x == C-1 and y == 0:
 
-        elif x == C-1 and y == K-1:
+                return "left_bottom_corner"
 
-            return "right_bottom_corner"
+            elif x == C-1 and y == K-1:
 
-        elif x == 0:
+                return "right_bottom_corner"
 
-            return "top_side_part"
+            elif x == 0:
 
-        elif x == C-1:
+                return "top_side_part"
 
-            return "bottom_side_part"
+            elif x == C-1:
 
-        elif y == 0:
+                return "bottom_side_part"
 
-            return "left_side_part"
+            elif y == 0:
 
-        elif y == K-1:
+                return "left_side_part"
 
-            return "right_side_part"
+            elif y == K-1:
 
-        return None
+                return "right_side_part"
+
+            return None
+
+        result_coords = []
+        x, y = start_coord
+
+        type_coord = define_matrix(start_coord, C, K)
+
+        if type_coord == "left_top_corner":
+
+            result_coords.append((x+C+1, y+1))
+            result_coords.append((x+C+1, y+K+1))
+            result_coords.append((x+1, y+K+1))
+
+        elif type_coord == "right_top_corner":
+
+            result_coords.append((x+C+1, y+1))
+            result_coords.append((x+C+1, y-K+1))
+            result_coords.append((x+1, y-K+1))
+
+        elif type_coord == "left_bottom_corner":
+
+            result_coords.append((x-C+1, y+1))
+            result_coords.append((x-C+1, y+K+1))
+            result_coords.append((x+1, y+K+1))
+
+        elif type_coord == "right_bottom_corner":
+
+            result_coords.append((x-C+1, y+1))
+            result_coords.append((x-C+1, y-K+1))
+            result_coords.append((x+1, y-K+1))
+
+        elif type_coord == "top_side_part":
+
+            result_coords.append((x+C+1, y+1))
+
+        elif type_coord == "bottom_side_part":
+
+            result_coords.append((x-C+1, y+1))
+
+        elif type_coord == "left_side_part":
+
+            result_coords.append((x+1, y+K+1))
+
+        elif type_coord == "right_side_part":
+
+            result_coords.append((x+1, y-K+1))
+
+        return result_coords
+
+    def get_front_group_config(group_index):
+
+        total_colors = len(colors)
+        total_linestyles = len(line_configurations)
+        # Використовуємо цілу частину від ділення для визначення типу лінії
+        linestyle_index = group_index // total_colors  
+        # Індекс кольору – залишок від ділення
+        color_index = group_index % total_colors  
+        # Якщо group_idx перевищує кількість комбінацій, можна циклічно повертати значення
+        linestyle_index %= total_linestyles
+
+        return [colors[color_index], line_configurations[linestyle_index]]
 
     result = dict()
-
-    term_list = ['01X', '0X1', '100']
+    bin_sets = []
 
     num_of_groups = len(term_list)
     num_of_args = len(term_list[0])
 
     if num_of_groups > 64: return None
 
-    sets_number = [5, 13]
-    bin_sets = []
+    for set_strc in sets_number: bin_sets.append(format(int(set_strc), f'0{num_of_args}b'))
 
-    for set in sets_number: bin_sets.append(format(int(set), f'0{num_of_args}b'))
+    forming_groups = [[(0,1), (3, 1)]]
 
     if num_of_args == 9:
 
-        veich_structure = np.zeros((16, 32), dtype=int)
-        back_veich_structure = [
+        FRONT_veich_structure = np.zeros((16, 32), dtype=int)
+        BACK_veich_structure = [
 
             ["010101100", "010101110", "010111110", "010111100", "010110100", "010110110", "010100110", "010100100", "011101100", "011101110", "011111110", "011111100", "011110100", "011110110", "011100110", "011100100", "110101100", "110101110", "110111110", "110111100", "110110100", "110110110", "110100110", "110100100", "111101100", "111101110", "111111110", "111111100", "111110100", "111110110", "111100110", "111100100"],
             ["010101101", "010101111", "010111111", "010111101", "010110101", "010110111", "010100111", "010100101", "011101101", "011101111", "011111111", "011111101", "011110101", "011110111", "011100111", "011100101", "110101101", "110101111", "110111111", "110111101", "110110101", "110110111", "110100111", "110100101", "111101101", "111101111", "111111111", "111111101", "111110101", "111110111", "111100111", "111100101"],
@@ -185,8 +243,8 @@ def main_function(term_list):
 
     elif num_of_args == 8:
 
-        veich_structure = np.zeros((16, 16), dtype=int)
-        back_veich_structure = [
+        FRONT_veich_structure = np.zeros((16, 16), dtype=int)
+        BACK_veich_structure = [
 
             ["10101100", "10101110", "10111110", "10111100", "10110100", "10110110", "10100110", "10100100", "11101100", "11101110", "11111110", "11111100", "11110100", "11110110", "11100110", "11100100"],
             ["10101101", "10101111", "10111111", "10111101", "10110101", "10110111", "10100111", "10100101", "11101101", "11101111", "11111111", "11111101", "11110101", "11110111", "11100111", "11100101"],
@@ -239,8 +297,8 @@ def main_function(term_list):
 
     elif num_of_args == 7:
 
-        veich_structure = np.zeros((8, 16), dtype=int)
-        back_veich_structure = [
+        FRONT_veich_structure = np.zeros((8, 16), dtype=int)
+        BACK_veich_structure = [
 
             ["0101100", "0101110", "0111110", "0111100", "0110100", "0110110", "0100110", "0100100", "1101100", "1101110", "1111110", "1111100", "1110100", "1110110", "1100110", "1100100"],
             ["0101101", "0101111", "0111111", "0111101", "0110101", "0110111", "0100111", "0100101", "1101101", "1101111", "1111111", "1111101", "1110101", "1110111", "1100111", "1100101"],
@@ -285,8 +343,8 @@ def main_function(term_list):
 
     elif num_of_args == 6:
 
-        veich_structure = np.zeros((8, 8), dtype=int)
-        back_veich_structure = [
+        FRONT_veich_structure = np.zeros((8, 8), dtype=int)
+        BACK_veich_structure = [
 
             ["101100", "101110", "111110", "111100", "110100", "110110", "100110", "100100"],
             ["101101", "101111", "111111", "111101", "110101", "110111", "100111", "100101"],
@@ -329,8 +387,8 @@ def main_function(term_list):
 
     elif num_of_args == 5:
 
-        veich_structure = np.zeros((4, 8), dtype=int)
-        back_veich_structure = [
+        FRONT_veich_structure = np.zeros((4, 8), dtype=int)
+        BACK_veich_structure = [
 
             ["01100", "01110", "11110", "11100", "10100", "10110", "00110", "00100"],
             ["01101", "01111", "11111", "11101", "10101", "10111", "00111", "00101"],
@@ -368,8 +426,8 @@ def main_function(term_list):
 
     elif num_of_args == 4:
 
-        veich_structure = np.zeros((4, 4), dtype=int)
-        back_veich_structure = [
+        FRONT_veich_structure = np.zeros((4, 4), dtype=int)
+        BACK_veich_structure = [
 
             ["1100", "1101", "1001", "1000"],
             ["1110", "1111", "1011", "1010"],
@@ -399,9 +457,8 @@ def main_function(term_list):
 
     elif num_of_args == 3:
 
-        veich_structure = np.zeros((2, 4), dtype=int)
-
-        back_veich_structure = [
+        FRONT_veich_structure = np.zeros((2, 4), dtype=int)
+        BACK_veich_structure = [
 
             ["110", "111", "101", "100"],
             ["010", "011", "001", "000"]
@@ -425,9 +482,8 @@ def main_function(term_list):
 
     elif num_of_args == 2:
 
-        veich_structure = np.zeros((2, 2), dtype=int)
-
-        back_veich_structure = [
+        FRONT_veich_structure = np.zeros((2, 2), dtype=int)
+        BACK_veich_structure = [
 
             ["11", "10"],
             ["01", "00"]
@@ -449,8 +505,8 @@ def main_function(term_list):
 
     elif num_of_args == 1:
 
-        veich_structure = np.zeros((2, 1), dtype=int)
-        back_veich_structure = [
+        FRONT_veich_structure = np.zeros((2, 1), dtype=int)
+        BACK_veich_structure = [
 
             ["1"],
             ["0"]
@@ -469,45 +525,163 @@ def main_function(term_list):
 
         ] # 1
 
-    back_veich_structure = np.array(back_veich_structure, dtype=str)
+    BACK_veich_structure = np.array(BACK_veich_structure, dtype=str)
     forming_groups = []
 
     for num in bin_sets:
 
-        row_indices, col_indices = np.where(back_veich_structure == num)
+        row_indices, col_indices = np.where(BACK_veich_structure == num)
         row = row_indices[0]
         col = col_indices[0]
-        veich_structure[row, col] = 1
+        FRONT_veich_structure[row, col] = 1
 
     for term in term_list:
 
         group = []
 
-        for idx, val in np.ndenumerate(back_veich_structure):
+        for idx, val in np.ndenumerate(BACK_veich_structure):
 
             val = str(val)
             if differ(term, val): group.append((idx[0], idx[1]))
 
         forming_groups.append(group)
 
-    rows, cols = Afront_kmap.shape
+    rows, cols = FRONT_veich_structure.shape
     C, K = rows, cols
 
-    forming_groups = [[(0,1), (3, 1)]]
     new_forming_groups = []
     new_main_groups = []
 
-    configuration = (veich_structure, forming_groups, line_configurations, colors)
+    NEW_FRONT_veich_structure = np.zeros((C+2, K+2), dtype=int)
+    NEW_BACK_veich_structure = np.empty((C+2, K+2), dtype=object)
 
-    print(f"veich_structure:\n{veich_structure}")
-    print(f"forming_groups:\n{forming_groups}")
-    print(f"line_configurations:\n{line_configurations}")
-    print(f"colors:\n{colors}")
+    """Для ФРОНТОВОЇ таблиці Вейча"""
+
+    # Сторони
+    top_side = FRONT_veich_structure[0, :]          # Верхня сторона
+    bottom_side = FRONT_veich_structure[-1, :]      # Нижня сторона
+    left_side = FRONT_veich_structure[:, 0]         # Ліва сторона
+    right_side = FRONT_veich_structure[:, -1]       # Права сторона
+
+    # Кути (як 1x1 матриці для узгодженості)
+    top_left_corner = np.array([[FRONT_veich_structure[0, 0]]])      # Верхній лівий
+    top_right_corner = np.array([[FRONT_veich_structure[0, -1]]])    # Верхній правий
+    bottom_left_corner = np.array([[FRONT_veich_structure[-1, 0]]])  # Нижній лівий
+    bottom_right_corner = np.array([[FRONT_veich_structure[-1, -1]]]) # Нижній правий
+
+    # Заповнюємо верхній рядок
+    NEW_FRONT_veich_structure[0, 0] = bottom_right_corner
+    NEW_FRONT_veich_structure[0, 1:K+1] = bottom_side
+    NEW_FRONT_veich_structure[0, K+1] = bottom_left_corner
+
+    # Заповнюємо середні рядки (1–4)
+    NEW_FRONT_veich_structure[1:C+1, 1:K+1] = FRONT_veich_structure  # Центральна частина
+    NEW_FRONT_veich_structure[1:C+1, 0] = right_side  # Ліва сторона
+    NEW_FRONT_veich_structure[1:C+1, K+1] = left_side  # Права сторона
+
+    # Заповнюємо нижній рядок
+    NEW_FRONT_veich_structure[C+1, 0] = top_right_corner
+    NEW_FRONT_veich_structure[C+1, 1:K+1] = top_side
+    NEW_FRONT_veich_structure[C+1, K+1] = top_left_corner
+
+    """Для ЗАДНЬОЇ таблиці Вейча"""
+
+    # Сторони
+    top_side = BACK_veich_structure[0, :]          # Верхня сторона
+    bottom_side = BACK_veich_structure[-1, :]      # Нижня сторона
+    left_side = BACK_veich_structure[:, 0]         # Ліва сторона
+    right_side = BACK_veich_structure[:, -1]       # Права сторона
+
+    # Кути (як 1x1 матриці для узгодженості)
+    top_left_corner = np.array([[BACK_veich_structure[0, 0]]], dtype=object)      # Верхній лівий
+    top_right_corner = np.array([[BACK_veich_structure[0, -1]]], dtype=object)    # Верхній правий
+    bottom_left_corner = np.array([[BACK_veich_structure[-1, 0]]], dtype=object)  # Нижній лівий
+    bottom_right_corner = np.array([[BACK_veich_structure[-1, -1]]], dtype=object) # Нижній правий
+
+    print(f"top_left_corner:\n{top_left_corner}")
+    print(f"top_right_corner:\n{top_right_corner}")
+    print(f"bottom_left_corner:\n{bottom_left_corner}")
+    print(f"bottom_right_corner:\n{bottom_right_corner}")
+
+    # Заповнюємо верхній рядок
+    NEW_BACK_veich_structure[0, 0] = bottom_right_corner[0, 0]
+    NEW_BACK_veich_structure[0, 1:K+1] = bottom_side
+    NEW_BACK_veich_structure[0, K+1] = bottom_left_corner[0, 0]
+
+    # Заповнюємо середні рядки (1–4)
+    NEW_BACK_veich_structure[1:C+1, 1:K+1] = BACK_veich_structure  # Центральна частина
+    NEW_BACK_veich_structure[1:C+1, 0] = right_side  # Ліва сторона
+    NEW_BACK_veich_structure[1:C+1, K+1] = left_side  # Права сторона
+
+    # Заповнюємо нижній рядок
+    NEW_BACK_veich_structure[C+1, 0] = top_right_corner[0, 0]
+    NEW_BACK_veich_structure[C+1, 1:K+1] = top_side
+    NEW_BACK_veich_structure[C+1, K+1] = top_left_corner[0, 0]
+
+    for group in forming_groups:
+
+        new_forming_groups.append([])
+
+        for coord in group:
+
+            for new_coord in generate_add_coordinates(coord, C, K):
+
+                new_forming_groups[-1].append(new_coord)
+
+    for group in forming_groups:
+
+        new_main_groups.append([])
+
+        for coord in group:
+
+            new_main_groups[-1].append((coord[0]+1, coord[1]+1))
+
+    print(f"FRONT_veich_structure:\n{FRONT_veich_structure}")
+    print(f"NEW_FRONT_veich_structure:\n{NEW_FRONT_veich_structure}")
+    #print(f"BACK_veich_structure:\n{BACK_veich_structure}")
+    #print(f"NEW_BACK_veich_structure:\n{NEW_BACK_veich_structure}")
+
+    print("\n")
+
+    print(f"new_forming_groups:\n{new_forming_groups}")
+    print(f"new_main_groups:\n{new_main_groups}")
+
+    num_count_of_groups = 0
+
+    for group in new_main_groups:
+
+        result[num_count_of_groups+1] = []
+        temp = []
+        added_temp = []
+
+        main_coordinate_index = 0
+
+        for main_coord in group:
+
+            neighbors = find_all_neighbors(new_main_groups[main_coordinate_index] + new_forming_groups[main_coordinate_index], main_coord)
+            if neighbors in temp: continue
+
+            temp.append(neighbors)
+
+        for mini_group in temp:
+
+            added_temp.append(find_min_max(mini_group))
+
+        result[num_count_of_groups+1].append(added_temp)
+
+        group_front_config = get_front_group_config(num_count_of_groups)
+        result[num_count_of_groups+1].extend(group_front_config)
+
+    print(result)
+
+    # ПОГРАТИСЬ З BACK_VEIC кутами, а також з конфігурацією нашої діаграми вейча а потім вже виправити код для малювання та робити тести
+
+    group_config = (NEW_FRONT_veich_structure, )
 
 
 
-    paint(configuration)
+    paint(NEW_FRONT_veich_structure, result)
 
 if __name__ == "__main__":
 
-    main_function()
+    main_function(['X101'], [5,13])
