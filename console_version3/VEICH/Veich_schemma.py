@@ -1,7 +1,7 @@
 import numpy as np
 from creating_diagram import paint
 
-def main_function(term_list, sets_number):
+def main_function(term_list, sets_number, list_args):
 
     """
     TODO:
@@ -528,6 +528,8 @@ def main_function(term_list, sets_number):
     BACK_veich_structure = np.array(BACK_veich_structure, dtype=str)
     forming_groups = []
 
+    print(f"bin_sets:\n{bin_sets}")
+
     for num in bin_sets:
 
         row_indices, col_indices = np.where(BACK_veich_structure == num)
@@ -548,6 +550,8 @@ def main_function(term_list, sets_number):
 
     rows, cols = FRONT_veich_structure.shape
     C, K = rows, cols
+
+    print(f"forming_groups:\n{forming_groups}")
 
     new_forming_groups = []
     new_main_groups = []
@@ -676,12 +680,10 @@ def main_function(term_list, sets_number):
 
     # ПОГРАТИСЬ З BACK_VEIC кутами, а також з конфігурацією нашої діаграми вейча а потім вже виправити код для малювання та робити тести
 
-    group_config = (NEW_FRONT_veich_structure, )
+    group_config = (NEW_FRONT_veich_structure, result, num_of_args, list_args)
 
-
-
-    paint(NEW_FRONT_veich_structure, result)
+    paint(group_config)
 
 if __name__ == "__main__":
 
-    main_function(['X101'], [5,13])
+    main_function(['01X1', '0X01'], [1,5,7], []) # Вирішити баг
