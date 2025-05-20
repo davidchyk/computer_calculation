@@ -1,7 +1,7 @@
 import numpy as np
 from creating_diagram import paint
 
-def main_function(term_list, sets_number, list_args):
+def main_function(minimized_term_term_list, sets_number, list_args):
 
     """
     TODO:
@@ -64,6 +64,8 @@ def main_function(term_list, sets_number, list_args):
                     neighbors.add(point)
                     queue.append(point)
 
+        print(f"For coord: {origin}, neighbors: {list[neighbors]}")
+
         return list(neighbors)
 
     def find_min_max(points):
@@ -75,9 +77,9 @@ def main_function(term_list, sets_number, list_args):
 
         return min_x, min_y, max_x, max_y
 
-    def generate_add_coordinates(start_coord, C, K):
+    def generate_add_coordinates(start_coord, rows, cols):
 
-        def define_matrix(coord, C, K):
+        def define_matrix(coord, rows, cols):
 
             x, y = coord
 
@@ -85,15 +87,15 @@ def main_function(term_list, sets_number, list_args):
 
                 return "left_top_corner"
 
-            elif x == 0 and y == K-1:
+            elif x == 0 and y == cols-1:
 
                 return "right_top_corner"
 
-            elif x == C-1 and y == 0:
+            elif x == rows-1 and y == 0:
 
                 return "left_bottom_corner"
 
-            elif x == C-1 and y == K-1:
+            elif x == rows-1 and y == cols-1:
 
                 return "right_bottom_corner"
 
@@ -101,7 +103,7 @@ def main_function(term_list, sets_number, list_args):
 
                 return "top_side_part"
 
-            elif x == C-1:
+            elif x == rows-1:
 
                 return "bottom_side_part"
 
@@ -109,7 +111,7 @@ def main_function(term_list, sets_number, list_args):
 
                 return "left_side_part"
 
-            elif y == K-1:
+            elif y == cols-1:
 
                 return "right_side_part"
 
@@ -118,47 +120,47 @@ def main_function(term_list, sets_number, list_args):
         result_coords = []
         x, y = start_coord
 
-        type_coord = define_matrix(start_coord, C, K)
+        type_coord = define_matrix(start_coord, rows, cols)
 
         if type_coord == "left_top_corner":
 
-            result_coords.append((x+C+1, y+1))
-            result_coords.append((x+C+1, y+K+1))
-            result_coords.append((x+1, y+K+1))
+            result_coords.append((x+rows+1, y+1))
+            result_coords.append((x+rows+1, y+cols+1))
+            result_coords.append((x+1, y+cols+1))
 
         elif type_coord == "right_top_corner":
 
-            result_coords.append((x+C+1, y+1))
-            result_coords.append((x+C+1, y-K+1))
-            result_coords.append((x+1, y-K+1))
+            result_coords.append((x+rows+1, y+1))
+            result_coords.append((x+rows+1, y-cols+1))
+            result_coords.append((x+1, y-cols+1))
 
         elif type_coord == "left_bottom_corner":
 
-            result_coords.append((x-C+1, y+1))
-            result_coords.append((x-C+1, y+K+1))
-            result_coords.append((x+1, y+K+1))
+            result_coords.append((x-rows+1, y+1))
+            result_coords.append((x-rows+1, y+cols+1))
+            result_coords.append((x+1, y+cols+1))
 
         elif type_coord == "right_bottom_corner":
 
-            result_coords.append((x-C+1, y+1))
-            result_coords.append((x-C+1, y-K+1))
-            result_coords.append((x+1, y-K+1))
+            result_coords.append((x-rows+1, y+1))
+            result_coords.append((x-rows+1, y-cols+1))
+            result_coords.append((x+1, y-cols+1))
 
         elif type_coord == "top_side_part":
 
-            result_coords.append((x+C+1, y+1))
+            result_coords.append((x+rows+1, y+1))
 
         elif type_coord == "bottom_side_part":
 
-            result_coords.append((x-C+1, y+1))
+            result_coords.append((x-rows+1, y+1))
 
         elif type_coord == "left_side_part":
 
-            result_coords.append((x+1, y+K+1))
+            result_coords.append((x+1, y+cols+1))
 
         elif type_coord == "right_side_part":
 
-            result_coords.append((x+1, y-K+1))
+            result_coords.append((x+1, y-cols+1))
 
         return result_coords
 
@@ -178,14 +180,12 @@ def main_function(term_list, sets_number, list_args):
     result = dict()
     bin_sets = []
 
-    num_of_groups = len(term_list)
-    num_of_args = len(term_list[0])
+    num_of_groups = len(minimized_term_term_list)
+    num_of_args = len(minimized_term_term_list[0])
 
     if num_of_groups > 64: return None
 
     for set_strc in sets_number: bin_sets.append(format(int(set_strc), f'0{num_of_args}b'))
-
-    forming_groups = [[(0,1), (3, 1)]]
 
     if num_of_args == 9:
 
@@ -526,9 +526,7 @@ def main_function(term_list, sets_number, list_args):
         ] # 1
 
     BACK_veich_structure = np.array(BACK_veich_structure, dtype=str)
-    forming_groups = []
-
-    print(f"bin_sets:\n{bin_sets}")
+    initial_MAIN_coord_groups = []
 
     for num in bin_sets:
 
@@ -537,27 +535,28 @@ def main_function(term_list, sets_number, list_args):
         col = col_indices[0]
         FRONT_veich_structure[row, col] = 1
 
-    for term in term_list:
+    for minimized_term in minimized_term_term_list:
 
         group = []
 
         for idx, val in np.ndenumerate(BACK_veich_structure):
 
             val = str(val)
-            if differ(term, val): group.append((idx[0], idx[1]))
+            if differ(minimized_term, val): group.append((idx[0], idx[1]))
 
-        forming_groups.append(group)
+        initial_MAIN_coord_groups.append(group)
+
+    # initial_coord_groups --- це список, який має в собі групи, а в кожній групі є координати, які входять до мінімізаційного терму
 
     rows, cols = FRONT_veich_structure.shape
-    C, K = rows, cols
 
-    print(f"forming_groups:\n{forming_groups}")
+    print(f"initial_MAIN_coord_groups:\n{initial_MAIN_coord_groups}")
 
-    new_forming_groups = []
-    new_main_groups = []
+    updated_MAIN_coord_groups = []
+    updated_EXTENDED_coord_groups = []
 
-    NEW_FRONT_veich_structure = np.zeros((C+2, K+2), dtype=int)
-    NEW_BACK_veich_structure = np.empty((C+2, K+2), dtype=object)
+    NEW_FRONT_veich_structure = np.zeros((rows+2, cols+2), dtype=int)
+    NEW_BACK_veich_structure = np.empty((rows+2, cols+2), dtype=object)
 
     """Для ФРОНТОВОЇ таблиці Вейча"""
 
@@ -574,19 +573,19 @@ def main_function(term_list, sets_number, list_args):
     bottom_right_corner = np.array([[FRONT_veich_structure[-1, -1]]]) # Нижній правий
 
     # Заповнюємо верхній рядок
-    NEW_FRONT_veich_structure[0, 0] = bottom_right_corner
-    NEW_FRONT_veich_structure[0, 1:K+1] = bottom_side
-    NEW_FRONT_veich_structure[0, K+1] = bottom_left_corner
+    NEW_FRONT_veich_structure[0, 0] = bottom_right_corner[0, 0]
+    NEW_FRONT_veich_structure[0, 1:cols+1] = bottom_side
+    NEW_FRONT_veich_structure[0, cols+1] = bottom_left_corner[0, 0]
 
     # Заповнюємо середні рядки (1–4)
-    NEW_FRONT_veich_structure[1:C+1, 1:K+1] = FRONT_veich_structure  # Центральна частина
-    NEW_FRONT_veich_structure[1:C+1, 0] = right_side  # Ліва сторона
-    NEW_FRONT_veich_structure[1:C+1, K+1] = left_side  # Права сторона
+    NEW_FRONT_veich_structure[1:rows+1, 1:cols+1] = FRONT_veich_structure  # Центральна частина
+    NEW_FRONT_veich_structure[1:rows+1, 0] = right_side  # Ліва сторона
+    NEW_FRONT_veich_structure[1:rows+1, cols+1] = left_side  # Права сторона
 
     # Заповнюємо нижній рядок
-    NEW_FRONT_veich_structure[C+1, 0] = top_right_corner
-    NEW_FRONT_veich_structure[C+1, 1:K+1] = top_side
-    NEW_FRONT_veich_structure[C+1, K+1] = top_left_corner
+    NEW_FRONT_veich_structure[rows+1, 0] = top_right_corner[0, 0]
+    NEW_FRONT_veich_structure[rows+1, 1:cols+1] = top_side
+    NEW_FRONT_veich_structure[rows+1, cols+1] = top_left_corner[0, 0]
 
     """Для ЗАДНЬОЇ таблиці Вейча"""
 
@@ -602,70 +601,58 @@ def main_function(term_list, sets_number, list_args):
     bottom_left_corner = np.array([[BACK_veich_structure[-1, 0]]], dtype=object)  # Нижній лівий
     bottom_right_corner = np.array([[BACK_veich_structure[-1, -1]]], dtype=object) # Нижній правий
 
-    print(f"top_left_corner:\n{top_left_corner}")
-    print(f"top_right_corner:\n{top_right_corner}")
-    print(f"bottom_left_corner:\n{bottom_left_corner}")
-    print(f"bottom_right_corner:\n{bottom_right_corner}")
-
     # Заповнюємо верхній рядок
     NEW_BACK_veich_structure[0, 0] = bottom_right_corner[0, 0]
-    NEW_BACK_veich_structure[0, 1:K+1] = bottom_side
-    NEW_BACK_veich_structure[0, K+1] = bottom_left_corner[0, 0]
+    NEW_BACK_veich_structure[0, 1:cols+1] = bottom_side
+    NEW_BACK_veich_structure[0, cols+1] = bottom_left_corner[0, 0]
 
     # Заповнюємо середні рядки (1–4)
-    NEW_BACK_veich_structure[1:C+1, 1:K+1] = BACK_veich_structure  # Центральна частина
-    NEW_BACK_veich_structure[1:C+1, 0] = right_side  # Ліва сторона
-    NEW_BACK_veich_structure[1:C+1, K+1] = left_side  # Права сторона
+    NEW_BACK_veich_structure[1:rows+1, 1:cols+1] = BACK_veich_structure  # Центральна частина
+    NEW_BACK_veich_structure[1:rows+1, 0] = right_side  # Ліва сторона
+    NEW_BACK_veich_structure[1:rows+1, cols+1] = left_side  # Права сторона
 
     # Заповнюємо нижній рядок
-    NEW_BACK_veich_structure[C+1, 0] = top_right_corner[0, 0]
-    NEW_BACK_veich_structure[C+1, 1:K+1] = top_side
-    NEW_BACK_veich_structure[C+1, K+1] = top_left_corner[0, 0]
+    NEW_BACK_veich_structure[rows+1, 0] = top_right_corner[0, 0]
+    NEW_BACK_veich_structure[rows+1, 1:cols+1] = top_side
+    NEW_BACK_veich_structure[rows+1, cols+1] = top_left_corner[0, 0]
 
-    for group in forming_groups:
+    for group in initial_MAIN_coord_groups:
 
-        new_forming_groups.append([])
-
-        for coord in group:
-
-            for new_coord in generate_add_coordinates(coord, C, K):
-
-                new_forming_groups[-1].append(new_coord)
-
-    for group in forming_groups:
-
-        new_main_groups.append([])
+        updated_MAIN_coord_groups.append([])
+        updated_EXTENDED_coord_groups.append([])
 
         for coord in group:
 
-            new_main_groups[-1].append((coord[0]+1, coord[1]+1))
+            updated_MAIN_coord_groups[-1].append((coord[0]+1, coord[1]+1))
+
+            for new_coord in generate_add_coordinates(coord, rows, cols):
+
+                updated_EXTENDED_coord_groups[-1].append(new_coord)
 
     print(f"FRONT_veich_structure:\n{FRONT_veich_structure}")
     print(f"NEW_FRONT_veich_structure:\n{NEW_FRONT_veich_structure}")
-    #print(f"BACK_veich_structure:\n{BACK_veich_structure}")
-    #print(f"NEW_BACK_veich_structure:\n{NEW_BACK_veich_structure}")
 
     print("\n")
 
-    print(f"new_forming_groups:\n{new_forming_groups}")
-    print(f"new_main_groups:\n{new_main_groups}")
+    print(f"updated_EXTENDED_coord_groups:\n{updated_EXTENDED_coord_groups}")
+    print(f"updated_MAIN_coord_groups:\n{updated_MAIN_coord_groups}")
 
     num_count_of_groups = 0
 
-    for group in new_main_groups:
+    for group in updated_MAIN_coord_groups:
 
         result[num_count_of_groups+1] = []
         temp = []
         added_temp = []
 
-        main_coordinate_index = 0
-
         for main_coord in group:
 
-            neighbors = find_all_neighbors(new_main_groups[main_coordinate_index] + new_forming_groups[main_coordinate_index], main_coord)
+            neighbors = find_all_neighbors(updated_MAIN_coord_groups[num_count_of_groups] + updated_EXTENDED_coord_groups[num_count_of_groups], main_coord)
             if neighbors in temp: continue
 
             temp.append(neighbors)
+
+        print(f"for group: {group} its temp is {temp}")
 
         for mini_group in temp:
 
@@ -675,6 +662,8 @@ def main_function(term_list, sets_number, list_args):
 
         group_front_config = get_front_group_config(num_count_of_groups)
         result[num_count_of_groups+1].extend(group_front_config)
+
+        num_count_of_groups += 1
 
     print(result)
 
@@ -686,4 +675,4 @@ def main_function(term_list, sets_number, list_args):
 
 if __name__ == "__main__":
 
-    main_function(['01X1', '0X01'], [1,5,7], []) # Вирішити баг
+    main_function(['XX11', 'X00X', 'XX00', '01X0'], [0, 4, 12, 6, 15,11,7,3,1,9, 8], []) # Вирішити баг
