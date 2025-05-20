@@ -3,51 +3,257 @@ from matplotlib.patches import FancyBboxPatch, Rectangle
 
 # === ПАРАМЕТРИ ===
 CELL_SIZE = 0.2  # Розмір клітинки
-GAP = 0  # Відсутність проміжку між клітинками
 LINE_WIDTH = 1.2  # Товщина обведення
 PADDING = 0.03  # Відступ усередині, щоб рамки не накладались
 
-def draw_axis_brackets(ax, cell_size, rows, cols, list_args):
-    """
-    Малює 4 лінії (дужки) навколо таблиці та текстові позначки.
-    Координати жорстко задані на основі меж таблиці.
-    """
+def draw_axis_brackets(ax, list_args):
 
-    if len(list_args) == 4:
+    plt.rcParams['text.usetex'] = True
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
 
-        plt.rcParams['text.usetex'] = True
-        plt.rcParams['font.family'] = 'serif'
-        plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
+    if len(list_args) == 9:
 
-        # Верхня дужка (X3)
-        ax.plot([0.2, 0.6], [1.03, 1.03], color='black', linewidth=3, zorder=100)
-        ax.text(0.4, 1.09, r"$x_3$", ha='center', va='center', fontsize=40, zorder=101)
+        ...
+
+    elif len(list_args) == 8:
+
+        # Права_правіша дужка (X8)
+        ax.plot([3.6, 3.6], [3.4, 1.8], color='black', linewidth=3, zorder=100)
+        ax.text(3.67, 2.6, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Верхня_верхня дужка (X7)
+        ax.plot([1.8, 3.4], [3.55, 3.55], color='black', linewidth=3, zorder=100)
+        ax.text(2.6, 3.61, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Ліва_лівіша дужка (X6)
+        ax.plot([0.0, 0.0], [1.8, 1.0], color='black', linewidth=3, zorder=100)
+        ax.text(-0.07, 1.4, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([0.0, 0.0], [3.4, 2.6], color='black', linewidth=3, zorder=100)
+        ax.text(-0.07, 3.0, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Нижня_вища дужка (X5)
+        ax.plot([0.6, 1.4], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+        ax.text(1.0, 0.12, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([2.2, 3.0], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+        ax.text(2.6, 0.12, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Верхня_нижча дужка (X4)
+        ax.plot([0.2, 1.0], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+        ax.text(0.6, 3.49, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([1.8, 2.6], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+        ax.text(2.2, 3.49, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Ліва_правіша дужка (X3)
+        ax.plot([0.17, 0.17], [1, 0.6], color='black', linewidth=3, zorder=100)
+        ax.text(0.11, 0.8, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([0.17, 0.17], [1.8, 1.4], color='black', linewidth=3, zorder=100)
+        ax.text(0.11, 1.6, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([0.17, 0.17], [2.6, 2.2], color='black', linewidth=3, zorder=100)
+        ax.text(0.11, 2.4, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([0.17, 0.17], [3.4, 3.0], color='black', linewidth=3, zorder=100)
+        ax.text(0.11, 3.2, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Нижня_нижня дужка (X2)
+        ax.plot([0.4, 0.8], [0.05, 0.05], color='black', linewidth=3, zorder=100)
+        ax.text(0.6, 0.01, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([1.2, 1.6], [0.05, 0.05], color='black', linewidth=3, zorder=100)
+        ax.text(1.4, 0.01, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([2.0, 2.4], [0.05, 0.05], color='black', linewidth=3, zorder=100)
+        ax.text(2.2, 0.01, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([2.8, 3.2], [0.05, 0.05], color='black', linewidth=3, zorder=100)
+        ax.text(3.0, 0.01, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Права_лівіша дужка (X1)
+        ax.plot([3.43, 3.43], [0.8, 0.4], color='black', linewidth=3, zorder=100)
+        ax.text(3.5, 0.6, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([3.43, 3.43], [1.6, 1.2], color='black', linewidth=3, zorder=100)
+        ax.text(3.5, 1.4, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([3.43, 3.43], [2.4, 2.0], color='black', linewidth=3, zorder=100)
+        ax.text(3.5, 2.2, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([3.43, 3.43], [3.2, 2.8], color='black', linewidth=3, zorder=100)
+        ax.text(3.5, 3.0, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+    elif len(list_args) == 7:
+
+        # Верхня_верхня дужка (X7)
+        ax.plot([1.8, 3.4], [1.95, 1.95], color='black', linewidth=3, zorder=100)
+        ax.text(2.6, 2.01, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Ліва_лівіша дужка (X6)
+        ax.plot([0.0, 0.0], [1.8, 1.0], color='black', linewidth=3, zorder=100)
+        ax.text(-0.07, 1.4, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Нижня_вища дужка (X5)
+        ax.plot([0.6, 1.4], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+        ax.text(1.0, 0.12, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([2.2, 3.0], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+        ax.text(2.6, 0.12, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Верхня_нижча дужка (X4)
+        ax.plot([0.2, 1.0], [1.83, 1.83], color='black', linewidth=3, zorder=100)
+        ax.text(0.6, 1.89, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([1.8, 2.6], [1.83, 1.83], color='black', linewidth=3, zorder=100)
+        ax.text(2.2, 1.89, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Ліва_правіша дужка (X3)
+        ax.plot([0.17, 0.17], [1, 0.6], color='black', linewidth=3, zorder=100)
+        ax.text(0.11, 0.8, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([0.17, 0.17], [1.8, 1.4], color='black', linewidth=3, zorder=100)
+        ax.text(0.11, 1.6, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Нижня_нижня дужка (X2)
+        ax.plot([0.4, 0.8], [0.05, 0.05], color='black', linewidth=3, zorder=100)
+        ax.text(0.6, 0.01, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([1.2, 1.6], [0.05, 0.05], color='black', linewidth=3, zorder=100)
+        ax.text(1.4, 0.01, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([2.0, 2.4], [0.05, 0.05], color='black', linewidth=3, zorder=100)
+        ax.text(2.2, 0.01, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([2.8, 3.2], [0.05, 0.05], color='black', linewidth=3, zorder=100)
+        ax.text(3.0, 0.01, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Права дужка (X1)
+        ax.plot([3.43, 3.43], [0.8, 0.4], color='black', linewidth=3, zorder=100)
+        ax.text(3.5, 0.6, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([3.43, 3.43], [1.6, 1.2], color='black', linewidth=3, zorder=100)
+        ax.text(3.5, 1.4, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+
+    elif len(list_args) == 6:
+
+        # Ліва_лівіша дужка (X6)
+        ax.plot([0.0, 0.0], [1.8, 1.0], color='black', linewidth=3, zorder=100)
+        ax.text(-0.07, 1.4, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Нижня_вища дужка (X5)
+        ax.plot([0.6, 1.4], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+        ax.text(1.0, 0.12, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Верхня дужка (X4)
+        ax.plot([0.2, 1.0], [1.83, 1.83], color='black', linewidth=3, zorder=100)
+        ax.text(0.6, 1.89, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Ліва_правіша дужка (X3)
+        ax.plot([0.17, 0.17], [1, 0.6], color='black', linewidth=3, zorder=100)
+        ax.text(0.11, 0.8, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([0.17, 0.17], [1.8, 1.4], color='black', linewidth=3, zorder=100)
+        ax.text(0.11, 1.6, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Нижня_нижня дужка (X2)
+        ax.plot([0.4, 0.8], [0.05, 0.05], color='black', linewidth=3, zorder=100)
+        ax.text(0.6, 0.01, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([1.2, 1.6], [0.05, 0.05], color='black', linewidth=3, zorder=100)
+        ax.text(1.4, 0.01, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Права дужка (X1)
+        ax.plot([1.83, 1.83], [0.8, 0.4], color='black', linewidth=3, zorder=100)
+        ax.text(1.9, 0.6, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([1.83, 1.83], [1.6, 1.2], color='black', linewidth=3, zorder=100)
+        ax.text(1.9, 1.4, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+    elif len(list_args) == 5:
+
+        # Нижня_вища дужка (X5)
+        ax.plot([0.6, 1.4], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+        ax.text(1.0, 0.12, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Верхня дужка (X4)
+        ax.plot([0.2, 1.0], [1.03, 1.03], color='black', linewidth=3, zorder=100)
+        ax.text(0.6, 1.09, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Ліва дужка (X3)
+        ax.plot([0.17, 0.17], [1, 0.6], color='black', linewidth=3, zorder=100)
+        ax.text(0.11, 0.8, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Нижня_нижня дужка (X2)
+        ax.plot([0.4, 0.8], [0.05, 0.05], color='black', linewidth=3, zorder=100)
+        ax.text(0.6, 0.01, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        ax.plot([1.2, 1.6], [0.05, 0.05], color='black', linewidth=3, zorder=100)
+        ax.text(1.4, 0.01, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Права дужка (X1)
+        ax.plot([1.83, 1.83], [0.8, 0.4], color='black', linewidth=3, zorder=100)
+        ax.text(1.9, 0.6, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+    elif len(list_args) == 4:
 
         # Ліва дужка (X4)
         ax.plot([0.17, 0.17], [1, 0.6], color='black', linewidth=3, zorder=100)
-        ax.text(0.11, 0.8, r"$x_4$", ha='center', va='center', fontsize=40, zorder=101)
+        ax.text(0.11, 0.8, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Верхня дужка (X3)
+        ax.plot([0.2, 0.6], [1.03, 1.03], color='black', linewidth=3, zorder=100)
+        ax.text(0.4, 1.09, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
 
         # Права дужка (X2)
         ax.plot([1.03, 1.03], [0.8, 0.4], color='black', linewidth=3, zorder=100)
-        ax.text(1.10, 0.6, r"$x_2$", ha='center', va='center', fontsize=40, zorder=101)
+        ax.text(1.10, 0.6, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
 
         # Нижня дужка (X1)
         ax.plot([0.4, 0.8], [0.17, 0.17], color='black', linewidth=3, zorder=100)
-        ax.text(0.6, 0.12, r"$x_1$", ha='center', va='center', fontsize=40, zorder=101)
+        ax.text(0.6, 0.12, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
 
+    elif len(list_args) == 3:
 
+        # Ліва дужка (X3)
+        ax.plot([0.17, 0.17], [0.6, 0.4], color='black', linewidth=3, zorder=100)
+        ax.text(0.11, 0.52, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
 
+        # Верхня дужка (X2)
+        ax.plot([0.2, 0.6], [0.63, 0.63], color='black', linewidth=3, zorder=100)
+        ax.text(0.4, 0.69, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
 
+        # Нижня дужка (X1)
+        ax.plot([0.4, 0.8], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+        ax.text(0.6, 0.12, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+    elif len(list_args) == 2:
+
+        # Ліва дужка (X2)
+        ax.plot([0.17, 0.17], [0.6, 0.4], color='black', linewidth=3, zorder=100)
+        ax.text(0.11, 0.52, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        # Верхня дужка (X2)
+        ax.plot([0.2, 0.4], [0.63, 0.63], color='black', linewidth=3, zorder=100)
+        ax.text(0.3, 0.69, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+    elif len(list_args) == 1:
+
+        # Ліва дужка (X1)
+        ax.plot([0.17, 0.17], [0.6, 0.4], color='black', linewidth=3, zorder=100)
+        ax.text(0.11, 0.52, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
 
 def draw_kmap_with_tight_rounded_boxes(kmap, groups, list_args, filename="rounded_groups_fixed.png"):
 
     """
-    Малює карту Карно та додає обведення груп із заокругленими прямокутниками.
+    Малює карту Вейча та додає обведення груп із заокругленими прямокутниками.
     Тепер обведення не заходить на сусідні клітинки!
     """
 
     cell_size=CELL_SIZE
-    gap = GAP
 
     rows, cols = kmap.shape
     fig, ax = plt.subplots()
@@ -117,7 +323,6 @@ def draw_kmap_with_tight_rounded_boxes(kmap, groups, list_args, filename="rounde
 
     ax.set_xticks([])
     ax.set_yticks([])
-    #plt.show()
 
     edge_rows = {0, rows - 1}
     edge_cols = {0, cols - 1}
@@ -189,12 +394,9 @@ def draw_kmap_with_tight_rounded_boxes(kmap, groups, list_args, filename="rounde
         zorder=10
     ))
 
-    if len(list_args) == 4:
-
-        draw_axis_brackets(ax, cell_size, rows, cols, list_args)
+    draw_axis_brackets(ax, list_args)
 
     plt.show()
-
 
     #TODO
 
@@ -212,6 +414,8 @@ def paint(data: tuple):
 
     if not list_args:
 
-        for x in range(num_of_args): list_args.append(f"x_{x}")
+        for x in range(num_of_args, 0, -1): list_args.append(f"x_{x}")
+
+    print(list_args)
 
     draw_kmap_with_tight_rounded_boxes(kmap, forming_groups, list_args)
