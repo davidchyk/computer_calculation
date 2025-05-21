@@ -39,9 +39,8 @@ def minimize_dnf_as_implicants(num_vars, true_terms):
         result += f"({new_set}) ∨ "
 
     result = result.rstrip(' ∨ ')
-    result = "МДНФ: " + result
 
-    return result, implicants
+    return result, implicants, True
 
 def minimize_cnf_as_implicants(num_vars, false_terms):
 
@@ -81,6 +80,5 @@ def minimize_cnf_as_implicants(num_vars, false_terms):
         result += f"({new_set}) ∧ "
 
     result = result.rstrip(' ∧ ')
-    result = "МКНФ: " + result
 
-    return result, implicants
+    return result, implicants, False
