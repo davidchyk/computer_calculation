@@ -189,6 +189,7 @@ while 1:
     operator_result = operator_form(normal_result[1], in_num, out_num)
 
     args.append(f"Операторна форма при елементному базисі {'/'.join(basis)}: {conver_to_normal(operator_result, int(number_of_arguments))}")
+
     args.append(r" \ ")
 
     if type_of:
