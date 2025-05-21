@@ -135,82 +135,134 @@ def conver_to_normal_operator(string, num_of_args):
 
     return result  
 
-print("Beta version 0.9")
-print("\nДеякі нотатки: дужки в виводі означають певну групу, яку описує певний логічний елемент.\nПри запереченнях вгорі групи формуюються не дужками, а запереченнями.\nЯкщо над певним термом розташовані 3 заперечення, то 2 з них можна проігнорувати.")
+def validate(data, type, optinal = False):
+
+    if type == "number_of_arguments":
+
+        try:
+
+            number_of_arguments = float(data)
+
+            if number_of_arguments.is_integer() == False or number_of_arguments <= 0:
+
+                print("Неправильне значення кількості аргументів"); return False
+
+        except: print("Неправильне значення кількості аргументів"); return False
+
+    elif type == "num_functions":
+
+        try:
+
+            if int(float(data)) <= 0 or float(data).is_integer() == False:
+                print("Неправильне значення кількості функцій"); return False
+
+        except: print("Неправильне значення кількості функцій"); return False
+
+    elif type == "input_data":
+
+        try:
+
+            temp = [float(x) for x in data.split(',')]
+
+            if any(x.is_integer() == False for x in temp):
+                print("Неправильне значення наборів"); return False
+
+            temp = [int(x) for x in temp]
+
+            if any((x >= optinal) or (x < 0) for x in temp):
+                print("Неправильний номер набору"); return False
+
+        except: print("Неправильне введення наборів"); return False
+
+    elif type == "basis":
+
+        try:
+
+            temp = [(int(data[0][0]), data[0][1:]), (int(data[1][0]), data[1][1:])]
+
+            if not temp[1][1] in ["АБО", "І", "АБО-НЕ", "І-НЕ"]:
+                print("Неправильний базис. Приклад: 3І/2АБО"); return False
+            
+            if [temp[0][1], temp[1][1]] not in db:
+                print("Неправильний базис. Приклад: 3І/2АБО"); return False
+
+        except: print("Неправильний базис. Приклад: 3І/2АБО"); return False
+
+    return True
+
+print("Version 2.0")
+print("Головний розробник: Давидчук Артем\nІнші розробники: Білий Іван, Троценко Максим")
 
 while 1:
 
-    try:
-
-        number_of_arguments = float(input("\nНабери кількість аргументів функції: "))
-
-        if number_of_arguments.is_integer() == False or number_of_arguments <= 0:
-
-            print("Неправильний кількість аргументів. Спробуй ще раз."); continue
-
-        number_of_sets = 2**int(number_of_arguments)
-
-    except:
-
-        print("Неправильне введення кількості аргументів")
-        continue
+    ddnf_list = []
+    dknf_list = []
+    normal_list = []
+    operator_list = []
+    minimum_list = []
+    normal_minimum_list = []
+    operator_minimum_list = []
+    i = 1
 
     basis_update = []
     args = []
 
-    try:
+    number_of_arguments = input("\nНаберіть кількість аргументів функції: ")
+    if not validate(number_of_arguments, "number_of_arguments"): continue
+    number_of_arguments = int(float(number_of_arguments))
+    number_of_sets = 2**number_of_arguments
 
-        sets_number = [int(x) for x in input("Набери числа наборів, при яких функція набуває одиниці: ").split(',')]
+    print("\nВведіть кількість функцій, які потрібно мінімізувати:")
+    num_functions = input("Кількість функцій: ")
+    if not validate(num_functions, "num_functions"): continue
+    num_functions = int(float(num_functions))
 
-    except:
+    while i <= num_functions:
 
-        print(f"Неправильно введено кількість наборів. Спробуйте ще раз.")
-        continue
+        print("---------")
 
-    if any((x >= number_of_sets) or (x < 0) for x in sets_number): print("Неправильний номер набору. Спробуй ще раз."); continue
+        print(f"Ввід даних для функції y{i}:")
 
-    basis = input("Набери елементний базис через '/': ").split('/')
+        input_data = input("Набери числа наборів, при яких функція набуває одиниці (через кому): ").strip()
+        if not validate(input_data, "input_data", number_of_sets): continue
+        sets_number = [int(float(x)) for x in input_data.split(',')]
 
-    if (len(basis) == 1) or ([basis[0][1::], basis[1][1::]] not in db): print("Неправильний базис. Приклад: 3І/2АБО. Спробуй ще раз."); continue
+        basis = input("Наберіть елементний базис через '/': ").split('/')
+        if not validate(basis, "basis"): continue
 
-    basis_update.append((int(basis[0][0]), basis[0][1::]))
-    basis_update.append((int(basis[1][0]), basis[1][1::]))
+        basis_update = [(int(basis[0][0]), basis[0][1:]), (int(basis[1][0]), basis[1][1:])]
 
-    if basis_update[1][1] in ['АБО', 'І-НЕ']: type_of = 1
-    if basis_update[1][1] in ['І', 'АБО-НЕ']: type_of = 0
+        if basis_update[1][1] in ['АБО', 'І-НЕ']: type_of = 1
+        else: type_of = 0
 
-    in_num = int(basis_update[0][0])
-    out_num = int(basis_update[1][0])
+        in_num = int(basis_update[0][0])
+        out_num = int(basis_update[1][0])
 
-    data_table = truth_table(int(number_of_arguments), sets_number)
+        data_table = truth_table(number_of_arguments, sets_number)
+        normal_result = normal(sets_number, type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), False)
+        operator_result = operator_form(normal_result[1], in_num, out_num)
 
-    normal_result = normal(sets_number, type_of, int(number_of_arguments), (basis_update[0][1], basis_update[1][1]), False)
-    for line in normal_result[0]: args.append(conver_to_normal(line, int(number_of_arguments)))
-    operator_result = operator_form(normal_result[1], in_num, out_num)
+        ddnf_list.append("\\text{ДДНФ" "} " f"y_{i}: {conver_to_normal(normal_result[0][0], number_of_arguments)}")
+        dknf_list.append("\\text{ДКНФ" "} " f"y_{i}: {conver_to_normal(normal_result[0][1], number_of_arguments)}")
+        normal_list.append("\\text{Нормальна форма" "} " f"y_{i}: {conver_to_normal(normal_result[0][2], number_of_arguments)}")
 
-    args.append(f"Операторна форма при елементному базисі {'/'.join(basis)}: {conver_to_normal(operator_result, int(number_of_arguments))}")
+        operator_list.append("\\text{Операторна форма" "} " f"y_{i}: {conver_to_normal(operator_result, number_of_arguments)}")
 
-    args.append(r" \ ")
+        if type_of:
+            minimize_result = minimize_dnf_as_implicants(number_of_arguments, sets_number)
+        else:
+            minimize_result = minimize_cnf_as_implicants(number_of_arguments, [x for x in range(number_of_sets) if x not in sets_number])
 
-    if type_of:
+        if minimize_result[2]: minimum_list.append("\\text{МДНФ" "} " f"y_{i}: {conver_to_normal(minimize_result[0], number_of_arguments)}")
+        else: minimum_list.append("\\text{МКНФ" "} " f"y_{i}: {conver_to_normal(minimize_result[0], number_of_arguments)}")
 
-        minimize_result = minimize_dnf_as_implicants(int(number_of_arguments), sets_number)
+        minimize_normal_result = normal(minimize_result[1], type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), True)[1]
+        normal_minimum_list.append("\\text{Нормальна форма мінімізованої функції" "} " f"y_{i}: {conver_to_normal(str(minimize_normal_result), number_of_arguments)}")
 
-    else:
+        minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
+        operator_minimum_list.append("\\text{Операторна форма мінімізованої функції" "} " f"y_{i}: {conver_to_normal_operator(minimize_operator_result, number_of_arguments)}")
 
-        minimize_result = minimize_cnf_as_implicants(int(number_of_arguments), [x for x in range(2**int(number_of_arguments)) if x not in sets_number])
+        i += 1
 
-    args.append(conver_to_normal(minimize_result[0], int(number_of_arguments)))
-
-    minimize_normal_result = normal(minimize_result[1], type_of, int(number_of_arguments), (basis_update[0][1], basis_update[1][1]), True)[1]
-
-    args.append(f"Нормальна форма мінімізованої функції при {'/'.join([basis_update[0][1], basis_update[1][1]])}: {conver_to_normal(str(minimize_normal_result), int(number_of_arguments))}")
-
-    minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
-    args.append(f"Операторна форма мінімізованої функції при елементному базисі {'/'.join(basis)}: {conver_to_normal_operator(minimize_operator_result, int(number_of_arguments))}")
-
-    for _ in range(6): args.append(r" \ ")
-
-    args.append("Розробник: Давидчук Артем")
-
+    args = ddnf_list + dknf_list + normal_list + operator_list + [r" \ "]+ minimum_list + normal_minimum_list + operator_minimum_list
     graph(args, data_table)

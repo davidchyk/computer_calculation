@@ -176,14 +176,14 @@ def normal(sets_number, type_of, num_of_args, basis, mini):
 
     else:
 
-        out_put.append(f"ДДНФ: {basic(sets_number, 1, int(num_of_args))[0]}") #ДДНФ
-        out_put.append(f"ДКНФ: {basic(sets_number, 0, int(num_of_args))[0]}") #ДКНФ
+        out_put.append(f"{basic(sets_number, 1, int(num_of_args))[0]}") #ДДНФ
+        out_put.append(f"{basic(sets_number, 0, int(num_of_args))[0]}") #ДКНФ
 
         basic_result = basic(sets_number, type_of, int(num_of_args))
 
         normal_form = NormalForm(basic_result[2], basic_result[1], basis)
         normal_form.define()
 
-        out_put.append(f"Нормальна форма {basis[0]}/{basis[1]}: {normal_form}")
+        out_put.append(f"{normal_form}")
 
     return out_put, normal_form
