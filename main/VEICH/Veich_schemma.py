@@ -1,14 +1,32 @@
 import numpy as np
 from creating_diagram import paint
 
-def main_function(minimized_term_term_list, sets_number, list_args):
+def main_function(type, minimized_term_term_list, sets_number, list_args):
+
+    if type:
+
+        WORK_minimized_term_term_list = minimized_term_term_list
+
+    else:
+
+        WORK_minimized_term_term_list = []
+
+        for t in minimized_term_term_list:
+
+            t = t.replace("0", "_")
+            t = t.replace("1", "0")
+            t = t.replace("_", "1")
+
+            WORK_minimized_term_term_list.append(t)
+
+    print(f"Thats list is {WORK_minimized_term_term_list}")
 
     """
     TODO
 
     GLOBAL:
 
-    [] 1. Потрібно також будувати для МКНФ
+    [x] 1. Потрібно також будувати для МКНФ
 
     Veich_schemma:
 
@@ -175,8 +193,8 @@ def main_function(minimized_term_term_list, sets_number, list_args):
     result = dict()
     bin_sets = []
 
-    num_of_groups = len(minimized_term_term_list)
-    num_of_args = len(minimized_term_term_list[0])
+    num_of_groups = len(WORK_minimized_term_term_list)
+    num_of_args = len(WORK_minimized_term_term_list[0])
 
     if num_of_groups > 64: return None
 
@@ -530,7 +548,7 @@ def main_function(minimized_term_term_list, sets_number, list_args):
         col = col_indices[0]
         FRONT_veich_structure[row, col] = 1
 
-    for minimized_term in minimized_term_term_list:
+    for minimized_term in WORK_minimized_term_term_list:
 
         group = []
 
@@ -668,4 +686,4 @@ def main_function(minimized_term_term_list, sets_number, list_args):
 
 if __name__ == "__main__":
 
-    main_function(['000000XX'], [0, 1, 2, 3], [])
+    main_function(0, ['XX1X', 'XXX1', '10XX', '01XX'], [3, 15], [])
