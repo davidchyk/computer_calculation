@@ -407,7 +407,7 @@ def validate(data, type, optinal = False):
 
     return True
 
-print("Version 3.5 Beta")
+print("Version 3.0 Beta")
 
 while 1:
 
