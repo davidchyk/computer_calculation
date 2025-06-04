@@ -1,6 +1,7 @@
-def create_logic_diagram_png(user_input, num_of_func, list_to_create):
+from schemdraw.parsing import logicparse
+import os
 
-    from schemdraw.parsing import logicparse
+def create_logic_diagrams_png(list_to_create, path_to_save):
 
     def convert_symbols(user_input):
 
@@ -17,14 +18,23 @@ def create_logic_diagram_png(user_input, num_of_func, list_to_create):
 
     #Створює блок-схему на основі логічного виразу.
 
-    try:
+    flag = False
+    counter = 1
 
-        d = logicparse(convert_symbols(user_input), outlabel=rf'$Y_{num_of_func}$')
+    for input_data in list_to_create:
 
-        # Малювання та збереження схеми
-        # d.draw()
-        d.save(f"OUTPUT_SCHEMMA Y_{num_of_func}.png")
+        temp = convert_symbols(input_data)
 
-    except Exception as e:
+        try:
 
-        print(f"Помилка при створенні схеми. Зверніться до розробників.")
+            d = logicparse(temp, outlabel=rf'$y_{counter}$', gateH=1, gateW=3)
+            temp_path = os.path.join(path_to_save, f"OUTPUT_SCHEMMA_Y_{counter}.png")
+            d.save(temp_path)
+
+        except Exception as e:
+
+            print(f"Не вдалося створити блок-схему для функції y{counter}: {e}"); flag = True
+
+        counter += 1
+
+    if flag: return False
