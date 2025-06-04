@@ -1,7 +1,7 @@
 from schemdraw.parsing import logicparse
 import os
 
-def create_logic_diagrams_png(list_to_create, path_to_save):
+def create_logic_diagrams_png(path_to_save, logic_schemme_list):
 
     def convert_symbols(user_input):
 
@@ -21,14 +21,14 @@ def create_logic_diagrams_png(list_to_create, path_to_save):
     flag = False
     counter = 1
 
-    for input_data in list_to_create:
+    for input_data in logic_schemme_list:
 
         temp = convert_symbols(input_data)
 
         try:
 
             d = logicparse(temp, outlabel=rf'$y_{counter}$', gateH=1, gateW=3)
-            temp_path = os.path.join(path_to_save, f"OUTPUT_SCHEMMA_Y_{counter}.png")
+            temp_path = os.path.join(path_to_save, f"OUTPUT_SCHEMME_Y_{counter}.png")
             d.save(temp_path)
 
         except Exception as e:
