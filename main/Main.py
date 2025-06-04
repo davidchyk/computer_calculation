@@ -1,19 +1,46 @@
 from tkinter import messagebox
+from PyPDF2 import PdfReader
+from pathlib import Path
+from os import PathLike
+from math import ceil
 import numpy as np
 import tempfile
 
-from normal_forms import normal
-from operator_form2 import operator_form
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
-from class_function import class_define
-
-from create_veich_schemme import create_veich_schemme_pdf
-from create_logic_schemme import create_logic_diagrams_png
-
 from create_pdf_output import create_pdf_main, get_true_table
+from create_logic_schemme import create_logic_diagrams_png
+from create_veich_schemme import create_veich_schemme_pdf
+from operator_form2 import operator_form
+from class_function import class_define
+from normal_forms import normal
 
 db = [['І', 'АБО'], ['І-НЕ', 'І-НЕ'], ['АБО', 'І-НЕ'], ['АБО-НЕ', 'АБО'],
       ['АБО', 'І'], ['АБО-НЕ', 'АБО-НЕ'], ['І', 'АБО-НЕ'], ['І-НЕ', 'І']]
+
+def largest_pdf_height_cm(folder: str | PathLike) -> int:
+
+    folder = Path(folder).expanduser().resolve()
+
+    # 1. однорівнево скануємо теку на *.pdf
+    pdf_files = [p for p in folder.iterdir() if p.suffix.lower() == ".pdf"]
+    if not pdf_files: print("У теці немає PDF-файлів."); return 0
+
+    # 2. беремо найбільший за розміром
+    largest_pdf = max(pdf_files, key=lambda p: p.stat().st_size)
+
+    # 3. перша сторінка → MediaBox → висота в поінтах
+    reader = PdfReader(largest_pdf)
+    page = reader.pages[0]
+    mediabox = page.mediabox
+    height_pt = float(mediabox.top) - float(mediabox.bottom)
+
+    # 4. поінти → сантиметри: 1 pt = 25.4 mm = 2.54 cm / 72
+    height_cm_ceil = ceil(height_pt * 2.54 / 72)
+
+    print(f"Найбільший PDF: {largest_pdf.name}")
+    print(f"Висота (1-ша сторінка): {height_cm_ceil} см")
+
+    return height_cm_ceil
 
 def find_args_and_sets(function_input):
 
@@ -571,7 +598,7 @@ while 1:
     BLOCK1_width = (number_of_arguments+1)*1.5
 
     page_width = max(int(len(max((item for item in global_output if item is not None), key=len))*0.15), 44)
-    page_height = max(number_of_sets, 30)
+    page_height = max(number_of_sets, 30, largest_pdf_height_cm(temp_dir))
 
     output_difficult = round(max(page_width * 4 / 23, page_height * 4 / 23), 2)
 
@@ -586,10 +613,14 @@ while 1:
         if create_logic_diagrams_png(temp_dir, logic_schemme_list) == False:
 
             messagebox.showerror("Помилка", "Не вдалося створити блок-схеми для функцій, звідси й pdf файл."); continue
-        
+
+        print(f"Veich Schemme List: {veich_schemme_list}")
+
         if create_veich_schemme_pdf(temp_dir, veich_schemme_list) == False:
 
             messagebox.showerror("Помилка", "Не вдалося створити діаграми Вейча для функцій, звідси й pdf файл."); continue
+
+        page_height += largest_pdf_height_cm(temp_dir)
 
         create_pdf_main(temp_dir, [global_output, global_truth_table_output], [page_width, page_height, BLOCK1_width])
 
