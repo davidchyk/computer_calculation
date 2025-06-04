@@ -7,8 +7,8 @@ from operator_form2 import operator_form
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
 from class_function import class_define
 
-from create_veich_schemma import veich_create
-from create_logic_schemma import create_logic_diagrams_png
+from create_veich_schemme import create_veich_schemme_pdf
+from create_logic_schemme import create_logic_diagrams_png
 
 from create_pdf_output import create_pdf_main, get_true_table
 
@@ -426,7 +426,8 @@ while 1:
     global_output = []
     global_truth_table_output = []
     basis_update = []
-    list_to_create = []
+    logic_schemme_list = []
+    veich_schemme_list = []
     i = 1
 
     print("\nДля вводу функції використовуйте func, для вводу наборів використовуйте sets")
@@ -472,12 +473,11 @@ while 1:
             if type_of: minimize_result = minimize_dnf_as_implicants(number_of_arguments, sets_number)
             else: minimize_result = minimize_cnf_as_implicants(number_of_arguments, [x for x in range(number_of_sets) if x not in sets_number])
 
-            print(minimize_result)
-
             minimize_normal_result = normal(minimize_result[1], type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), True)[1]
             minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
 
-            list_to_create.append(conver_to_normal(function_regime, minimize_result[0], number_of_arguments))
+            logic_schemme_list.append(conver_to_normal(function_regime, minimize_result[0], number_of_arguments))
+            veich_schemme_list.append((type_of, minimize_result[1], sets_number, []))
 
             #Forming Output
 
@@ -544,7 +544,8 @@ while 1:
             minimize_normal_result = normal(minimize_result[1], type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), True)[1]
             minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
 
-            list_to_create.append(conver_to_normal(function_regime, minimize_result[0], number_of_arguments, args_list))
+            logic_schemme_list.append(conver_to_normal(function_regime, minimize_result[0], number_of_arguments, args_list))
+            veich_schemme_list.append((type_of, minimize_result[1], sets_number, args_list))
 
             #Forming Output
 
@@ -582,9 +583,13 @@ while 1:
 
         print(f"\nСкладність виводу функції {output_difficult}%, що < 100%:")
 
-        if create_logic_diagrams_png(list_to_create, temp_dir) == False:
+        if create_logic_diagrams_png(temp_dir, logic_schemme_list) == False:
 
             messagebox.showerror("Помилка", "Не вдалося створити блок-схеми для функцій, звідси й pdf файл."); continue
+        
+        if create_veich_schemme_pdf(temp_dir, veich_schemme_list) == False:
+
+            messagebox.showerror("Помилка", "Не вдалося створити діаграми Вейча для функцій, звідси й pdf файл."); continue
 
         create_pdf_main(temp_dir, [global_output, global_truth_table_output], [page_width, page_height, BLOCK1_width])
 

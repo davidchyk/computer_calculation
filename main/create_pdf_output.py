@@ -30,8 +30,7 @@ def compile_latex(temp_dir, latex_str, output_path):
     tex_file_path = os.path.join(temp_dir, "document.tex")
 
     # Записуємо LaTeX код у .tex файл
-    with open(tex_file_path, 'w', encoding='utf-8') as tex_file:
-        tex_file.write(latex_str)
+    with open(tex_file_path, 'w', encoding='utf-8') as tex_file: tex_file.write(latex_str)
 
     # Виконуємо компіляцію
     try:
@@ -290,7 +289,7 @@ def get_latex_formula(args, page_width, page_height, block_width):
                 \end{flalign*}
 
                 \begin{figure}[H]
-                    \includegraphics[height=6cm]{OUTPUT_SCHEMMA_Y_""" + f"{truth_index+1}" + r""".png}
+                    \includegraphics[height=6cm]{OUTPUT_SCHEMME_Y_""" + f"{truth_index+1}" + r""".png}
                     \label{fig:left_top_image}
                 \end{figure}
             \end{minipage}
