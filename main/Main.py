@@ -1,10 +1,16 @@
+from tkinter import messagebox
+import numpy as np
+import tempfile
+
 from normal_forms import normal
 from operator_form2 import operator_form
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
 from class_function import class_define
-from Veich_schemma import veich_create
-from create_output import create_pdf_main, get_true_table
-import numpy as np
+
+from create_veich_schemma import veich_create
+from create_logic_schemma import create_logic_diagrams_png
+
+from create_pdf_output import create_pdf_main, get_true_table
 
 db = [['І', 'АБО'], ['І-НЕ', 'І-НЕ'], ['АБО', 'І-НЕ'], ['АБО-НЕ', 'АБО'],
       ['АБО', 'І'], ['АБО-НЕ', 'АБО-НЕ'], ['І', 'АБО-НЕ'], ['І-НЕ', 'І']]
@@ -412,6 +418,11 @@ print("Version 3.5 Beta")
 
 while 1:
 
+    tmp_obj = tempfile.TemporaryDirectory()   # delete=True за замовчуванням
+    temp_dir = tmp_obj.name
+
+    temp_config = (tmp_obj, temp_dir)
+
     global_output = []
     global_truth_table_output = []
     basis_update = []
@@ -570,4 +581,11 @@ while 1:
     else:
 
         print(f"\nСкладність виводу функції {output_difficult}%, що < 100%:")
-        create_pdf_main([global_output, global_truth_table_output], [page_width, page_height, BLOCK1_width], list_to_create)
+
+        if create_logic_diagrams_png(list_to_create, temp_dir) == False:
+
+            messagebox.showerror("Помилка", "Не вдалося створити блок-схеми для функцій, звідси й pdf файл."); continue
+
+        create_pdf_main(temp_dir, [global_output, global_truth_table_output], [page_width, page_height, BLOCK1_width])
+
+    tmp_obj.cleanup()

@@ -1,12 +1,9 @@
 import subprocess
 import os
 import shutil
-import tempfile
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from datetime import datetime as dt
-from create_schemma import create_logic_diagrams_png
-from Veich_schemma import veich_create
 
 def check_pdflatex_installed():
 
@@ -17,7 +14,7 @@ def check_pdflatex_installed():
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
-def compile_latex(latex_str, output_path, list_to_create):
+def compile_latex(temp_dir, latex_str, output_path):
 
     """
     Компілірує LaTeX рядок у PDF та зберігає його за обраним користувачем шляхом.
@@ -26,55 +23,46 @@ def compile_latex(latex_str, output_path, list_to_create):
     :param output_path: Повний шлях до вихідного PDF файлу
     :return: True, якщо успішно, інакше False
     """
+
     if not check_pdflatex_installed():
-        messagebox.showerror("Помилка", "Помилка. Будь ласка, встановіть LaTeX-компілятор.")
+        messagebox.showerror("Помилка", "Помилка. Будь ласка, встановіть LaTeX-компілятор."); return False
+
+    tex_file_path = os.path.join(temp_dir, "document.tex")
+
+    # Записуємо LaTeX код у .tex файл
+    with open(tex_file_path, 'w', encoding='utf-8') as tex_file:
+        tex_file.write(latex_str)
+
+    # Виконуємо компіляцію
+    try:
+        subprocess.run(
+            ['pdflatex', '-interaction=nonstopmode', tex_file_path],
+            cwd=temp_dir,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+    except subprocess.CalledProcessError as e:
+        error_message = e.stdout.decode() + "\n" + e.stderr.decode()
+        messagebox.showerror("Помилка компіляції", f"Сталася помилка під час компіляції LaTeX:\n{error_message}")
+        #with open("error_log.txt", "w", encoding="utf-8") as f: f.write(error_message)
         return False
 
-    # Створюємо тимчасову папку
-    with tempfile.TemporaryDirectory() as temp_dir:
-        tex_file_path = os.path.join(temp_dir, "document.tex")
+    # Шлях до згенерованого PDF
+    generated_pdf = os.path.join(temp_dir, "document.pdf")
 
-        t = create_logic_diagrams_png(list_to_create, temp_dir)
+    if not os.path.exists(generated_pdf):
+        messagebox.showerror("Помилка", "Не вдалося створити PDF файл.")
+        return False
 
-        if t == False:
-
-            messagebox.showerror("Помилка", "Не вдалося створити блок-схеми для функцій, звідси й pdf файл.")
-            return False
-
-        # Записуємо LaTeX код у .tex файл
-        with open(tex_file_path, 'w', encoding='utf-8') as tex_file:
-            tex_file.write(latex_str)
-
-        # Виконуємо компіляцію
-        try:
-            subprocess.run(
-                ['pdflatex', '-interaction=nonstopmode', tex_file_path],
-                cwd=temp_dir,
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
-        except subprocess.CalledProcessError as e:
-            error_message = e.stdout.decode() + "\n" + e.stderr.decode()
-            messagebox.showerror("Помилка компіляції", f"Сталася помилка під час компіляції LaTeX:\n{error_message}")
-            #with open("error_log.txt", "w", encoding="utf-8") as f: f.write(error_message)
-            return False
-
-        # Шлях до згенерованого PDF
-        generated_pdf = os.path.join(temp_dir, "document.pdf")
-
-        if not os.path.exists(generated_pdf):
-            messagebox.showerror("Помилка", "Не вдалося створити PDF файл.")
-            return False
-
-        # Копіюємо PDF у вказане місце
-        try:
-            shutil.copyfile(generated_pdf, output_path)
-            messagebox.showinfo("Успіх", f"PDF успішно створено: {output_path}")
-            return True
-        except Exception as e:
-            messagebox.showerror("Помилка", f"Не вдалося зберегти PDF файл:\n{e}")
-            return False
+    # Копіюємо PDF у вказане місце
+    try:
+        shutil.copyfile(generated_pdf, output_path)
+        messagebox.showinfo("Успіх", f"PDF успішно створено: {output_path}")
+        return True
+    except Exception as e:
+        messagebox.showerror("Помилка", f"Не вдалося зберегти PDF файл:\n{e}")
+        return False
 
 def select_save_location():
 
@@ -319,7 +307,7 @@ def get_latex_formula(args, page_width, page_height, block_width):
 
     return final_latex_formula
 
-def create_pdf_main(args:list, page_params:list, list_to_create):
+def create_pdf_main(temp_dir: str, args:list, page_params:list):
 
     print("\nСтворення PDF файлу...\n")
 
@@ -333,7 +321,7 @@ def create_pdf_main(args:list, page_params:list, list_to_create):
     save_path = select_save_location()
 
     if save_path:
-        success = compile_latex(latex_str, save_path, list_to_create)
+        success = compile_latex(temp_dir, latex_str, save_path)
         if success:
             print(f"PDF збережено за адресою: {save_path}")
         else:
