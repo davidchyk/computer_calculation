@@ -2,7 +2,8 @@ from normal_forms import normal
 from operator_form2 import operator_form
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
 from class_function import class_define
-from create_pdf import create_pdf_main, get_true_table
+from Veich_schemma import veich_create
+from create_output import create_pdf_main, get_true_table
 import numpy as np
 
 db = [['І', 'АБО'], ['І-НЕ', 'І-НЕ'], ['АБО', 'І-НЕ'], ['АБО-НЕ', 'АБО'],
@@ -407,7 +408,7 @@ def validate(data, type, optinal = False):
 
     return True
 
-print("Version 3.0 Beta")
+print("Version 3.5 Beta")
 
 while 1:
 

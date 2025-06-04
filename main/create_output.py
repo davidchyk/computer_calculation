@@ -4,45 +4,9 @@ import shutil
 import tempfile
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from schemdraw.parsing import logicparse
-
-def create_logic_diagrams_png(list_to_create, path_to_save):
-
-    def convert_symbols(user_input):
-
-        #Замінює символи ∨, ∧, not на відповідні &, |, ~.
-
-        converted_input = (
-            user_input.replace("∧", "&")
-            .replace("∨", "|")
-            .replace("not", "~")
-            .replace("_", "")
-        )
-
-        return converted_input
-
-    #Створює блок-схему на основі логічного виразу.
-
-    flag = False
-    counter = 1
-
-    for input_data in list_to_create:
-
-        temp = convert_symbols(input_data)
-
-        try:
-
-            d = logicparse(temp, outlabel=rf'$y_{counter}$', gateH=1, gateW=3)
-            temp_path = os.path.join(path_to_save, f"OUTPUT_SCHEMMA_Y_{counter}.png")
-            d.save(temp_path)
-
-        except Exception as e:
-
-            print(f"Не вдалося створити блок-схему для функції y{counter}: {e}"); flag = True
-
-        counter += 1
-
-    if flag: return False
+from datetime import datetime as dt
+from create_schemma import create_logic_diagrams_png
+from Veich_schemma import veich_create
 
 def check_pdflatex_installed():
 
@@ -272,7 +236,7 @@ def get_latex_formula(args, page_width, page_height, block_width):
 
     \begin{flushleft}
 
-    {\Huge LogicMin Output Result}
+    {\Huge Computer Logic Analysis and Calculation Suite}
 
     {\Large Версія програмного забезпечення: 3.5 Beta\newline}
     {\Large Розробниками цієї програми є студенти КПІ, 1 курс 2024 року, ІО-41 \newline}
@@ -289,7 +253,7 @@ def get_latex_formula(args, page_width, page_height, block_width):
     {\large Якщо виникли питання або пропозиції, надішліть їх нам на адресу ел. пошти: \href{mailto:artemdiachenko2007@gmail.com}{artemdiachenko2007@gmail.com} \newline}
     \newline
     \newline
-    {\large Всі права застережено © 2024 -- 2025}
+    {\large Всі права застережено © 2024 -- """ + str(dt.now().year) + r"""}
 
     \end{flushleft}
 
@@ -365,8 +329,6 @@ def create_pdf_main(args:list, page_params:list, list_to_create):
 
     latex_list = get_latex_list(args[0])
     latex_str = get_latex_formula([latex_list, args[1]], page_width, page_height, block_width)
-
-    #with open("example.txt", "w", encoding="utf-8") as f: f.write(latex_str)
 
     save_path = select_save_location()
 
