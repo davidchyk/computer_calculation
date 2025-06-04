@@ -1123,6 +1123,8 @@ def create_veich_schemme_pdf(temp_dir, veich_schemme_list):
 
             if veich_create(filename, *veich_config) == False: return False
 
+            count += 1
+
     except Exception as e:
 
         traceback.print_exc()     # друкує повну трасу у stderr
@@ -1132,4 +1134,4 @@ def create_veich_schemme_pdf(temp_dir, veich_schemme_list):
 
 if __name__ == "__main__":
 
-    create_veich_schemme_pdf(".", [(0, ['XX1X', 'XXX1', '10XX', '01XX'], [3, 15], [])])
+    create_veich_schemme_pdf(".", [(1, ['0001X', '000X1'], [1, 2, 3], [])])
