@@ -276,7 +276,7 @@ def get_latex_formula(args, page_width, page_height, block_width):
 
         temp = r"""\noindent
         \begin{minipage}[t]{""" + f"{block_width}cm" + r"""}
-            \text{\Large Truth table for $y_""" + f"{truth_index+1}" + r"""$:}
+            \text{\Large Таблиця істинності для $y_""" + f"{truth_index+1}" + r"""$:}
 
             \begin{flalign*}&""" + \
             truth_table_list[truth_index] + r"""
@@ -286,8 +286,8 @@ def get_latex_formula(args, page_width, page_height, block_width):
             \begin{minipage}[t]{0.5\textwidth}
                 \raggedright % Вирівнювання тексту до лівого краю всередині minipage
 
-                \text{\Large Result of analysis of function $y_""" + f"{truth_index+1}" + r"""$:}
-                
+                \text{\Large Результат аналізу функції $y_""" + f"{truth_index+1}" + r"""$:}
+
                 """ + temp_deep + r"""
                 \begin{flalign*}
                     &

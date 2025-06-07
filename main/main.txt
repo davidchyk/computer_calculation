@@ -1,0 +1,262 @@
+
+    \documentclass{article}
+
+    \usepackage[utf8]{inputenc}
+    \usepackage[T2A]{fontenc}
+    \usepackage[english, ukrainian]{babel}
+    \usepackage{lmodern}
+    \usepackage{microtype}
+    \usepackage{graphicx}
+    \usepackage{geometry}
+    \usepackage{array}
+    \usepackage{float}
+    \usepackage{nopageno}
+    \usepackage{xcolor}
+    \usepackage{hyperref} 
+    \geometry{
+        paperwidth=74cm,
+        paperheight=45cm,
+        left=1cm,
+        right=1cm,
+        top=1cm,
+        bottom=1cm,
+    }
+
+    \definecolor{myteal}{RGB}{0, 128, 128}
+    \definecolor{mysteelblue}{RGB}{70, 130, 180}
+    \definecolor{mycoral}{RGB}{255, 127, 80}
+
+    \hypersetup{
+        colorlinks=true,
+        linkcolor=myteal,      % Внутрішні посилання
+        urlcolor=mysteelblue,  % Зовнішні посилання
+        citecolor=mycoral      % Бібліографічні посилання
+    }
+
+    \usepackage{setspace}
+    \onehalfspacing
+
+    \emergencystretch=1em
+    \sloppy
+
+    \usepackage{amsmath, amsfonts, amssymb}
+
+    \begin{document}
+
+    \pagestyle{empty} % Вимикає нумерацію сторінок
+
+    \setlength{\abovedisplayskip}{1pt}
+    \setlength{\belowdisplayskip}{1pt}
+
+    \begin{flushleft}
+
+    {\Huge Computer Logic Analysis and Calculation Suite}
+
+    {\Large Версія програмного забезпечення: 3.5 Beta\newline}
+    {\Large Розробниками цієї програми є студенти КПІ, 1 курс 2024 року, ІО-41 \newline}
+
+    {\large Розробка аналізу функції: Давидчук Артем \newline}
+    {\large Побудова комбінаційної схеми: Білий Іван, Давидчук Артем \newline}
+    {\large Парсинг функції: Троценко Максим \newline}
+    {\large BackEnd: ... \newline}
+    {\large FrontEnd: Єнь Данило \newline}
+
+    {\large Примітка: \href{https://uk.wikipedia.org/wiki/%D0%9B%D0%BE%D0%B3%D1%96%D1%87%D0%BD%D1%96_%D0%B5%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82%D0%B8}{Умовні позначення логічних елементів} }
+
+    {\large Якщо виникли помилки, надішліть їх нам на адресу ел. пошти: \href{mailto:belijivan9@gmail.com}{belijivan9@gmail.com} \newline}
+    {\large Якщо виникли питання або пропозиції, надішліть їх нам на адресу ел. пошти: \href{mailto:artemdiachenko2007@gmail.com}{artemdiachenko2007@gmail.com} \newline}
+    \newline
+    \newline
+    {\large Всі права застережено © 2024 -- 2025}
+
+    \end{flushleft}
+
+    \newpage
+
+    \noindent
+        \begin{minipage}[t]{7.5cm}
+            \text{\Large Truth table for $y_1$:}
+
+            \begin{flalign*}&\begin{tabular}{|c|c|c|c!{\vrule width 1.5pt}c|}
+        \hline
+        $X_4$ & $X_3$ & $X_2$ & $X_1$ & $y_1$ \\
+        \hline
+        0 & 0 & 0 & 0 & 0 \\
+        \hline
+        0 & 0 & 0 & 1 & 1 \\
+        \hline
+        0 & 0 & 1 & 0 & 1 \\
+        \hline
+        0 & 0 & 1 & 1 & 1 \\
+        \hline
+        0 & 1 & 0 & 0 & 0 \\
+        \hline
+        0 & 1 & 0 & 1 & 0 \\
+        \hline
+        0 & 1 & 1 & 0 & 0 \\
+        \hline
+        0 & 1 & 1 & 1 & 0 \\
+        \hline
+        1 & 0 & 0 & 0 & 0 \\
+        \hline
+        1 & 0 & 0 & 1 & 0 \\
+        \hline
+        1 & 0 & 1 & 0 & 0 \\
+        \hline
+        1 & 0 & 1 & 1 & 0 \\
+        \hline
+        1 & 1 & 0 & 0 & 0 \\
+        \hline
+        1 & 1 & 0 & 1 & 0 \\
+        \hline
+        1 & 1 & 1 & 0 & 0 \\
+        \hline
+        1 & 1 & 1 & 1 & 0 \\
+        \hline
+    \end{tabular}
+            &
+            \end{flalign*}
+        \end{minipage}
+            \begin{minipage}[t]{0.5\textwidth}
+                \raggedright % Вирівнювання тексту до лівого краю всередині minipage
+
+                \text{\Large Result of analysis of function $y_1$:}
+                
+                
+            \begin{flalign*}
+                &
+            \text{ДДНФ }y_1\text{: }(\overline{X_4} \wedge \overline{X_3} \wedge \overline{X_2} \wedge X_1) \vee (\overline{X_4} \wedge \overline{X_3} \wedge X_2 \wedge \overline{X_1}) \vee (\overline{X_4} \wedge \overline{X_3} \wedge X_2 \wedge X_1)
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{ДКНФ }y_1\text{: }(X_4 \vee X_3 \vee X_2 \vee X_1) \wedge (X_4 \vee \overline{X_3} \vee X_2 \vee X_1) \wedge (X_4 \vee \overline{X_3} \vee X_2 \vee \overline{X_1}) \wedge (X_4 \vee \overline{X_3} \vee \overline{X_2} \vee X_1) \wedge (X_4 \vee \overline{X_3} \vee \overline{X_2} \vee \overline{X_1}) \wedge (\overline{X_4} \vee X_3 \vee X_2 \vee X_1) \wedge (\overline{X_4} \vee X_3 \vee X_2 \vee \overline{X_1}) \wedge (\overline{X_4} \vee X_3 \vee \overline{X_2} \vee X_1) \wedge (\overline{X_4} \vee X_3 \vee \overline{X_2} \vee \overline{X_1}) \wedge (\overline{X_4} \vee \overline{X_3} \vee X_2 \vee X_1) \wedge (\overline{X_4} \vee \overline{X_3} \vee X_2 \vee \overline{X_1}) \wedge (\overline{X_4} \vee \overline{X_3} \vee \overline{X_2} \vee X_1) \wedge (\overline{X_4} \vee \overline{X_3} \vee \overline{X_2} \vee \overline{X_1})
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{Нормальна форма }y_1\text{: }\overline{\overline{\overline{X_4} \wedge \overline{X_3} \wedge \overline{X_2} \wedge X_1} \wedge \overline{\overline{X_4} \wedge \overline{X_3} \wedge X_2 \wedge \overline{X_1}} \wedge \overline{\overline{X_4} \wedge \overline{X_3} \wedge X_2 \wedge X_1}}
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{Операторна форма }y_1\text{: }\overline{\overline{\overline{\overline{\overline{X_4} \wedge \overline{X_3} \wedge \overline{X_2}}} \wedge X_1} \wedge \overline{\overline{\overline{\overline{X_4} \wedge \overline{X_3} \wedge X_2}} \wedge \overline{X_1}} \wedge \overline{\overline{\overline{\overline{X_4} \wedge \overline{X_3} \wedge X_2}} \wedge X_1}}
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{МДНФ }y_1\text{: }(\overline{X_4} \wedge \overline{X_3} \wedge X_2) \vee (\overline{X_4} \wedge \overline{X_3} \wedge X_1)
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{Нормальна форма мінімізованої функції }y_1\text{: }\overline{\overline{\overline{X_4} \wedge \overline{X_3} \wedge X_2} \wedge \overline{\overline{X_4} \wedge \overline{X_3} \wedge X_1}}
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{Операторна форма мінімізованої функції }y_1\text{: }\overline{\overline{\overline{\overline{\overline{X_4} \wedge \overline{X_3} \wedge X_2}}} \wedge \overline{\overline{\overline{\overline{X_4} \wedge \overline{X_3}}} \wedge X_1}}
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{Дослідження функції } y_1\text{: }
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{K0: }\text{Зберігає нуль: }y_1(0, 0, 0, 0) = 0 \rightarrow \text{входить в клас K0}
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{K1: }\text{Не зберігає одиницю: }y_1(1, 1, 1, 1) = 0 \rightarrow \text{не входить в клас K1}
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{КС: }\text{Не самодвоїста: }y_1(1, 1, 1, 1) = 0 \text{ та }\overline{y_1(0, 0, 0, 0)} = 0 \rightarrow \text{не входить в клас КС}
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{КМ: }\text{Не монотонна: }y_1(0, 0, 0, 1) > y_1(0, 1, 0, 1) \rightarrow \text{не входить в клас KM}
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{КЛ: }\text{Не лінійна, тому що поліном містить терм, ранг якого більший за 1: }X_1 \oplus X_2 \oplus X_2 \wedge X_1 \oplus X_3 \wedge X_1 \oplus X_3 \wedge X_2 \oplus X_4 \wedge X_1 \oplus X_4 \wedge X_2 \oplus X_3 \wedge X_2 \wedge X_1 \oplus X_4 \wedge X_2 \wedge X_1 \oplus X_4 \wedge X_3 \wedge X_1 \oplus X_4 \wedge X_3 \wedge X_2 \oplus X_4 \wedge X_3 \wedge X_2 \wedge X_1 \rightarrow \text{не входить в клас КЛ}
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{\qquad   Покрокове знаходження поліному Жегалкіна:}
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{\qquad    ДДНФ функції:} (\overline{X_4} \wedge \overline{X_3} \wedge \overline{X_2} \wedge X_1) \vee (\overline{X_4} \wedge \overline{X_3} \wedge X_2 \wedge \overline{X_1}) \vee (\overline{X_4} \wedge \overline{X_3} \wedge X_2 \wedge X_1)
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{\qquad    Заміню} \vee \text{на} \oplus \text{та застосую аксіому алгебри Жегалкіна }\overline{X} = X \oplus 1\text{:}
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{\qquad    }((X_4 \oplus 1) \wedge (X_3 \oplus 1) \wedge (X_2 \oplus 1) \wedge X_1) \oplus ((X_4 \oplus 1) \wedge (X_3 \oplus 1) \wedge X_2 \wedge (X_1 \oplus 1)) \oplus ((X_4 \oplus 1) \wedge (X_3 \oplus 1) \wedge X_2 \wedge X_1) \ 
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{\qquad    Розкрию дужки, викреслю парні терми та отримаю фінальну форму поліному Жегалкіна:}
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{\qquad    }X_1 \oplus X_2 \oplus X_2 \wedge X_1 \oplus X_3 \wedge X_1 \oplus X_3 \wedge X_2 \oplus X_4 \wedge X_1 \oplus X_4 \wedge X_2 \oplus X_3 \wedge X_2 \wedge X_1 \oplus X_4 \wedge X_2 \wedge X_1 \oplus X_4 \wedge X_3 \wedge X_1 \oplus X_4 \wedge X_3 \wedge X_2 \oplus X_4 \wedge X_3 \wedge X_2 \wedge X_1
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \textbf{Резюме дослідження функції }y_1\text{: }
+                &
+            \end{flalign*}
+            \begin{flalign*}
+                &
+            \text{Функція }y_1\text{: }\text{входить в клас K0}, \text{не входить в клас K1}, \text{не входить в клас KC}, \text{не входить в клас KM}, \text{не входить в клас КЛ}, \text{тому за теоремою Поста-Яблонського функція } y_1 \text{ НЕ ЯВЛЯЄТЬСЯ функціонально повною}
+                &
+            \end{flalign*}
+                \begin{flalign*}
+                    &
+                    \text{\large Unstable Beta! Комбінаційна схема функції $y_1$:}
+                    &
+                \end{flalign*}
+
+                \begin{figure}[H]
+                    \includegraphics[height=6cm]{OUTPUT_SCHEMME_Y_1.png}
+                    \label{fig:left_top_image}
+                \end{figure}
+
+                % Added:
+
+                \begin{flalign*}
+                    &
+                    \text{\large Unstable Beta! Діаграма Вейча для $y_1$:}
+                    &
+                \end{flalign*}
+
+                \begin{figure}[H]
+                    \includegraphics[width=0.3\linewidth]{plot1.pdf}
+                    \label{fig:left_top_image}
+                \end{figure}
+
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+            \end{minipage}
+
+            \newpage
+        
+    \end{document}
+    
