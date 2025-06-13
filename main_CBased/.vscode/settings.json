@@ -63,5 +63,9 @@
       "addWords": true,
       "scope": "workspace"
     }
+  },
+  "files.associations": {
+    "*.embeddedhtml": "html",
+    "stdio.h": "c"
   }
 }

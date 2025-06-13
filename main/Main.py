@@ -448,8 +448,6 @@ while 1:
     tmp_obj = tempfile.TemporaryDirectory()   # delete=True за замовчуванням
     temp_dir = tmp_obj.name
 
-    temp_config = (tmp_obj, temp_dir)
-
     global_output = []
     global_truth_table_output = []
     basis_update = []
