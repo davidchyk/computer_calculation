@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-char *db[][2] = {
+char* db[][2] = {
     {"AND", "OR"},
     {"AND-NOT", "AND-NOT"},
     {"OR", "AND-NOT"},
@@ -13,6 +13,12 @@ char *db[][2] = {
     {"AND", "OR-NOT"},
     {"AND-NOT", "AND"}
 };
+
+int isFloat(const char *str);
+
+int* parseDynamicStringToArray(char *dynamicString, int optional, size_t *arraySize);
+
+char** splitBASIS(char *dynamicString);
 
 int isFloat(const char *str) {
     char *endptr;
@@ -147,12 +153,6 @@ char **splitBASIS(char *dynamicString) {
 
 //normal_forms:
 
-
 //operator_form2:
 
-
-
-
 //minimization:
-
-

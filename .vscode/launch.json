@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/artem/OneDrive/Desktop/reps/computer_calculation/console_version3CBased",
-      "program": "c:/Users/artem/OneDrive/Desktop/reps/computer_calculation/console_version3CBased/build/Debug/outDebug",
+      "cwd": "c:/Users/artem/OneDrive/Desktop/reps/computer_calculation/main",
+      "program": "c:/Users/artem/OneDrive/Desktop/reps/computer_calculation/main/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

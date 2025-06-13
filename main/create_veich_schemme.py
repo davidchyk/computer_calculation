@@ -405,10 +405,14 @@ def draw_kmap_with_tight_rounded_boxes(kmap, groups, list_args, filename):
 
         if not draw_axis_brackets(ax, list_args): return False
 
+        plt.show()
+
+        """
         # Збереження у файл
         plt.savefig(filename, dpi=300, bbox_inches='tight', pad_inches=0.1)
         plt.close(fig)
         print(f"Зображення збережено у файл: {filename}")
+        """
 
     except Exception: return False
     return True
@@ -456,21 +460,6 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
     """
 
     try:
-
-        if type: WORK_minimized_term_term_list = minimized_term_term_list
-        else:
-
-            WORK_minimized_term_term_list = []
-
-            for t in minimized_term_term_list:
-
-                t = t.replace("0", "_")
-                t = t.replace("1", "0")
-                t = t.replace("_", "1")
-
-                WORK_minimized_term_term_list.append(t)
-
-        print(f"Thats list is {WORK_minimized_term_term_list}")
 
         def differ(s1: str, s2: str) -> bool:
 
@@ -617,6 +606,44 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
             linestyle_index %= total_linestyles
 
             return [colors[color_index], line_configurations[linestyle_index]]
+
+        def del_one(FRONT, NEW_FRONT):
+
+            rows, cols = NEW_FRONT.shape
+
+            print(f"rows: {rows}, cols: {cols}")
+
+            allone_coord_list = []
+
+            for i in np.where(np.all(FRONT == 1, axis=1))[0]:
+
+                i = int(i) + 1
+
+                NEW_FRONT[0, i]
+
+
+    
+                #allone_coord_list.append(("row", int(i)+1))
+
+
+            for j in np.where(np.all(FRONT == 1, axis=0))[0]:
+
+                allone_coord_list.append(("col", int(j)+1))
+
+            print(f"allone_coord_list: {allone_coord_list}")
+
+        if type: WORK_minimized_term_term_list = minimized_term_term_list
+        else:
+
+            WORK_minimized_term_term_list = []
+
+            for t in minimized_term_term_list:
+
+                t = t.replace("0", "_")
+                t = t.replace("1", "0")
+                t = t.replace("_", "1")
+
+                WORK_minimized_term_term_list.append(t)
 
         result = dict()
         bin_sets = []
@@ -828,6 +855,8 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
         elif num_of_args == 5:
 
+            #
+
             FRONT_veich_structure = np.zeros((4, 8), dtype=int)
             BACK_veich_structure = [
 
@@ -867,6 +896,8 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
         elif num_of_args == 4:
 
+            # done
+
             FRONT_veich_structure = np.zeros((4, 4), dtype=int)
             BACK_veich_structure = [
 
@@ -898,6 +929,8 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
         elif num_of_args == 3:
 
+            # done
+
             FRONT_veich_structure = np.zeros((2, 4), dtype=int)
             BACK_veich_structure = [
 
@@ -923,6 +956,8 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
         elif num_of_args == 2:
 
+            # done
+
             FRONT_veich_structure = np.zeros((2, 2), dtype=int)
             BACK_veich_structure = [
 
@@ -945,6 +980,8 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
             ] # 2
 
         elif num_of_args == 1:
+
+            # done
 
             FRONT_veich_structure = np.zeros((2, 1), dtype=int)
             BACK_veich_structure = [
@@ -1057,6 +1094,10 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
         NEW_BACK_veich_structure[rows+1, 1:cols+1] = top_side
         NEW_BACK_veich_structure[rows+1, cols+1] = top_left_corner[0, 0]
 
+        # Виявлення рядків та стовпців повністю увішані одиницями
+
+        del_one(FRONT_veich_structure, NEW_FRONT_veich_structure)
+
         for group in initial_MAIN_coord_groups:
 
             updated_MAIN_coord_groups.append([])
@@ -1114,13 +1155,14 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
 def create_veich_schemme_pdf(temp_dir, veich_schemme_list):
 
+    print(f"temp_dir: {temp_dir}, veich_schemme_list: {veich_schemme_list}")
+
     try:
 
         count = 1
         for veich_config in veich_schemme_list:
 
             filename = os.path.join(temp_dir, f"plot{count}.pdf")
-
             if veich_create(filename, *veich_config) == False: return False
 
             count += 1
@@ -1134,4 +1176,4 @@ def create_veich_schemme_pdf(temp_dir, veich_schemme_list):
 
 if __name__ == "__main__":
 
-    create_veich_schemme_pdf(".", [(1, ['0001X', '000X1'], [1, 2, 3], [])])
+    create_veich_schemme_pdf(".", [(1, ['X0X0'], [0, 2, 8, 10], [])])
