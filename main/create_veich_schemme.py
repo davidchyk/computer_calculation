@@ -9,13 +9,13 @@ CELL_SIZE = 0.2  # Розмір клітинки
 LINE_WIDTH = 1.2  # Товщина обведення
 PADDING = 0.03  # Відступ усередині, щоб рамки не накладались
 
+plt.rcParams['text.usetex'] = True
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['text.latex.preamble'] = r'''\usepackage{amsmath}'''
+
 def draw_axis_brackets(ax, list_args):
 
     try:
-
-        plt.rcParams['text.usetex'] = True
-        plt.rcParams['font.family'] = 'serif'
-        plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
 
         if len(list_args) == 9:
 
@@ -291,10 +291,10 @@ def draw_kmap_with_tight_rounded_boxes(kmap, groups, list_args, filename):
                 ax.text(
                     x + cell_size / 2,
                     y + cell_size / 2,
-                    str(kmap[r, c]),
+                    r"\texttt{" f"{kmap[r, c]}" "}",
                     ha='center',
                     va='center',
-                    fontsize=15
+                    fontsize=20
                 )
 
         for group in groups:
@@ -405,14 +405,12 @@ def draw_kmap_with_tight_rounded_boxes(kmap, groups, list_args, filename):
 
         if not draw_axis_brackets(ax, list_args): return False
 
-        plt.show()
+        #plt.show()
 
-        """
         # Збереження у файл
         plt.savefig(filename, dpi=300, bbox_inches='tight', pad_inches=0.1)
         plt.close(fig)
         print(f"Зображення збережено у файл: {filename}")
-        """
 
     except Exception: return False
     return True
@@ -607,30 +605,26 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
             return [colors[color_index], line_configurations[linestyle_index]]
 
-        def del_one(FRONT, NEW_FRONT):
+        def del_one(FRONT, shape: tuple) -> list:
 
-            rows, cols = NEW_FRONT.shape
+            result = []
+            rows, cols = shape
 
-            print(f"rows: {rows}, cols: {cols}")
-
-            allone_coord_list = []
+            print(f"rows: {rows} cols: {cols}")
 
             for i in np.where(np.all(FRONT == 1, axis=1))[0]:
 
-                i = int(i) + 1
-
-                NEW_FRONT[0, i]
-
-
-    
-                #allone_coord_list.append(("row", int(i)+1))
-
+                result.append((int(i)+1, 0))
+                result.append((int(i)+1, cols-1))
 
             for j in np.where(np.all(FRONT == 1, axis=0))[0]:
 
-                allone_coord_list.append(("col", int(j)+1))
+                result.append((0, int(j)+1))
+                result.append((rows-1, int(j)+1))
+    
+            print(f"result of deleting: {result}")
 
-            print(f"allone_coord_list: {allone_coord_list}")
+            return result
 
         if type: WORK_minimized_term_term_list = minimized_term_term_list
         else:
@@ -639,9 +633,9 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
             for t in minimized_term_term_list:
 
-                t = t.replace("0", "_")
-                t = t.replace("1", "0")
-                t = t.replace("_", "1")
+                t = (t.replace("0", "_")
+                     .replace("1", "0")
+                     .replace("_", "1"))
 
                 WORK_minimized_term_term_list.append(t)
 
@@ -1094,10 +1088,6 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
         NEW_BACK_veich_structure[rows+1, 1:cols+1] = top_side
         NEW_BACK_veich_structure[rows+1, cols+1] = top_left_corner[0, 0]
 
-        # Виявлення рядків та стовпців повністю увішані одиницями
-
-        del_one(FRONT_veich_structure, NEW_FRONT_veich_structure)
-
         for group in initial_MAIN_coord_groups:
 
             updated_MAIN_coord_groups.append([])
@@ -1109,7 +1099,9 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
                 for new_coord in generate_add_coordinates(coord, rows, cols):
 
-                    updated_EXTENDED_coord_groups[-1].append(new_coord)
+                    if new_coord not in del_one(FRONT_veich_structure, NEW_FRONT_veich_structure.shape):
+
+                        updated_EXTENDED_coord_groups[-1].append(new_coord)
 
         print(f"FRONT_veich_structure:\n{FRONT_veich_structure}")
         print(f"NEW_FRONT_veich_structure:\n{NEW_FRONT_veich_structure}")
@@ -1169,7 +1161,7 @@ def create_veich_schemme_pdf(temp_dir, veich_schemme_list):
 
     except Exception as e:
 
-        traceback.print_exc()     # друкує повну трасу у stderr
+        traceback.print_exc()
         return False
 
     return True

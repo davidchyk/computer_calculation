@@ -296,7 +296,7 @@ def get_latex_formula(args, page_width, page_height, block_width):
                 \end{flalign*}
 
                 \begin{figure}[H]
-                    \includegraphics[height=6cm]{OUTPUT_SCHEMME_Y_""" + f"{truth_index+1}" + r""".png}
+                    \includegraphics[height=6cm]{OUTPUT_SCHEMME_Y_""" + f"{truth_index+1}" + r""".pdf}
                     \label{fig:left_top_image}
                 \end{figure}
 
