@@ -31,7 +31,7 @@ def KM_function(sets_number, num_of_args, num_of_function):
 
     return "\\text{Монотонна" "}" "\\rightarrow" + "\\text{входить в клас KM}", True
 
-def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional=False):
+def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional=""):
 
     def good_looking_polynomial(polynomial):
 
@@ -68,169 +68,100 @@ def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional=F
 
         return final_str
 
-    list_to_replace = [f"x{e}" for e in range(num_of_args, 0, -1)]
+    def final_form_function(indices, num_vars):
 
-    if function_regime == "sets":
-
-        def final_form_function(indices, num_vars):
-
-            size = 2 ** num_vars
-            # Ініціалізуємо вектор функції
-            f = [0] * size
-            for idx in indices:
-                if 0 <= idx < size:
-                    f[idx] = 1
-                else:
-                    raise ValueError(f"Індекс {idx} виходить за межі допустимого діапазону для {num_vars} змінних.")
-
-            # Виконуємо перетворення Мёбіуса (алгоритм Жегалкіна)
-            for i in range(num_vars):
-                for j in range(size):
-                    if j & (1 << i):
-                        f[j] ^= f[j ^ (1 << i)]
-
-            # Генеруємо мономи
-            monomials = []
-            for i in range(size):
-                if f[i]:
-                    if i == 0:
-                        monomials.append("1")
-                    else:
-                        vars_in_monomial = []
-                        for bit in range(num_vars):
-                            if i & (1 << bit):
-                                vars_in_monomial.append(f"x{bit+1}")
-                        monomials.append('*'.join(vars_in_monomial))
-            
-            # Формуємо поліном
-            if not monomials:
-                return "0"
+        size = 2 ** num_vars
+        # Ініціалізуємо вектор функції
+        f = [0] * size
+        for idx in indices:
+            if 0 <= idx < size:
+                f[idx] = 1
             else:
-                return ' + '.join(monomials)
+                raise ValueError(f"Індекс {idx} виходить за межі допустимого діапазону для {num_vars} змінних.")
 
-        steps = []
+        # Виконуємо перетворення Мёбіуса (алгоритм Жегалкіна)
+        for i in range(num_vars):
+            for j in range(size):
+                if j & (1 << i):
+                    f[j] ^= f[j ^ (1 << i)]
 
-        normal_result = normal(sets_number, 1, num_of_args, ('І', 'АБО'), False)
-        form = ""
+        # Генеруємо мономи
+        monomials = []
+        for i in range(size):
+            if f[i]:
+                if i == 0:
+                    monomials.append("1")
+                else:
+                    vars_in_monomial = []
+                    for bit in range(num_vars):
+                        if i & (1 << bit):
+                            vars_in_monomial.append(f"x{bit+1}")
+                    monomials.append('*'.join(vars_in_monomial))
 
-        steps.append("\\text{\\qquad   Покрокове знаходження поліному Жегалкіна:}")
-        steps.append("\\text{\\qquad    ДДНФ функції:" "} " + f"{DDNF}")
-        steps.append("\\text{\\qquad    Заміню} " "∨ " "\\text{на" "} " "⊕" " \\text{та застосую аксіому алгебри Жегалкіна }" "not(X) = X ⊕ 1" "\\text{:" "}")
+        # Формуємо поліном
+        if not monomials:
+            return "0"
+        else:
+            return ' + '.join(monomials)
 
-        for term in normal_result[1].structure:
+    normal_result = normal(sets_number, 1, num_of_args, ('І', 'АБО'), False)
+    list_to_replace = [f"x{e}" for e in range(num_of_args, 0, -1)]
+    steps = []
+    form = ""
 
-            new_term = ""
+    steps.append("\\text{\\qquad   Покрокове знаходження поліному Жегалкіна:}")
+    steps.append("\\text{\\qquad    ДДНФ функції:" "} " + f"{DDNF}")
+    steps.append("\\text{\\qquad    Заміню} " "∨ " "\\text{на" "} " "⊕" " \\text{та застосую аксіому алгебри Жегалкіна }" "not(X) = X ⊕ 1" "\\text{:" "}")
 
-            for e in range(num_of_args):
+    for term in normal_result[1].structure:
+
+        new_term = ""
+
+        for e in range(num_of_args):
+
+            if function_regime == "sets":
 
                 if term[e] == '1': new_term += f"X_{num_of_args - e} ∧ "
                 else: new_term += f"(X_{num_of_args - e} ⊕ 1) ∧ "
 
-            new_term = new_term.rstrip(" ∧ ")
-            form += f"({new_term}) ⊕ "
-
-        form = form.rstrip(" ⊕ ")
-
-        steps.append("\\text{\\qquad    }" + form + r" \ ")
-        steps.append("\\text{\\qquad    Розкрию дужки, викреслю парні терми та отримаю фінальну форму поліному Жегалкіна:}")
-
-        final_form = final_form_function(sets_number, num_of_args)
-        final_form = final_form.replace("+", "⊕")
-        final_form = final_form.replace("*", " ∧ ")
-
-        for i in range(num_of_args): final_form = final_form.replace(f"x{i+1}", f"X_{i+1}")
-        final_form = good_looking_polynomial(final_form)
-
-        steps.append("\\text{\\qquad    }" + final_form)
-
-        if "∧" in final_form:
-
-            return "\\text{Не лінійна, тому що поліном містить терм, ранг якого більший за 1: }" + f"{final_form} \\rightarrow " + "\\text{не входить в клас КЛ}", steps, False
-
-        else:
-
-            return "\\text{Лінійна:" "} " +  f"{final_form} \\rightarrow " + "\\text{входить в клас КЛ}", steps, True
-
-    elif function_regime == "func":
-
-        def final_form_function(indices, num_vars):
-
-            size = 2 ** num_vars
-            # Ініціалізуємо вектор функції
-            f = [0] * size
-            for idx in indices:
-                if 0 <= idx < size:
-                    f[idx] = 1
-                else:
-                    raise ValueError(f"Індекс {idx} виходить за межі допустимого діапазону для {num_vars} змінних.")
-
-            # Виконуємо перетворення Мёбіуса (алгоритм Жегалкіна)
-            for i in range(num_vars):
-                for j in range(size):
-                    if j & (1 << i):
-                        f[j] ^= f[j ^ (1 << i)]
-
-            # Генеруємо мономи
-            monomials = []
-            for i in range(size):
-                if f[i]:
-                    if i == 0:
-                        monomials.append("1")
-                    else:
-                        vars_in_monomial = []
-                        for bit in range(num_vars):
-                            if i & (1 << bit):
-                                vars_in_monomial.append(f"x{bit+1}")
-                        monomials.append('*'.join(vars_in_monomial))
-            
-            # Формуємо поліном
-            if not monomials:
-                return "0"
-            else:
-                return ' + '.join(monomials)
-
-        steps = []
-
-        normal_result = normal(sets_number, 1, num_of_args, ('І', 'АБО'), False)
-        form = ""
-
-        steps.append("\\text{\\qquad   Покрокове знаходження поліному Жегалкіна:}")
-        steps.append("\\text{\\qquad    ДДНФ функції:" "} " + f"{DDNF}")
-        steps.append("\\text{\\qquad    Заміню} " "∨ " "\\text{на" "} " "⊕" " \\text{та застосую аксіому алгебри Жегалкіна }" "not(X) = X ⊕ 1" "\\text{:" "}")
-
-        for term in normal_result[1].structure:
-
-            new_term = ""
-
-            for e in range(num_of_args):
+            elif function_regime == "func":
 
                 if term[e] == '1': new_term += f"{optional[e]} ∧ "
                 else: new_term += f"({optional[e]} ⊕ 1) ∧ "
 
-            new_term = new_term.rstrip(" ∧ ")
-            form += f"({new_term}) ⊕ "
+        new_term = new_term.rstrip(" ∧ ")
+        form += f"({new_term}) ⊕ "
 
-        form = form.rstrip(" ⊕ ")
+    form = form.rstrip(" ⊕ ")
 
-        steps.append("\\text{\\qquad    }" + form + r" \ ")
-        steps.append("\\text{\\qquad    Розкрию дужки, викреслю парні терми та отримаю фінальну форму поліному Жегалкіна:}")
+    steps.append("\\text{\\qquad    }" + form + r" \ ")
+    steps.append("\\text{\\qquad    Розкрию дужки, викреслю парні терми та отримаю фінальну форму поліному Жегалкіна:}")
 
-        final_form = final_form_function(sets_number, num_of_args)
-        final_form = final_form.replace("+", "⊕")
-        final_form = final_form.replace("*", " ∧ ")
+    final_form = final_form_function(sets_number, num_of_args)
+    final_form = final_form.replace("+", "⊕")
+    final_form = final_form.replace("*", " ∧ ")
 
-        for i in range(num_of_args): final_form = final_form.replace(list_to_replace[i], optional[i])
-        final_form = good_looking_polynomial(final_form)
+    for i in range(num_of_args):
 
-        steps.append("\\text{\\qquad    }" + final_form)
-
-        if "∧" in final_form:
-
-            return "\\text{Не лінійна, тому що поліном містить терм, ранг якого більший за 1: }" + f"{final_form} \\rightarrow " + "\\text{не входить в клас КЛ}", steps, False
+        if function_regime == "sets":
         
-        else:
+            final_form = final_form.replace(f"x{i+1}", f"X_{i+1}")
 
-            return "\\text{Лінійна:" "} " +  f"{final_form} \\rightarrow " + "\\text{входить в клас КЛ}", steps, True
+        elif function_regime == "func":
+
+            final_form = final_form.replace(list_to_replace[i], optional[i])
+
+    final_form = good_looking_polynomial(final_form)
+
+    steps.append("\\text{\\qquad    }" + final_form)
+
+    if "∧" in final_form:
+
+        return "\\text{Не лінійна, тому що поліном містить терм, ранг якого більший за 1: }" + f"{final_form} \\rightarrow " + "\\text{не входить в клас КЛ}", steps, False
+
+    else:
+
+        return "\\text{Лінійна:" "} " +  f"{final_form} \\rightarrow " + "\\text{входить в клас КЛ}", steps, True
 
 def KC_function(sets_number, num_of_args, num_of_function): #Самодвоїстість функції
 
@@ -265,7 +196,7 @@ def KC_function(sets_number, num_of_args, num_of_function): #Самодвоїс�
 
     return r"\text{Самодвоїста} \rightarrow \text{входить в клас КС}", True
 
-def class_define(function_regime, sets_number, num_of_args, num_of_function, DDNF=None, optional = False):
+def class_define(function_regime, sets_number, num_of_args, num_of_function, DDNF=None, optional = []):
 
     result = ""
 

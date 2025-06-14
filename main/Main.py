@@ -8,7 +8,7 @@ import tempfile
 
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
 from create_pdf_output import create_pdf_main, get_true_table
-from create_logic_schemme import create_logic_diagrams_png
+from create_logic_schemme import create_logic_diagrams_pdf
 from create_veich_schemme import create_veich_schemme_pdf
 from operator_form2 import operator_form
 from class_function import class_define
@@ -103,7 +103,7 @@ def find_args_and_sets(function_input):
     x = get_truth_table(len(result),result,org_func)
     return result, x
 
-def truth_table_Create(function_regime, number_of_arguments, number_of_sets, number_of_function, optional = False):
+def truth_table_Create(function_regime, number_of_arguments, number_of_sets, number_of_function, optional = []):
 
     result = np.empty((number_of_sets+1, number_of_arguments), dtype=object)
 
@@ -125,8 +125,8 @@ def truth_table_Create(function_regime, number_of_arguments, number_of_sets, num
 
     for l in range(number_of_sets):
 
-        if l in sets_number: temp.append(1)
-        else: temp.append(0)
+        if l in sets_number: temp.append("1")
+        else: temp.append("0")
 
     # Перетворюємо список на масив NumPy
     np_temp = np.array(temp, dtype = object)
@@ -136,7 +136,7 @@ def truth_table_Create(function_regime, number_of_arguments, number_of_sets, num
 
     return np.hstack((result, new_np_temp))
 
-def conver_to_normal(function_regime, string, num_of_args, optional = False):
+def conver_to_normal(function_regime, string, num_of_args, optional = []):
 
     if function_regime == "sets":
 
@@ -224,41 +224,49 @@ def conver_to_normal(function_regime, string, num_of_args, optional = False):
 
         return result
 
-def conver_to_normal_operator(function_regime, string, num_of_args, optional = False):
+def conver_to_normal_operator(function_regime, string, num_of_args, optional = []):
 
-    if function_regime == "sets":
+    def replacing(result, listing, function_regime):
 
-        def replacing(result, num_of_args):
+        result = (result.replace("# ∧ ", "")
+                      .replace("# ∨ ", "")
+                      .replace(" ∨ # ", "")
+                      .replace(" ∧ # ", "")
+                      .replace(" ∨ #", "")
+                      .replace(" ∧ #", "")
+                      .replace("#", "")
+                      .replace("not(not())", "%")
+                      .replace("% ∧ ", "")
+                      .replace("% ∨ ", "")
+                      .replace(" ∨ % ", "")
+                      .replace(" ∧ % ", "")
+                      .replace(" ∨ %", "")
+                      .replace(" ∧ %", "")
+                      .replace("%", ""))
 
-            result = result.replace("# ∧ ", "")
-            result = result.replace("# ∨ ", "")
-            result = result.replace(" ∨ # ", "")
-            result = result.replace(" ∧ # ", "")
-            result = result.replace(" ∨ #", "")
-            result = result.replace(" ∧ #", "")
-            result = result.replace("#", "")
+        if function_regime == "func":
 
-            result = result.replace("not(not())", "%")
+            for i in range(len(listing)):
 
-            result = result.replace("% ∧ ", "")
-            result = result.replace("% ∨ ", "")
-            result = result.replace(" ∨ % ", "")
-            result = result.replace(" ∧ % ", "")
-            result = result.replace(" ∨ %", "")
-            result = result.replace(" ∧ %", "")
-            result = result.replace("%", "")
+                argument = f"{listing[i]}"
+                result = result.replace(f"not(not({argument}))", argument)
+
+        else:
 
             for i in range(1, num_of_args+1):
 
                 argument = f"X_{i}"
                 result = result.replace(f"not(not({argument}))", argument)
 
-            return result
+        return result
 
-        index = 0
+    index = 0
+    result = ""
+
+    if function_regime == "sets":
+
         counter = num_of_args
-        result = ""
-
+    
         while index < len(string):
 
             if string[index] == '0':
@@ -274,7 +282,6 @@ def conver_to_normal_operator(function_regime, string, num_of_args, optional = F
             elif string[index] == 'X':
 
                 result += "#"
-
                 counter -= 1
 
             else:
@@ -285,42 +292,11 @@ def conver_to_normal_operator(function_regime, string, num_of_args, optional = F
 
             if counter == 0: counter = num_of_args
 
-        result = replacing(result, num_of_args)
-
-        return result 
+        result = replacing(result, num_of_args, function_regime)
 
     elif function_regime == "func":
 
-        def replacing(result, optinal):
-
-            result = result.replace("# ∧ ", "")
-            result = result.replace("# ∨ ", "")
-            result = result.replace(" ∨ # ", "")
-            result = result.replace(" ∧ # ", "")
-            result = result.replace(" ∨ #", "")
-            result = result.replace(" ∧ #", "")
-            result = result.replace("#", "")
-
-            result = result.replace("not(not())", "%")
-
-            result = result.replace("% ∧ ", "")
-            result = result.replace("% ∨ ", "")
-            result = result.replace(" ∨ % ", "")
-            result = result.replace(" ∧ % ", "")
-            result = result.replace(" ∨ %", "")
-            result = result.replace(" ∧ %", "")
-            result = result.replace("%", "")
-
-            for i in range(len(optinal)):
-
-                argument = f"{optinal[i]}"
-                result = result.replace(f"not(not({argument}))", argument)
-
-            return result
-
-        index = 0
         element_index = 0
-        result = ""
 
         while index < len(string):
 
@@ -346,8 +322,9 @@ def conver_to_normal_operator(function_regime, string, num_of_args, optional = F
             index += 1
             if element_index == len(optional): element_index = 0
 
-        result = replacing(result, optional)
-        return result 
+        result = replacing(result, optional, function_regime)
+    
+    return result 
 
 def validate(data, type, optinal = False):
 
@@ -443,7 +420,7 @@ def validate(data, type, optinal = False):
 
 print("Version 3.5 Beta")
 
-while 1:
+while True:
 
     tmp_obj = tempfile.TemporaryDirectory()   # delete=True за замовчуванням
     temp_dir = tmp_obj.name
@@ -593,7 +570,7 @@ while 1:
 
             i += 1
 
-    BLOCK1_width = (number_of_arguments+1)*1.5
+    BLOCK1_width = (int(number_of_arguments)+1)*1.5
 
     page_width = max(int(len(max((item for item in global_output if item is not None), key=len))*0.15), 44)
     page_height = max(number_of_sets, 30, largest_pdf_height_cm(temp_dir))
@@ -608,15 +585,19 @@ while 1:
 
         print(f"\nСкладність виводу функції {output_difficult}%, що < 100%:")
 
-        if create_logic_diagrams_png(temp_dir, logic_schemme_list) == False:
-
-            messagebox.showerror("Помилка", "Не вдалося створити блок-схеми для функцій, звідси й pdf файл."); continue
-
         print(f"Veich Schemme List: {veich_schemme_list}")
+
+        print("ALL IS GOOD WITH 1 YOO")
 
         if create_veich_schemme_pdf(temp_dir, veich_schemme_list) == False:
 
             messagebox.showerror("Помилка", "Не вдалося створити діаграми Вейча для функцій, звідси й pdf файл."); continue
+        
+        print(f"logic_schemme_list: {logic_schemme_list}")
+
+        if create_logic_diagrams_pdf(temp_dir, logic_schemme_list) == False:
+
+            messagebox.showerror("Помилка", "Не вдалося створити блок-схеми для функцій, звідси й pdf файл."); continue
 
         page_height += largest_pdf_height_cm(temp_dir)
 
