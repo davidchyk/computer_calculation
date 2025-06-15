@@ -1,7 +1,6 @@
 from matplotlib.patches import FancyBboxPatch, Rectangle
 import matplotlib.pyplot as plt
 import numpy as np
-import traceback
 import os
 
 # === ПАРАМЕТРИ ===
@@ -13,9 +12,24 @@ plt.rcParams['text.usetex'] = True
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['text.latex.preamble'] = r'''\usepackage{amsmath}'''
 
-def draw_axis_brackets(ax, list_args):
+def draw_axis_brackets(ax, list_args: list[str]):
 
     try:
+
+        add_symbols = {"A", "B", "C", "D", "E", "F", "G", "H", "K", "L", "N", "O", "P", "Q", "R", "S", "U", "V", "X", "Z"}
+        normal_symbols = {"I", "J", "T", "Y"} # not add
+        over_add_symbols = {"m", "M", "w", "W"}
+
+        offer_list = []
+        x_left = 0.0147
+        x_right = 0.009
+        y_down = 0.015
+
+        for x in list_args:
+
+            offer_list.append(bool((not set(x).intersection(normal_symbols) and (x.isupper() or set(x).intersection({"m", "w"})))))
+
+        print(f"offer_list: {offer_list}")
 
         if len(list_args) == 9:
 
@@ -177,54 +191,90 @@ def draw_axis_brackets(ax, list_args):
             ax.plot([1.83, 1.83], [1.6, 1.2], color='black', linewidth=3, zorder=100)
             ax.text(1.9, 1.4, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
 
+            
+
+
+
+
+
+
+
         elif len(list_args) == 5:
 
-            # Нижня_вища дужка (X5)
-            ax.plot([0.6, 1.4], [0.17, 0.17], color='black', linewidth=3, zorder=100)
-            ax.text(1.0, 0.12, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+            # DONE
 
-            # Верхня дужка (X4)
-            ax.plot([0.2, 1.0], [1.03, 1.03], color='black', linewidth=3, zorder=100)
-            ax.text(0.6, 1.09, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
+            left_offer = offer_list[1]*x_left
+            if over_add_symbols.intersection(set(list_args[1])): left_offer += 0.009
 
-            # Ліва дужка (X3)
-            ax.plot([0.17, 0.17], [1, 0.6], color='black', linewidth=3, zorder=100)
-            ax.text(0.11, 0.8, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+            down_offer = bool(offer_list[4] or set(list_args[4]).intersection(normal_symbols) or set(list_args[2]).intersection({"k", "l", "i", "j", "f"}))*y_down
 
-            # Нижня_нижня дужка (X2)
-            ax.plot([0.4, 0.8], [0.05, 0.05], color='black', linewidth=3, zorder=100)
-            ax.text(0.6, 0.01, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+            right_offer = bool(set(list_args[3]).intersection(over_add_symbols))*x_right
 
-            ax.plot([1.2, 1.6], [0.05, 0.05], color='black', linewidth=3, zorder=100)
-            ax.text(1.4, 0.01, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+            # Верхня_вища дужка (X5)
+            ax.plot([1.0032, 1.8032], [1.17, 1.17], color='black', linewidth=3, zorder=100)
+            ax.text(1.4032, 1.23, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
 
-            # Права дужка (X1)
-            ax.plot([1.83, 1.83], [0.8, 0.4], color='black', linewidth=3, zorder=100)
-            ax.text(1.9, 0.6, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+            # Ліва дужка (X4)
+            ax.plot([0.17, 0.17], [0.9968, 0.6032], color='black', linewidth=3, zorder=100)
+            ax.text(0.11 - left_offer, 0.8, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Верхня дужка (X3)
+            ax.plot([0.2032, 0.5968], [1.03, 1.03], color='black', linewidth=3, zorder=100)
+            ax.text(0.4, 1.09, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([1.0032, 1.3968], [1.03, 1.03], color='black', linewidth=3, zorder=100)
+            ax.text(1.2, 1.09, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Права дужка (X2)
+            ax.plot([1.83, 1.83], [0.7968, 0.4032], color='black', linewidth=3, zorder=100)
+            ax.text(1.9 + right_offer, 0.6, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Нижня дужка (X1)
+            ax.plot([0.4032, 0.7968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(0.6, 0.12 - down_offer, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([1.2032, 1.5968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(1.4, 0.12 - down_offer, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
 
         elif len(list_args) == 4:
 
+            # DONE
+
+            left_offer = offer_list[0]*x_left
+            if over_add_symbols.intersection(set(list_args[0])): left_offer += 0.009
+
+            down_offer = bool(offer_list[2] or set(list_args[2]).intersection(normal_symbols) or set(list_args[2]).intersection({"k", "l", "i", "j", "f"}))*y_down
+
+            right_offer = bool(set(list_args[2]).intersection(over_add_symbols))*x_right
+
             # Ліва дужка (X4)
-            ax.plot([0.17, 0.17], [1, 0.6], color='black', linewidth=3, zorder=100)
-            ax.text(0.11, 0.8, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+            ax.plot([0.17, 0.17], [0.9968, 0.6032], color='black', linewidth=3, zorder=100)
+            ax.text(0.11 - left_offer, 0.8, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
 
             # Верхня дужка (X3)
-            ax.plot([0.2, 0.6], [1.03, 1.03], color='black', linewidth=3, zorder=100)
+            ax.plot([0.2032, 0.5968], [1.03, 1.03], color='black', linewidth=3, zorder=100)
             ax.text(0.4, 1.09, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
 
             # Права дужка (X2)
-            ax.plot([1.03, 1.03], [0.8, 0.4], color='black', linewidth=3, zorder=100)
-            ax.text(1.10, 0.6, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+            ax.plot([1.03, 1.03], [0.7968, 0.4032], color='black', linewidth=3, zorder=100)
+            ax.text(1.10 + right_offer, 0.6, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
 
             # Нижня дужка (X1)
-            ax.plot([0.4, 0.8], [0.17, 0.17], color='black', linewidth=3, zorder=100)
-            ax.text(0.6, 0.12, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+            ax.plot([0.4032, 0.7968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(0.6, 0.12 - down_offer, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
 
         elif len(list_args) == 3:
 
+            # DONE
+
+            left_offer = offer_list[0]*x_left
+            if over_add_symbols.intersection(set(list_args[0])): left_offer += 0.009
+
+            down_offer = bool(offer_list[2] or set(list_args[2]).intersection(normal_symbols) or set(list_args[2]).intersection({"k", "l", "i", "j", "f"}))*y_down
+
             # Ліва дужка (X3)
             ax.plot([0.17, 0.17], [0.6, 0.4], color='black', linewidth=3, zorder=100)
-            ax.text(0.11, 0.52, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+            ax.text(0.11 - left_offer, 0.52, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
 
             # Верхня дужка (X2)
             ax.plot([0.2, 0.6], [0.63, 0.63], color='black', linewidth=3, zorder=100)
@@ -232,26 +282,38 @@ def draw_axis_brackets(ax, list_args):
 
             # Нижня дужка (X1)
             ax.plot([0.4, 0.8], [0.17, 0.17], color='black', linewidth=3, zorder=100)
-            ax.text(0.6, 0.12, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+            ax.text(0.6, 0.12 - down_offer, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
 
         elif len(list_args) == 2:
 
-            # Ліва дужка (X2)
-            ax.plot([0.17, 0.17], [0.6, 0.4], color='black', linewidth=3, zorder=100)
-            ax.text(0.11, 0.52, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+            # DONE
 
-            # Верхня дужка (X2)
-            ax.plot([0.2, 0.4], [0.63, 0.63], color='black', linewidth=3, zorder=100)
+            left_offer = offer_list[0]*x_left
+            if over_add_symbols.intersection(set(list_args[0])): left_offer += 0.009
+
+            # Ліва дужка (X2)
+            ax.plot([0.17, 0.17], [0.5968, 0.4046], color='black', linewidth=3, zorder=100)
+            ax.text(0.11 - left_offer, 0.52, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Верхня дужка (X1)
+            ax.plot([0.2032, 0.3968], [0.63, 0.63], color='black', linewidth=3, zorder=100)
             ax.text(0.3, 0.69, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
 
         elif len(list_args) == 1:
 
+            # DONE
+
+            left_offer = offer_list[0]*x_left
+            if over_add_symbols.intersection(set(list_args[0])): left_offer += 0.009
+
             # Ліва дужка (X1)
-            ax.plot([0.17, 0.17], [0.6, 0.4], color='black', linewidth=3, zorder=100)
-            ax.text(0.11, 0.52, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+            ax.plot([0.17, 0.17], [0.5968, 0.4046], color='black', linewidth=3, zorder=100)
+            ax.text(0.11 - left_offer, 0.52, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
 
     except Exception: return False
     return True
+
+    # 0.1923
 
 def draw_kmap_with_tight_rounded_boxes(kmap, groups, list_args, filename):
 
@@ -406,6 +468,9 @@ def draw_kmap_with_tight_rounded_boxes(kmap, groups, list_args, filename):
         if not draw_axis_brackets(ax, list_args): return False
 
         #plt.show()
+        ax.axis("off")
+
+        #fig.set_size_inches(11.7, 8.3)  # A4 landscape у дюймах
 
         # Збереження у файл
         plt.savefig(filename, dpi=300, bbox_inches='tight', pad_inches=0.1)
@@ -469,8 +534,6 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
                     if point not in neighbors and abs(point[0] - current[0]) <= 1 and abs(point[1] - current[1]) <= 1:
                         neighbors.add(point)
                         queue.append(point)
-
-            print(f"For coord: {origin}, neighbors: {list[neighbors]}")
 
             return list(neighbors)
 
@@ -583,19 +646,19 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
             return [colors[color_index], line_configurations[linestyle_index]]
 
-        def del_one(FRONT, shape: tuple) -> list:
+        def del_one(type, FRONT, shape: tuple) -> list:
 
             result = []
             rows, cols = shape
 
             print(f"rows: {rows} cols: {cols}")
 
-            for i in np.where(np.all(FRONT == 1, axis=1))[0]:
+            for i in np.where(np.all(FRONT == type, axis=1))[0]:
 
                 result.append((int(i)+1, 0))
                 result.append((int(i)+1, cols-1))
 
-            for j in np.where(np.all(FRONT == 1, axis=0))[0]:
+            for j in np.where(np.all(FRONT == type, axis=0))[0]:
 
                 result.append((0, int(j)+1))
                 result.append((rows-1, int(j)+1))
@@ -611,10 +674,7 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
             for t in minimized_term_term_list:
 
-                t = (t.replace("0", "_")
-                     .replace("1", "0")
-                     .replace("_", "1"))
-
+                t = t.translate(str.maketrans("01", "10")) # заміна 0 на 1, й 1 на 0
                 WORK_minimized_term_term_list.append(t)
 
         result = dict()
@@ -928,8 +988,7 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
             for idx, val in np.ndenumerate(BACK_veich_structure):
 
-                val = str(val)
-                if differ(minimized_term, val): group.append((idx[0], idx[1]))
+                if differ(minimized_term, str(val)): group.append((idx[0], idx[1]))
 
             initial_MAIN_coord_groups.append(group)
 
@@ -1014,7 +1073,7 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
                 for new_coord in generate_add_coordinates(coord, rows, cols):
 
-                    if new_coord not in del_one(FRONT_veich_structure, NEW_FRONT_veich_structure.shape):
+                    if new_coord not in del_one(type, FRONT_veich_structure, NEW_FRONT_veich_structure.shape):
 
                         updated_EXTENDED_coord_groups[-1].append(new_coord)
 
@@ -1026,33 +1085,29 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
         print(f"updated_EXTENDED_coord_groups:\n{updated_EXTENDED_coord_groups}")
         print(f"updated_MAIN_coord_groups:\n{updated_MAIN_coord_groups}")
 
-        num_count_of_groups = 0
+        for group_index, group in enumerate(updated_MAIN_coord_groups):
 
-        for group in updated_MAIN_coord_groups:
-
-            result[num_count_of_groups+1] = []
-            temp = []
+            result[group_index + 1] = []
             added_temp = []
+            temp = []
 
             for main_coord in group:
-
-                neighbors = find_all_neighbors(updated_MAIN_coord_groups[num_count_of_groups] + updated_EXTENDED_coord_groups[num_count_of_groups], main_coord)
+                neighbors = find_all_neighbors(
+                    updated_MAIN_coord_groups[group_index] + updated_EXTENDED_coord_groups[group_index],
+                    main_coord
+                )
                 if neighbors in temp: continue
-
                 temp.append(neighbors)
 
             print(f"for group: {group} its temp is {temp}")
 
             for mini_group in temp:
-
                 added_temp.append(find_min_max(mini_group))
 
-            result[num_count_of_groups+1].append(added_temp)
+            result[group_index + 1].append(added_temp)
 
-            group_front_config = get_front_group_config(num_count_of_groups)
-            result[num_count_of_groups+1].extend(group_front_config)
-
-            num_count_of_groups += 1
+            group_front_config = get_front_group_config(group_index)
+            result[group_index + 1].extend(group_front_config)
 
         print(result)
         group_config = (NEW_FRONT_veich_structure, result, num_of_args, list_args)
@@ -1066,21 +1121,20 @@ def create_veich_schemme_pdf(temp_dir, veich_schemme_list):
 
     try:
 
-        count = 1
-        for veich_config in veich_schemme_list:
-
+        for count, veich_config in enumerate(veich_schemme_list, start=1):
+    
             filename = os.path.join(temp_dir, f"plot{count}.pdf")
             if veich_create(filename, *veich_config) == False: return False
 
-            count += 1
-
-    except Exception as e:
-
-        traceback.print_exc()
-        return False
-
+    except Exception as e: return False
     return True
 
 if __name__ == "__main__":
 
-    create_veich_schemme_pdf(".", [(1, ['001X', '00X1'], [1, 2, 3], [])])
+    create_veich_schemme_pdf(".", [(1, ['0001X', '000X1', '00100'], [1, 2, 3, 4], ["T_3", "M_9", "x_3", "Q_2", "Q_1"])])
+
+#1: [(1, ['0'], [0], [])]
+#2: [(1, ['0X'], [0, 1], [])]
+#3: [(0, ['0XX', 'X01'], [0, 1, 3], [])]
+#4: [(1, ['001X', '00X1'], [1, 2, 3], [])] [(1, ['001X', '00X1'], [1, 2, 3], ["Q_4", "Q_3", "Q_2", "Q_1"])]
+#5: [(1, ['0001X', '000X1', '00100'], [1, 2, 3, 4], [])]

@@ -1,14 +1,7 @@
-import numpy as np
+list_args = []
 
-BACK_veich_structure = [
-                [12, 13,  9,  8],
-                [14, 15, 11, 10],
-                [ 6,  7,  3,  2],
-                [ 4,  5,  1,  0]
-            ]
+for x in range(4, 0, -1): list_args.append(f"X_{x}")
 
-num_of_args = 4
+is_upper = any(x.isupper() for x in list_args)
 
-BACK_veich_structure = np.array([[format(n, f'0{num_of_args}b') for n in row] for row in BACK_veich_structure], dtype=str)
-
-print(BACK_veich_structure)
+print(is_upper)
