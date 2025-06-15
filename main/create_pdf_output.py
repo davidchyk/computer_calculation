@@ -236,10 +236,10 @@ def get_latex_formula(args, page_width, page_height, block_width):
     {\Large Розробниками цієї програми є студенти КПІ, 1 курс 2024 року, ІО-41 \newline}
 
     {\large Розробка аналізу функції: Давидчук Артем \newline}
-    {\large Побудова комбінаційної схеми: Білий Іван, Давидчук Артем \newline}
-    {\large Парсинг функції: Троценко Максим \newline}
+    {\large Побудова комбінаційної схеми: Давидчук Артем \newline}
     {\large BackEnd: ... \newline}
     {\large FrontEnd: Єнь Данило \newline}
+    {\large Вдячність за допомогу (парсинг при режимі вводу \texttt{func}): Троценко Максим \newline}
 
     {\large Примітка: \href{https://uk.wikipedia.org/wiki/%D0%9B%D0%BE%D0%B3%D1%96%D1%87%D0%BD%D1%96_%D0%B5%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82%D0%B8}{Умовні позначення логічних елементів} }
 

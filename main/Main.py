@@ -1,3 +1,4 @@
+from numpy.typing import NDArray
 from tkinter import messagebox
 from PyPDF2 import PdfReader
 from pathlib import Path
@@ -42,9 +43,9 @@ def largest_pdf_height_cm(folder: str | PathLike) -> int:
 
     return height_cm_ceil
 
-def find_args_and_sets(function_input):
+def find_args_and_sets(function_input: str) -> tuple:
 
-    def get_truth_table(num_of_args, result, org_func):
+    def get_truth_table(num_of_args: int, result: list, orig_func: str) -> list:
 
         replacer = result
 
@@ -55,7 +56,7 @@ def find_args_and_sets(function_input):
             replacer = [int(x) for x in bin_lst]  # Convert binary digits to integers
             
             # Replace variables in org_func with corresponding values from replacer
-            replaced_func = org_func
+            replaced_func = orig_func
             for var, value in zip(result, replacer):  # Pair variables with their replacement values
                 replaced_func = replaced_func.replace(var, str(value))
             
@@ -74,7 +75,7 @@ def find_args_and_sets(function_input):
         return indices_where_1 # повертає лист з ноберами наборів на яких 1
 
     result = []
-    org_func = function_input
+    orig_func = function_input
  
     function_input = function_input.replace("~", "  ~ ")
     function_input = function_input.replace("(", "  ( ")
@@ -100,10 +101,10 @@ def find_args_and_sets(function_input):
     result = list(result)
     result = sorted(result, key=lambda x: (x[0], -int(x[1:])))
 
-    x = get_truth_table(len(result),result,org_func)
+    x = get_truth_table(len(result), result, orig_func)
     return result, x
 
-def truth_table_Create(function_regime, number_of_arguments, number_of_sets, number_of_function, optional = []):
+def truth_table_Create(function_regime: str, number_of_arguments: int, number_of_sets: int, number_of_function: int, optional: list = []) -> NDArray:
 
     result = np.empty((number_of_sets+1, number_of_arguments), dtype=object)
 
@@ -136,99 +137,11 @@ def truth_table_Create(function_regime, number_of_arguments, number_of_sets, num
 
     return np.hstack((result, new_np_temp))
 
-def conver_to_normal(function_regime, string, num_of_args, optional = []):
+def converting_string(is_operator: bool, function_regime: str, string: str, num_of_args: int, optional: list = []) -> str:
 
-    if function_regime == "sets":
+    def replacing(main_input: str, optional: int | list[str]) -> str:
 
-        index = 0
-        counter = num_of_args
-        result = ""
-
-        while index < len(string):
-
-            if string[index] == '0':
-
-                result += f"not(X_{counter})"
-                counter -= 1
-
-            elif string[index] == '1':
-
-                result += f"X_{counter}"
-                counter -= 1
-
-            elif string[index] == 'X':
-
-                result += "#"
-
-                counter -= 1
-
-            else:
-
-                result += string[index]
-
-            index += 1
-
-            if counter == 0: counter = num_of_args
-
-        if "#" in result:
-
-            result = result.replace("# ∧ ", "")
-            result = result.replace("# ∨ ", "")
-            result = result.replace(" ∨ # ", "")
-            result = result.replace(" ∧ # ", "")
-            result = result.replace(" ∨ #", "")
-            result = result.replace(" ∧ #", "")
-            result = result.replace("#", "")
-
-        return result
-    
-    elif function_regime == "func":
-
-        index = 0
-        element_index = 0
-        result = ""
-
-        while index < len(string):
-
-            if string[index] == '0':
-
-                result += f"not({optional[element_index]})"
-                element_index += 1
-
-            elif string[index] == '1':
-
-                result += f"{optional[element_index]}"
-                element_index += 1
-
-            elif string[index] == 'X':
-
-                result += "#"
-                element_index += 1
-
-            else:
-
-                result += string[index]
-
-            index += 1
-            if element_index == len(optional): element_index = 0
-
-        if "#" in result:
-
-            result = result.replace("# ∧ ", "")
-            result = result.replace("# ∨ ", "")
-            result = result.replace(" ∨ # ", "")
-            result = result.replace(" ∧ # ", "")
-            result = result.replace(" ∨ #", "")
-            result = result.replace(" ∧ #", "")
-            result = result.replace("#", "")
-
-        return result
-
-def conver_to_normal_operator(function_regime, string, num_of_args, optional = []):
-
-    def replacing(result, listing, function_regime):
-
-        result = (result.replace("# ∧ ", "")
+        result = (main_input.replace("# ∧ ", "")
                       .replace("# ∨ ", "")
                       .replace(" ∨ # ", "")
                       .replace(" ∧ # ", "")
@@ -244,11 +157,11 @@ def conver_to_normal_operator(function_regime, string, num_of_args, optional = [
                       .replace(" ∧ %", "")
                       .replace("%", ""))
 
-        if function_regime == "func":
+        if isinstance(optional, list):
 
-            for i in range(len(listing)):
+            for i in range(len(optional)):
 
-                argument = f"{listing[i]}"
+                argument = f"{optional[i]}"
                 result = result.replace(f"not(not({argument}))", argument)
 
         else:
@@ -266,7 +179,7 @@ def conver_to_normal_operator(function_regime, string, num_of_args, optional = [
     if function_regime == "sets":
 
         counter = num_of_args
-    
+
         while index < len(string):
 
             if string[index] == '0':
@@ -282,6 +195,7 @@ def conver_to_normal_operator(function_regime, string, num_of_args, optional = [
             elif string[index] == 'X':
 
                 result += "#"
+
                 counter -= 1
 
             else:
@@ -292,7 +206,16 @@ def conver_to_normal_operator(function_regime, string, num_of_args, optional = [
 
             if counter == 0: counter = num_of_args
 
-        result = replacing(result, num_of_args, function_regime)
+        if is_operator: result = replacing(result, num_of_args)
+        elif not is_operator and "#" in result:
+
+            result = result.replace("# ∧ ", "")
+            result = result.replace("# ∨ ", "")
+            result = result.replace(" ∨ # ", "")
+            result = result.replace(" ∧ # ", "")
+            result = result.replace(" ∨ #", "")
+            result = result.replace(" ∧ #", "")
+            result = result.replace("#", "")
 
     elif function_regime == "func":
 
@@ -322,9 +245,18 @@ def conver_to_normal_operator(function_regime, string, num_of_args, optional = [
             index += 1
             if element_index == len(optional): element_index = 0
 
-        result = replacing(result, optional, function_regime)
-    
-    return result 
+        if is_operator: result = replacing(result, optional)
+        elif not is_operator and "#" in result:
+
+            result = result.replace("# ∧ ", "")
+            result = result.replace("# ∨ ", "")
+            result = result.replace(" ∨ # ", "")
+            result = result.replace(" ∧ # ", "")
+            result = result.replace(" ∨ #", "")
+            result = result.replace(" ∧ #", "")
+            result = result.replace("#", "")
+
+    return result
 
 def validate(data, type, optinal = False):
 
@@ -422,14 +354,15 @@ print("Version 3.5 Beta")
 
 while True:
 
-    tmp_obj = tempfile.TemporaryDirectory()   # delete=True за замовчуванням
+    tmp_obj = tempfile.TemporaryDirectory()
     temp_dir = tmp_obj.name
 
-    global_output = []
     global_truth_table_output = []
-    basis_update = []
+    number_of_arguments = int()
     logic_schemme_list = []
     veich_schemme_list = []
+    global_output = []
+    basis_update = []
     i = 1
 
     print("\nДля вводу функції використовуйте func, для вводу наборів використовуйте sets")
@@ -478,25 +411,25 @@ while True:
             minimize_normal_result = normal(minimize_result[1], type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), True)[1]
             minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
 
-            logic_schemme_list.append(conver_to_normal(function_regime, minimize_result[0], number_of_arguments))
+            logic_schemme_list.append(converting_string(False, function_regime, minimize_result[0], number_of_arguments))
             veich_schemme_list.append((type_of, minimize_result[1], sets_number, []))
 
-            #Forming Output
+            # Forming Output
 
             global_truth_table_output.append(get_true_table(truth_table, number_of_arguments))
 
-            DDNF = conver_to_normal(function_regime, normal_result[0][0], number_of_arguments)
+            DDNF = converting_string(False, function_regime, normal_result[0][0], number_of_arguments)
 
             global_output.append("\\text{ДДНФ }" f"y_{i}" r"\text{: }" f"{DDNF}")
-            global_output.append("\\text{ДКНФ }" f"y_{i}" r"\text{: }" f"{conver_to_normal(function_regime, normal_result[0][1], number_of_arguments)}")
-            global_output.append("\\text{Нормальна форма }" f"y_{i}" r"\text{: }" f"{conver_to_normal(function_regime,normal_result[0][2], number_of_arguments)}")
-            global_output.append("\\text{Операторна форма }" f"y_{i}" r"\text{: }" f"{conver_to_normal(function_regime, operator_result, number_of_arguments)}")
+            global_output.append("\\text{ДКНФ }" f"y_{i}" r"\text{: }" f"{converting_string(False, function_regime, normal_result[0][1], number_of_arguments)}")
+            global_output.append("\\text{Нормальна форма }" f"y_{i}" r"\text{: }" f"{converting_string(False, function_regime,normal_result[0][2], number_of_arguments)}")
+            global_output.append("\\text{Операторна форма }" f"y_{i}" r"\text{: }" f"{converting_string(False, function_regime, operator_result, number_of_arguments)}")
 
-            if minimize_result[2]: global_output.append("\\text{МДНФ }" f"y_{i}" r"\text{: }" f"{conver_to_normal(function_regime, minimize_result[0], number_of_arguments)}")
-            else: global_output.append("\\text{МКНФ }" f"y_{i}" r"\text{: }" f"{conver_to_normal(function_regime, minimize_result[0], number_of_arguments)}")
+            if minimize_result[2]: global_output.append("\\text{МДНФ }" f"y_{i}" r"\text{: }" f"{converting_string(False, function_regime, minimize_result[0], number_of_arguments)}")
+            else: global_output.append("\\text{МКНФ }" f"y_{i}" r"\text{: }" f"{converting_string(False, function_regime, minimize_result[0], number_of_arguments)}")
 
-            global_output.append("\\text{Нормальна форма мінімізованої функції }" f"y_{i}" r"\text{: }" f"{conver_to_normal(function_regime, str(minimize_normal_result), number_of_arguments)}")
-            global_output.append("\\text{Операторна форма мінімізованої функції }" f"y_{i}" r"\text{: }" f"{conver_to_normal_operator(function_regime, minimize_operator_result, number_of_arguments)}")
+            global_output.append("\\text{Нормальна форма мінімізованої функції }" f"y_{i}" r"\text{: }" f"{converting_string(False, function_regime, str(minimize_normal_result), number_of_arguments)}")
+            global_output.append("\\text{Операторна форма мінімізованої функції }" f"y_{i}" r"\text{: }" f"{converting_string(True, function_regime, minimize_operator_result, number_of_arguments)}")
             global_output.extend(class_define(function_regime, sets_number, number_of_arguments, i, DDNF=DDNF))
             global_output.append(None)
 
@@ -546,31 +479,31 @@ while True:
             minimize_normal_result = normal(minimize_result[1], type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), True)[1]
             minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
 
-            logic_schemme_list.append(conver_to_normal(function_regime, minimize_result[0], number_of_arguments, args_list))
+            logic_schemme_list.append(converting_string(False, function_regime, minimize_result[0], number_of_arguments, args_list))
             veich_schemme_list.append((type_of, minimize_result[1], sets_number, args_list))
 
             #Forming Output
 
             global_truth_table_output.append(get_true_table(truth_table, number_of_arguments))
 
-            DDNF = conver_to_normal(function_regime, normal_result[0][0], number_of_arguments, optional=args_list)
+            DDNF = converting_string(False, function_regime, normal_result[0][0], number_of_arguments, optional=args_list)
 
             global_output.append("\\text{ДДНФ }" f"y_{i}" r"\text{: }" f"{DDNF}")
-            global_output.append("\\text{ДКНФ }" f"y_{i}" r"\text{: }" f"{conver_to_normal(function_regime, normal_result[0][1], number_of_arguments, args_list)}")
-            global_output.append("\\text{Нормальна форма }" f"y_{i}" r"\text{: }" f"{conver_to_normal(function_regime,normal_result[0][2], number_of_arguments, args_list)}")
-            global_output.append("\\text{Операторна форма }" f"y_{i}" r"\text{: }" f"{conver_to_normal(function_regime, operator_result, number_of_arguments, args_list)}")
+            global_output.append("\\text{ДКНФ }" f"y_{i}" r"\text{: }" f"{converting_string(False, function_regime, normal_result[0][1], number_of_arguments, args_list)}")
+            global_output.append("\\text{Нормальна форма }" f"y_{i}" r"\text{: }" f"{converting_string(False, function_regime,normal_result[0][2], number_of_arguments, args_list)}")
+            global_output.append("\\text{Операторна форма }" f"y_{i}" r"\text{: }" f"{converting_string(False, function_regime, operator_result, number_of_arguments, args_list)}")
 
-            if minimize_result[2]: global_output.append("\\text{МДНФ }" f"y_{i}" r"\text{: }" f"{conver_to_normal(function_regime, minimize_result[0], number_of_arguments, args_list)}")
-            else: global_output.append("\\text{МКНФ }" f"y_{i}" r"\text{: }" f"{conver_to_normal(function_regime, minimize_result[0], number_of_arguments, args_list)}")
+            if minimize_result[2]: global_output.append("\\text{МДНФ }" f"y_{i}" r"\text{: }" f"{converting_string(False, function_regime, minimize_result[0], number_of_arguments, args_list)}")
+            else: global_output.append("\\text{МКНФ }" f"y_{i}" r"\text{: }" f"{converting_string(False, function_regime, minimize_result[0], number_of_arguments, args_list)}")
 
-            global_output.append("\\text{Нормальна форма мінімізованої функції }" f"y_{i}" r"\text{: }" f"{conver_to_normal(function_regime, str(minimize_normal_result), number_of_arguments, args_list)}")
-            global_output.append("\\text{Операторна форма мінімізованої функції }" f"y_{i}" r"\text{: }" f"{conver_to_normal_operator(function_regime, minimize_operator_result, number_of_arguments, args_list)}")
+            global_output.append("\\text{Нормальна форма мінімізованої функції }" f"y_{i}" r"\text{: }" f"{converting_string(False, function_regime, str(minimize_normal_result), number_of_arguments, args_list)}")
+            global_output.append("\\text{Операторна форма мінімізованої функції }" f"y_{i}" r"\text{: }" f"{converting_string(True, function_regime, minimize_operator_result, number_of_arguments, args_list)}")
             global_output.extend(class_define(function_regime, sets_number, number_of_arguments, i, optional=args_list, DDNF=DDNF))
             global_output.append(None)
 
             i += 1
 
-    BLOCK1_width = (int(number_of_arguments)+1)*1.5
+    BLOCK1_width = (number_of_arguments+1)*1.5
 
     page_width = max(int(len(max((item for item in global_output if item is not None), key=len))*0.15), 44)
     page_height = max(number_of_sets, 30, largest_pdf_height_cm(temp_dir))
