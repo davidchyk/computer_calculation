@@ -510,6 +510,8 @@ while True:
 
     output_difficult = round(max(page_width * 4 / 23, page_height * 4 / 23), 2)
 
+    print(f"Veich Schemme List: {veich_schemme_list}")
+
     if output_difficult > 100:
 
         print(f"\nВаша функція має складність виводу: {output_difficult}%, що перевищує 100%.\nНажаль Latex-компілятор не зможе створити PDF файл вивід :(\n")
