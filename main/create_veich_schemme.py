@@ -16,7 +16,6 @@ def draw_axis_brackets(ax, list_args: list[str]):
 
     try:
 
-        add_symbols = {"A", "B", "C", "D", "E", "F", "G", "H", "K", "L", "N", "O", "P", "Q", "R", "S", "U", "V", "X", "Z"}
         normal_symbols = {"I", "J", "T", "Y"} # not add
         over_add_symbols = {"m", "M", "w", "W"}
 
@@ -33,94 +32,258 @@ def draw_axis_brackets(ax, list_args: list[str]):
 
         if len(list_args) == 9:
 
-            ...
+            left_offer = offer_list[5]*x_left+0.01
+            left_left_offer = offer_list[3]*x_left + left_offer
 
-        elif len(list_args) == 8:
+            if over_add_symbols.intersection(set(list_args[3])):
 
-            # Права_правіша дужка (X8)
-            ax.plot([3.6, 3.6], [3.4, 1.8], color='black', linewidth=3, zorder=100)
-            ax.text(3.67, 2.6, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+                left_offer += 0.009
+                left_left_offer += 0.005
 
-            # Верхня_верхня дужка (X7)
-            ax.plot([1.8, 3.4], [3.55, 3.55], color='black', linewidth=3, zorder=100)
-            ax.text(2.6, 3.61, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
+                if over_add_symbols.intersection(set(list_args[3])): left_left_offer += 0.006
 
-            # Ліва_лівіша дужка (X6)
-            ax.plot([0.0, 0.0], [1.8, 1.0], color='black', linewidth=3, zorder=100)
-            ax.text(-0.07, 1.4, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+            down_offer = bool(offer_list[7] or set(list_args[8]).intersection(normal_symbols) or set(list_args[8]).intersection({"k", "l", "i", "j", "f"}))*y_down
 
-            ax.plot([0.0, 0.0], [3.4, 2.6], color='black', linewidth=3, zorder=100)
-            ax.text(-0.07, 3.0, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+            down_down_offer = down_offer + 0.03
 
-            # Нижня_вища дужка (X5)
-            ax.plot([0.6, 1.4], [0.17, 0.17], color='black', linewidth=3, zorder=100)
-            ax.text(1.0, 0.12, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+            right_offer = bool(set(list_args[7]).intersection(over_add_symbols))*x_right
+            right_right_text_offer = bool(set(list_args[1]).intersection(over_add_symbols))*0.015
+            right_right_offer = right_offer + 0.03
 
-            ax.plot([2.2, 3.0], [0.17, 0.17], color='black', linewidth=3, zorder=100)
-            ax.text(2.6, 0.12, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+            # Врехня, верхня, врехня дужка (X9)
+            ax.plot([3.4032, 6.6032], [3.71, 3.71], color='black', linewidth=3, zorder=100, clip_on=False)
+            ax.text(5.0032, 3.77, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
 
-            # Верхня_нижча дужка (X4)
-            ax.plot([0.2, 1.0], [3.43, 3.43], color='black', linewidth=3, zorder=100)
-            ax.text(0.6, 3.49, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            ax.plot([1.8, 2.6], [3.43, 3.43], color='black', linewidth=3, zorder=100)
-            ax.text(2.2, 3.49, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            # Ліва_правіша дужка (X3)
-            ax.plot([0.17, 0.17], [1, 0.6], color='black', linewidth=3, zorder=100)
-            ax.text(0.11, 0.8, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            ax.plot([0.17, 0.17], [1.8, 1.4], color='black', linewidth=3, zorder=100)
-            ax.text(0.11, 1.6, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            ax.plot([0.17, 0.17], [2.6, 2.2], color='black', linewidth=3, zorder=100)
-            ax.text(0.11, 2.4, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            ax.plot([0.17, 0.17], [3.4, 3.0], color='black', linewidth=3, zorder=100)
-            ax.text(0.11, 3.2, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            # Нижня_нижня дужка (X2)
-            ax.plot([0.4, 0.8], [0.05, 0.05], color='black', linewidth=3, zorder=100)
-            ax.text(0.6, 0.01, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            ax.plot([1.2, 1.6], [0.05, 0.05], color='black', linewidth=3, zorder=100)
-            ax.text(1.4, 0.01, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            ax.plot([2.0, 2.4], [0.05, 0.05], color='black', linewidth=3, zorder=100)
-            ax.text(2.2, 0.01, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            ax.plot([2.8, 3.2], [0.05, 0.05], color='black', linewidth=3, zorder=100)
-            ax.text(3.0, 0.01, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            # Права_лівіша дужка (X1)
-            ax.plot([3.43, 3.43], [0.8, 0.4], color='black', linewidth=3, zorder=100)
-            ax.text(3.5, 0.6, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            ax.plot([3.43, 3.43], [1.6, 1.2], color='black', linewidth=3, zorder=100)
-            ax.text(3.5, 1.4, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            ax.plot([3.43, 3.43], [2.4, 2.0], color='black', linewidth=3, zorder=100)
-            ax.text(3.5, 2.2, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-            ax.plot([3.43, 3.43], [3.2, 2.8], color='black', linewidth=3, zorder=100)
-            ax.text(3.5, 3.0, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
-
-        elif len(list_args) == 7:
-
-            left_offer = offer_list[3]*x_left
-            if over_add_symbols.intersection(set(list_args[3])): left_offer += 0.009
-
-            down_offer = bool(offer_list[6] or set(list_args[6]).intersection(normal_symbols) or set(list_args[6]).intersection({"k", "l", "i", "j", "f"}))*y_down
-
-            right_offer = bool(set(list_args[3]).intersection(over_add_symbols))*x_right
+            # Права правіша (X8)
+            ax.plot([6.77 + right_right_offer, 6.77 + right_right_offer], [1.7968, 0.2032], color='black', linewidth=3, zorder=100, clip_on=False)
+            ax.text(6.84 + right_right_offer + right_right_text_offer, 1.0, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
 
             # Нижня, нижня, нижня (X7)
-            ax.plot([1.8032, 3.3968], [0.06 - down_offer, 0.06 - down_offer], color='black', linewidth=3, zorder=100)
-            ax.text(2.6, 0.01 - down_offer, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+            ax.plot([1.8032, 3.3968], [0.06 - down_down_offer, 0.06 - down_down_offer], color='black', linewidth=3, zorder=100)
+            ax.text(2.6, 0.01 - down_down_offer - 0.02, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([5.0032, 6.5968], [0.06 - down_down_offer, 0.06 - down_down_offer], color='black', linewidth=3, zorder=100)
+            ax.text(5.8, 0.01 - down_down_offer - 0.02, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
 
             # Ліва_лівіша дужка (X6)
             ax.plot([0.03 - left_offer, 0.03 - left_offer], [0.9968, 0.2032], color='black', linewidth=3, zorder=100)
-            ax.text(-0.04 - left_offer, 0.6, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
+            ax.text(-0.04 - left_left_offer, 0.6, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([0.03 - left_offer, 0.03 - left_offer], [2.5968, 1.8032], color='black', linewidth=3, zorder=100)
+            ax.text(-0.04 - left_left_offer, 2.2, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Верхня_вища дужка (X5)
+            ax.plot([1.0032, 1.8032], [3.57, 3.57], color='black', linewidth=3, zorder=100)
+            ax.text(1.4032, 3.63, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([2.6032, 3.4032], [3.57, 3.57], color='black', linewidth=3, zorder=100)
+            ax.text(3.0032, 3.63, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([4.2032, 5.0032], [3.57, 3.57], color='black', linewidth=3, zorder=100)
+            ax.text(4.6032, 3.63, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([5.8032, 6.6032], [3.57, 3.57], color='black', linewidth=3, zorder=100)
+            ax.text(6.2032, 3.63, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Ліва дужка (X4)
+            ax.plot([0.17, 0.17], [1.7968, 1.4032], color='black', linewidth=3, zorder=100)
+            ax.text(0.11 - left_offer, 1.6, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([0.17, 0.17], [0.9968, 0.6032], color='black', linewidth=3, zorder=100)
+            ax.text(0.11 - left_offer, 0.8, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([0.17, 0.17], [3.3968, 3.0032], color='black', linewidth=3, zorder=100)
+            ax.text(0.11 - left_offer, 3.2, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([0.17, 0.17], [2.5968, 2.2032], color='black', linewidth=3, zorder=100)
+            ax.text(0.11 - left_offer, 2.4, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Верхня дужка (X3)
+            ax.plot([0.2032, 0.5968], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+            ax.text(0.4, 3.49, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([1.0032, 1.3968], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+            ax.text(1.2, 3.49, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([1.8032, 2.1968], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+            ax.text(2.0, 3.49, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([2.6032, 2.9968], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+            ax.text(2.8, 3.49, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([3.4032, 3.7968], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+            ax.text(3.6, 3.49, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([4.2032, 4.5968], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+            ax.text(4.4, 3.49, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([5.0032, 5.3968], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+            ax.text(5.2, 3.49, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([5.8032, 6.1968], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+            ax.text(6.0, 3.49, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Права дужка (X2)
+            ax.plot([6.63, 6.63], [1.5968, 1.2032], color='black', linewidth=3, zorder=100)
+            ax.text(6.7 + right_offer, 1.4, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([6.63, 6.63], [0.7968, 0.4032], color='black', linewidth=3, zorder=100)
+            ax.text(6.7 + right_offer, 0.6, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([6.63, 6.63], [3.1968, 2.8032], color='black', linewidth=3, zorder=100)
+            ax.text(6.7 + right_offer, 3.0, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([6.63, 6.63], [2.3968, 2.0032], color='black', linewidth=3, zorder=100)
+            ax.text(6.7 + right_offer, 2.2, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Нижня дужка (X1)
+            ax.plot([0.4032, 0.7968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(0.6, 0.12 - down_offer, f"${list_args[8]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([1.2032, 1.5968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(1.4, 0.12 - down_offer, f"${list_args[8]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([2.0032, 2.3968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(2.2, 0.12 - down_offer, f"${list_args[8]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([2.8032, 3.1968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(3.0, 0.12 - down_offer, f"${list_args[8]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([3.6032, 3.9968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(3.8, 0.12 - down_offer, f"${list_args[8]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([4.4032, 4.7968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(4.6, 0.12 - down_offer, f"${list_args[8]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([5.2032, 5.5968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(5.4, 0.12 - down_offer, f"${list_args[8]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([6.0032, 6.3968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(6.2, 0.12 - down_offer, f"${list_args[8]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        elif len(list_args) == 8:
+
+            # DONE
+
+            left_offer = offer_list[4]*x_left
+            left_left_offer = offer_list[2]*x_left + left_offer
+
+            if over_add_symbols.intersection(set(list_args[3])):
+
+                left_offer += 0.009
+                left_left_offer += 0.005
+
+                if over_add_symbols.intersection(set(list_args[2])): left_left_offer += 0.006
+
+            down_offer = bool(offer_list[7] or set(list_args[7]).intersection(normal_symbols) or set(list_args[7]).intersection({"k", "l", "i", "j", "f"}))*y_down
+
+            down_down_offer = down_offer + 0.03
+
+            right_offer = bool(set(list_args[6]).intersection(over_add_symbols))*x_right
+            right_right_text_offer = bool(set(list_args[0]).intersection(over_add_symbols))*0.015
+            right_right_offer = right_offer + 0.03
+
+            # Права правіша (X8)
+            ax.plot([3.57 + right_right_offer, 3.57 + right_right_offer], [1.7968, 0.2032], color='black', linewidth=3, zorder=100, clip_on=False)
+            ax.text(3.64 + right_right_offer + right_right_text_offer, 1.0, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Нижня, нижня, нижня (X7)
+            ax.plot([1.8032, 3.3968], [0.06 - down_down_offer, 0.06 - down_down_offer], color='black', linewidth=3, zorder=100)
+            ax.text(2.6, 0.01 - down_down_offer - 0.02, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Ліва_лівіша дужка (X6)
+            ax.plot([0.03 - left_offer, 0.03 - left_offer], [0.9968, 0.2032], color='black', linewidth=3, zorder=100)
+            ax.text(-0.04 - left_left_offer, 0.6, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([0.03 - left_offer, 0.03 - left_offer], [2.5968, 1.8032], color='black', linewidth=3, zorder=100)
+            ax.text(-0.04 - left_left_offer, 2.2, f"${list_args[2]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Верхня_вища дужка (X5)
+            ax.plot([1.0032, 1.8032], [3.57, 3.57], color='black', linewidth=3, zorder=100)
+            ax.text(1.4032, 3.63, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([2.6032, 3.4032], [3.57, 3.57], color='black', linewidth=3, zorder=100)
+            ax.text(3.0032, 3.63, f"${list_args[3]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Ліва дужка (X4)
+            ax.plot([0.17, 0.17], [1.7968, 1.4032], color='black', linewidth=3, zorder=100)
+            ax.text(0.11 - left_offer, 1.6, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([0.17, 0.17], [0.9968, 0.6032], color='black', linewidth=3, zorder=100)
+            ax.text(0.11 - left_offer, 0.8, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([0.17, 0.17], [3.3968, 3.0032], color='black', linewidth=3, zorder=100)
+            ax.text(0.11 - left_offer, 3.2, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([0.17, 0.17], [2.5968, 2.2032], color='black', linewidth=3, zorder=100)
+            ax.text(0.11 - left_offer, 2.4, f"${list_args[4]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Верхня дужка (X3)
+            ax.plot([0.2032, 0.5968], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+            ax.text(0.4, 3.49, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([1.0032, 1.3968], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+            ax.text(1.2, 3.49, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([1.8032, 2.1968], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+            ax.text(2.0, 3.49, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([2.6032, 2.9968], [3.43, 3.43], color='black', linewidth=3, zorder=100)
+            ax.text(2.8, 3.49, f"${list_args[5]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Права дужка (X2)
+            ax.plot([3.43, 3.43], [1.5968, 1.2032], color='black', linewidth=3, zorder=100)
+            ax.text(3.5 + right_offer, 1.4, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([3.43, 3.43], [0.7968, 0.4032], color='black', linewidth=3, zorder=100)
+            ax.text(3.5 + right_offer, 0.6, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([3.43, 3.43], [3.1968, 2.8032], color='black', linewidth=3, zorder=100)
+            ax.text(3.5 + right_offer, 3.0, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([3.43, 3.43], [2.3968, 2.0032], color='black', linewidth=3, zorder=100)
+            ax.text(3.5 + right_offer, 2.2, f"${list_args[6]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Нижня дужка (X1)
+            ax.plot([0.4032, 0.7968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(0.6, 0.12 - down_offer, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([1.2032, 1.5968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(1.4, 0.12 - down_offer, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([2.0032, 2.3968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(2.2, 0.12 - down_offer, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            ax.plot([2.8032, 3.1968], [0.17, 0.17], color='black', linewidth=3, zorder=100)
+            ax.text(3.0, 0.12 - down_offer, f"${list_args[7]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+        elif len(list_args) == 7:
+
+            # DONE
+
+            left_offer = offer_list[3]*x_left
+            left_left_offer = offer_list[1]*x_left + left_offer
+
+            if over_add_symbols.intersection(set(list_args[3])):
+
+                left_offer += 0.009
+                left_left_offer += 0.005
+
+                if over_add_symbols.intersection(set(list_args[1])): left_left_offer += 0.006
+
+            down_offer = bool(offer_list[6] or set(list_args[6]).intersection(normal_symbols) or set(list_args[6]).intersection({"k", "l", "i", "j", "f"}))*y_down
+
+            down_down_offer = down_offer + 0.03
+
+            right_offer = bool(set(list_args[5]).intersection(over_add_symbols))*x_right
+
+            # Нижня, нижня, нижня (X7)
+            ax.plot([1.8032, 3.3968], [0.06 - down_down_offer, 0.06 - down_down_offer], color='black', linewidth=3, zorder=100)
+            ax.text(2.6, 0.01 - down_down_offer - 0.02, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+
+            # Ліва_лівіша дужка (X6)
+            ax.plot([0.03 - left_offer, 0.03 - left_offer], [0.9968, 0.2032], color='black', linewidth=3, zorder=100)
+            ax.text(-0.04 - left_left_offer, 0.6, f"${list_args[1]}$", ha='center', va='center', fontsize=40, zorder=101)
 
             # Верхня_вища дужка (X5)
             ax.plot([1.0032, 1.8032], [1.97, 1.97], color='black', linewidth=3, zorder=100)
@@ -171,16 +334,25 @@ def draw_axis_brackets(ax, list_args: list[str]):
 
         elif len(list_args) == 6:
 
+            # DONE
+
             left_offer = offer_list[2]*x_left
-            if over_add_symbols.intersection(set(list_args[2])): left_offer += 0.009
+            left_left_offer = offer_list[0]*x_left + left_offer
 
-            down_offer = bool(offer_list[4] or set(list_args[4]).intersection(normal_symbols) or set(list_args[2]).intersection({"k", "l", "i", "j", "f"}))*y_down
+            if over_add_symbols.intersection(set(list_args[2])):
 
-            right_offer = bool(set(list_args[3]).intersection(over_add_symbols))*x_right
+                left_offer += 0.009
+                left_left_offer += 0.005
+
+                if over_add_symbols.intersection(set(list_args[0])): left_left_offer += 0.006
+
+            down_offer = bool(offer_list[5] or set(list_args[5]).intersection(normal_symbols) or set(list_args[5]).intersection({"k", "l", "i", "j", "f"}))*y_down
+
+            right_offer = bool(set(list_args[4]).intersection(over_add_symbols))*x_right
 
             # Ліва_лівіша дужка (X6)
             ax.plot([0.03 - left_offer, 0.03 - left_offer], [0.9968, 0.2032], color='black', linewidth=3, zorder=100)
-            ax.text(-0.04 - left_offer, 0.6, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
+            ax.text(-0.04 - left_left_offer, 0.6, f"${list_args[0]}$", ha='center', va='center', fontsize=40, zorder=101)
 
             # Верхня_вища дужка (X5)
             ax.plot([1.0032, 1.8032], [1.97, 1.97], color='black', linewidth=3, zorder=100)
@@ -222,7 +394,7 @@ def draw_axis_brackets(ax, list_args: list[str]):
             left_offer = offer_list[1]*x_left
             if over_add_symbols.intersection(set(list_args[1])): left_offer += 0.009
 
-            down_offer = bool(offer_list[4] or set(list_args[4]).intersection(normal_symbols) or set(list_args[2]).intersection({"k", "l", "i", "j", "f"}))*y_down
+            down_offer = bool(offer_list[4] or set(list_args[4]).intersection(normal_symbols) or set(list_args[4]).intersection({"k", "l", "i", "j", "f"}))*y_down
 
             right_offer = bool(set(list_args[3]).intersection(over_add_symbols))*x_right
 
@@ -328,8 +500,6 @@ def draw_axis_brackets(ax, list_args: list[str]):
 
     except Exception: return False
     return True
-
-    # 0.1923
 
 def draw_kmap_with_tight_rounded_boxes(kmap, groups, list_args, filename):
 
@@ -690,7 +860,7 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
 
             for t in minimized_term_term_list:
 
-                t = t.translate(str.maketrans("01", "10")) # заміна 0 на 1, й 1 на 0
+                t = t.translate(str.maketrans("01", "10"))
                 WORK_minimized_term_term_list.append(t)
 
         result = dict()
@@ -724,7 +894,6 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
                 [ 182, 183, 179, 178, 198, 199, 195, 194, 246, 247, 243, 242, 262, 263, 259, 258, 438, 439, 435, 434, 454, 455, 451, 450, 502, 503, 499, 498, 518, 519, 515, 514],
                 [ 180, 181, 177, 176, 196, 197, 193, 192, 244, 245, 241, 240, 260, 261, 257, 256, 436, 437, 433, 432, 452, 453, 449, 448, 500, 501, 497, 496, 516, 517, 513, 512]
             ]
-
 
             line_configurations = [
                 "-",
@@ -1147,15 +1316,22 @@ def create_veich_schemme_pdf(temp_dir, veich_schemme_list):
 
 if __name__ == "__main__":
 
-    create_veich_schemme_pdf(".", [(1, ['X000011', '000010X', '000001X', '00000X1'], [1, 2, 3, 4, 5, 67], ["Q_7", "W_6", "Q_5", "Q_4", "Q_3", "Q_2", "Q_1"])])
+    create_veich_schemme_pdf(".",
+        [(1, ['0000000X1', '00000001X'], [1, 2, 3], ["j_9", "x_8", "x_7", "x_6", "x_5", "a_4", "x_3", "x_2", "x_1"])])
 
-#1: [(1, ['0'], [0], [])]
-#2: [(1, ['0X'], [0, 1], [])]
-#3: [(0, ['0XX', 'X01'], [0, 1, 3], [])]
-#4: [(1, ['001X', '00X1'], [1, 2, 3], [])] [(1, ['001X', '00X1'], [1, 2, 3], ["Q_4", "Q_3", "Q_2", "Q_1"])]
-#5: [(1, ['0001X', '000X1', '00100'], [1, 2, 3, 4], [])] [(1, ['0001X', '000X1', '00100'], [1, 2, 3, 4], ["T_3", "M_9", "x_3", "Q_2", "Q_1"])]
-#6: [(1, ['0001X1', '000X10', '000X01'], [1, 2, 5, 6, 7], [])] [(1, ['0001X1', '000X10', '000X01'], [1, 2, 5, 6, 7], ["Q_6", "Q_5", "m_4", "Q_3", "Q_2", "Q_1"])]
+    #1: [(1, ['0'], [0], [])]
+    #2: [(1, ['0X'], [0, 1], [])]
+    #3: [(0, ['0XX', 'X01'], [0, 1, 3], [])]
+    #4: [(1, ['001X', '00X1'], [1, 2, 3], [])] [(1, ['001X', '00X1'], [1, 2, 3], ["Q_4", "Q_3", "Q_2", "Q_1"])]
+    #5: [(1, ['0001X', '000X1', '00100'], [1, 2, 3, 4], [])] [(1, ['0001X', '000X1', '00100'], [1, 2, 3, 4], ["T_3", "M_9", "x_3", "Q_2", "Q_1"])]
+    #6: [(1, ['0001X1', '000X10', '000X01'], [1, 2, 5, 6, 7], [])] [(1, ['0001X1', '000X10', '000X01'], [1, 2, 5, 6, 7], ["Q_6", "Q_5", "m_4", "Q_3", "Q_2", "Q_1"])]
 
-    # [(0, ['0XXXXX', 'X0XXXX', 'XX0XXX', 'XXXX11', 'XXX100'], [1, 2, 5, 6, 7], [])]
+        # [(0, ['0XXXXX', 'X0XXXX', 'XX0XXX', 'XXXX11', 'XXX100'], [1, 2, 5, 6, 7], [])]
 
-#7: [(1, ['X000011', '000010X', '000001X', '00000X1'], [1, 2, 3, 4, 5, 67], [])]
+    #7: [(1, ['X000011', '000010X', '000001X', '00000X1'], [1, 2, 3, 4, 5, 67], [])] [(0, ['X0XXXXX', 'XX0XXXX', 'XXX0XXX', '0XXXX1X', '0XXXXX1', 'XXXX111', 'XXXX00X'], [1, 2, 3, 4, 5, 67], [])]
+
+    #8: [(1, ['0000001X', '000000X1'], [1, 2, 3], [])]
+    # 
+    #       [(0, ['01XXXXXX', 'X1X0XXXX', 'X1XX10XX', 'XX10X1XX', 'XX1XX0X1', '0XXX1X1X', '1XXXX111', 'XX1X0X0X', 'X0X1XX0X', 'X0X1XXX0', '0XXX10XX', 'XX0X0X1X', 'XXX0X0X1', 'XXXX0X01', '101XXX1X', '1X0X1X0X', '1X0XX00X', 'X00X1XX0', '0XX001XX'], [1, 2, 3, 123, 100, 200, 9, 221, 255, 33, 87, 43, 242, 13], [])])
+    #       ['0000001X', '000000X1'], [1, 2, 3], ["W_8", "x_7", "x_6", "x_5", "x_4", "x_3", "W_2", "x_1"])]
+    #9: [(1, ['0000000X1', '00000001X'], [1, 2, 3], ["j_9", "x_8", "x_7", "x_6", "x_5", "a_4", "x_3", "x_2", "x_1"])])

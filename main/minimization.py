@@ -8,12 +8,12 @@ def minimize_dnf_as_implicants(num_vars, true_terms):
 
     variable_list = symbols(f"x0:{num_vars}")
     all_combinations = [list(map(int, f"{i:0{num_vars}b}")) for i in range(2**num_vars)]
-    
+
     minterms = []
     for index in true_terms:
         term = And(*[var if val else ~var for var, val in zip(variable_list, all_combinations[index])])
         minterms.append(term)
-    
+
     dnf_expression = Or(*minterms)
     minimized_expression = simplify_logic(dnf_expression, form='dnf')
 
@@ -69,7 +69,7 @@ def minimize_cnf_as_implicants(num_vars, false_terms):
 
     implicants = [implicant_to_string(term) for term in minimized_expression.args] \
         if isinstance(minimized_expression, And) else [implicant_to_string(minimized_expression)]
-    
+
     for set in implicants:
 
         new_set = ""
