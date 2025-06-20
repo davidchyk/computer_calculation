@@ -175,53 +175,54 @@ def get_latex_formula(args, page_width, page_height, block_width):
     latex_list = args[0]
     truth_table_list = args[1]
 
-    truth_index = 0
     start_item_index = 0
+    truth_index = 0
 
     final_latex_formula = r"""
-    \documentclass{article}
+\documentclass{article}
 
-    \usepackage[utf8]{inputenc}
-    \usepackage[T2A]{fontenc}
-    \usepackage[english, ukrainian]{babel}
-    \usepackage{lmodern}
-    \usepackage{microtype}
-    \usepackage{graphicx}
-    \usepackage{geometry}
-    \usepackage{array}
-    \usepackage{float}
-    \usepackage{nopageno}
-    \usepackage{xcolor}
-    \usepackage{hyperref} 
-    \geometry{
-        paperwidth=""" + f"{page_width}cm," + r"""
-        paperheight=""" + f"{page_height}cm," + r"""
-        left=1cm,
-        right=1cm,
-        top=1cm,
-        bottom=1cm,
-    }
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[ukrainian]{babel}
 
-    \definecolor{myteal}{RGB}{0, 128, 128}
-    \definecolor{mysteelblue}{RGB}{70, 130, 180}
-    \definecolor{mycoral}{RGB}{255, 127, 80}
+\usepackage{microtype}
 
-    \hypersetup{
-        colorlinks=true,
-        linkcolor=myteal,      % Внутрішні посилання
-        urlcolor=mysteelblue,  % Зовнішні посилання
-        citecolor=mycoral      % Бібліографічні посилання
-    }
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{float}
+\usepackage{xcolor}
 
-    \usepackage{setspace}
-    \onehalfspacing
+\usepackage{geometry}
+\geometry{
+    paperwidth=""" + str(page_width) + """cm,
+    paperheight=""" + str(page_height) + r"""cm,
+    left=1cm,
+    right=1cm,
+    top=1cm,
+    bottom=1cm,
+}
 
-    \emergencystretch=1em
-    \sloppy
+\usepackage{setspace}
+\onehalfspacing
+\emergencystretch=1em
+\sloppy
 
-    \usepackage{amsmath, amsfonts, amssymb}
+\usepackage{xcolor}
+\definecolor{myteal}{RGB}{0,128,128}
+\definecolor{mysteelblue}{RGB}{70,130,180}
+\definecolor{mycoral}{RGB}{255,127,80}
 
-    \begin{document}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=myteal,      % внутрішні
+    urlcolor=mysteelblue,  % зовнішні
+    citecolor=mycoral      % бібліографічні
+}
+
+\usepackage{amsmath, amsfonts, amssymb}
+
+\begin{document}
 
     \pagestyle{empty} % Вимикає нумерацію сторінок
 
@@ -230,29 +231,27 @@ def get_latex_formula(args, page_width, page_height, block_width):
 
     \begin{flushleft}
 
-    {\Huge Computer Logic Analysis and Calculation Suite}
+        {\Huge Computer Logic Analysis and Calculation Suite}
 
-    {\Large Версія програмного забезпечення: 3.5 Beta\newline}
-    {\Large Розробниками цієї програми є студенти КПІ, 1 курс 2024 року, ІО-41 \newline}
+        {\Large Версія програмного забезпечення: 3.5 Beta\newline}
+        {\Large Розробниками цієї програми є студенти КПІ, 1 курс 2024 року, ІО-41 \newline}
 
-    {\large Розробка аналізу функції: Давидчук Артем \newline}
-    {\large Побудова комбінаційної схеми: Давидчук Артем \newline}
-    {\large BackEnd: ... \newline}
-    {\large FrontEnd: Єнь Данило \newline}
-    {\large Вдячність за допомогу (парсинг при режимі вводу \texttt{func}): Троценко Максим \newline}
+        {\large Розробка аналізу функції: Давидчук Артем \newline}
+        {\large Побудова комбінаційної схеми: Давидчук Артем \newline}
+        {\large BackEnd: ... \newline}
+        {\large FrontEnd: Єнь Данило \newline}
 
-    {\large Примітка: \href{https://uk.wikipedia.org/wiki/%D0%9B%D0%BE%D0%B3%D1%96%D1%87%D0%BD%D1%96_%D0%B5%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82%D0%B8}{Умовні позначення логічних елементів} }
+        {\large Примітка: \href{https://uk.wikipedia.org/wiki/%D0%9B%D0%BE%D0%B3%D1%96%D1%87%D0%BD%D1%96_%D0%B5%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82%D0%B8}{Умовні позначення логічних елементів} }
 
-    {\large Якщо виникли помилки, надішліть їх нам на адресу ел. пошти: \href{mailto:belijivan9@gmail.com}{belijivan9@gmail.com} \newline}
-    {\large Якщо виникли питання або пропозиції, надішліть їх нам на адресу ел. пошти: \href{mailto:artemdiachenko2007@gmail.com}{artemdiachenko2007@gmail.com} \newline}
-    \newline
-    \newline
-    {\large Всі права застережено © 2024 -- """ + str(dt.now().year) + r"""}
+        {\large Якщо виникли помилки, надішліть їх нам на адресу ел. пошти: \href{mailto:belijivan9@gmail.com}{belijivan9@gmail.com} \newline}
+        {\large Якщо виникли питання або пропозиції, надішліть їх нам на адресу ел. пошти: \href{mailto:artemdiachenko2007@gmail.com}{artemdiachenko2007@gmail.com} \newline}
+        \newline
+        \newline
+        {\large Всі права застережено © 2024 -- """ + str(dt.now().year) + r"""}
 
     \end{flushleft}
 
     \newpage
-
     """
 
     while truth_index < len(truth_table_list):
@@ -275,18 +274,18 @@ def get_latex_formula(args, page_width, page_height, block_width):
             start_item_index += 1
 
         temp = r"""\noindent
-        \begin{minipage}[t]{""" + f"{block_width}cm" + r"""}
-            \text{\Large Таблиця істинності для $y_""" + f"{truth_index+1}" + r"""$:}
 
-            \begin{flalign*}&""" + \
+    \text{\LARGE Результат аналізу функції $y_""" + str(truth_index+1) + r"""$:}
+
+    \begin{minipage}[t]{""" + f"{block_width}cm" + r"""}
+
+        \begin{flalign*}&""" + \
             truth_table_list[truth_index] + r"""
             &
             \end{flalign*}
         \end{minipage}
             \begin{minipage}[t]{0.5\textwidth}
                 \raggedright % Вирівнювання тексту до лівого краю всередині minipage
-
-                \text{\Large Результат аналізу функції $y_""" + f"{truth_index+1}" + r"""$:}
 
                 """ + temp_deep + r"""
                 \begin{flalign*}
@@ -312,8 +311,6 @@ def get_latex_formula(args, page_width, page_height, block_width):
                     \includegraphics[width=0.3\linewidth]{plot""" + f"{truth_index+1}" + r""".pdf}
                     \label{fig:left_top_image}
                 \end{figure}
-
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
             \end{minipage}
 

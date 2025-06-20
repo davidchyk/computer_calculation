@@ -3,7 +3,7 @@ def group_elements(data, m):
     def group_once(lst, m):
 
         if len(lst) <= m:
-            
+
             return lst
 
         else:
@@ -37,7 +37,7 @@ def union(lst, way, begin, in_not, out_not):
         elif way[0] in ["І", "І-НЕ"]: term = term.replace(",", " ∧")
 
         return term
-    
+
     elif out_not and not(begin):
 
         term = str(lst)

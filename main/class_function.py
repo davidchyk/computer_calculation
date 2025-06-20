@@ -33,12 +33,12 @@ def KM_function(sets_number, num_of_args, num_of_function):
 
 def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional=""):
 
+    print(f"optional is {optional}")
+
     def good_looking_polynomial(polynomial):
 
         polynomial = polynomial.replace("_", "")
-
         term_list = polynomial.split(" ⊕ ")
-
         final_term_list = []
 
         for term in term_list:
@@ -51,7 +51,7 @@ def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional="
                 final_term_list.append(temp_list[0])
 
             else:
-                
+
                 temp_list = sorted(temp_list, key=lambda x: (x[0], -int(x[1:])))
 
                 for item in temp_list: temp_str += f"{item[0]}_{item[1]} ∧ "
@@ -69,6 +69,8 @@ def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional="
         return final_str
 
     def final_form_function(indices, num_vars):
+
+        print(f"final_form_function: indices: {indices}, num_vars: {num_vars}")
 
         size = 2 ** num_vars
         # Ініціалізуємо вектор функції
@@ -111,7 +113,7 @@ def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional="
 
     steps.append("\\text{\\qquad   Покрокове знаходження поліному Жегалкіна:}")
     steps.append("\\text{\\qquad    ДДНФ функції:" "} " + f"{DDNF}")
-    steps.append("\\text{\\qquad    Заміню} " "∨ " "\\text{на" "} " "⊕" " \\text{та застосую аксіому алгебри Жегалкіна }" "not(X) = X ⊕ 1" "\\text{:" "}")
+    steps.append("\\text{\\qquad    Заміню} " "∨ " "\\text{на" "} " "⊕" " \\text{та застосую аксіому алгебри Жегалкіна }" "not(x) = x ⊕ 1" "\\text{:" "}")
 
     for term in normal_result[1].structure:
 
@@ -121,10 +123,10 @@ def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional="
 
             if function_regime == "sets":
 
-                if term[e] == '1': new_term += f"X_{num_of_args - e} ∧ "
-                else: new_term += f"(X_{num_of_args - e} ⊕ 1) ∧ "
+                if term[e] == '1': new_term += f"x_{num_of_args - e} ∧ "
+                else: new_term += f"(x_{num_of_args - e} ⊕ 1) ∧ "
 
-            elif function_regime == "func":
+            elif function_regime == "expression":
 
                 if term[e] == '1': new_term += f"{optional[e]} ∧ "
                 else: new_term += f"({optional[e]} ⊕ 1) ∧ "
@@ -141,15 +143,18 @@ def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional="
     final_form = final_form.replace("+", "⊕")
     final_form = final_form.replace("*", " ∧ ")
 
+    print(f"KL_fucntion fucntion_regome: {function_regime}")
+    print(f"list_to_replace: {list_to_replace}")
+
+    print(f"to final_form: {final_form}")
+
     for i in range(num_of_args):
 
-        if function_regime == "sets":
-        
-            final_form = final_form.replace(f"x{i+1}", f"X_{i+1}")
-
-        elif function_regime == "func":
+        if function_regime == "expression":
 
             final_form = final_form.replace(list_to_replace[i], optional[i])
+
+    print(f"final form = {final_form}")
 
     final_form = good_looking_polynomial(final_form)
 

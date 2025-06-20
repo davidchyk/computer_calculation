@@ -1,6 +1,9 @@
+from sympy.logic.boolalg import BooleanFunction
 from numpy.typing import NDArray
 from tkinter import messagebox
+from itertools import product
 from PyPDF2 import PdfReader
+from sympy import sympify
 from pathlib import Path
 from os import PathLike
 from math import ceil
@@ -43,66 +46,31 @@ def largest_pdf_height_cm(folder: str | PathLike) -> int:
 
     return height_cm_ceil
 
-def find_args_and_sets(function_input: str) -> tuple:
+def find_args_and_sets(function_input: str) -> tuple[list[str], list[int]]:
 
-    def get_truth_table(num_of_args: int, result: list, orig_func: str) -> list:
+    # 1. Розпарсимо рядок у Sympy-вираз
+    expr = sympify(function_input)
+    if not isinstance(expr, BooleanFunction):
+        raise ValueError("Не вийшло розпізнати логічний вираз")
 
-        replacer = result
+    # 2. Отримаємо список змінних з потрібним порядком:
+    vars_sym = list(expr.free_symbols)
+    vars_sym.sort(key=lambda s: (str(s)[0], -int(str(s)[1:])))
+    var_names = [str(v) for v in vars_sym]
 
-        indices_where_1 = []
-        for num in range(2 ** num_of_args):
-            # Generate binary values for replacer
-            bin_lst = list(format(num, f"0{num_of_args}b"))  # Convert num to binary string with leading zeros
-            replacer = [int(x) for x in bin_lst]  # Convert binary digits to integers
-            
-            # Replace variables in org_func with corresponding values from replacer
-            replaced_func = orig_func
-            for var, value in zip(result, replacer):  # Pair variables with their replacement values
-                replaced_func = replaced_func.replace(var, str(value))
-            
-            # Replace bitwise operators with logical operators
-            replaced_func = replaced_func.replace("&", " and ").replace("|", " or ").replace("~", " not ")
+    # 3. Переберемо всі можливі бітові комбінації
+    ones_indices: list[int] = []
+    n = len(vars_sym)
+    for bits in product([0, 1], repeat=n):
+        subs = dict(zip(vars_sym, bits))
+        # підставляємо й обчислюємо; результат теж булевий
+        val = bool(expr.xreplace(subs))
+        if val:
+            # переводимо бітову кортеж у десятковий індекс
+            idx = int("".join(str(b) for b in bits), 2)
+            ones_indices.append(idx)
 
-            # Evaluate the logical expression and cast the result to an integer
-            result_value = int(eval(replaced_func))
-            
-            # If the function evaluates to 1, store the current index
-            if result_value == 1: indices_where_1.append(num)
-
-            # Output the evaluated result for debugging
-            #print(f"Replacer: {replacer}, Evaluated Result: {result_value}") debug value
-
-        return indices_where_1 # повертає лист з ноберами наборів на яких 1
-
-    result = []
-    orig_func = function_input
- 
-    function_input = function_input.replace("~", "  ~ ")
-    function_input = function_input.replace("(", "  ( ")
-    function_input = function_input.replace(")", "  ) ")
-    function_input = function_input.replace("&", "  & ")
-    function_input = function_input.replace("|", "  | ")
-    function_input = function_input.replace("~", " ")
-
-    result = function_input.split(" ")
-
-    result = [x for x in result if x]
-
-    function_input = function_input.replace("~", " ")
-    function_input = function_input.replace("(", " ")
-    function_input = function_input.replace(")", " ")
-    function_input = function_input.replace("&", " ")
-    function_input = function_input.replace("|", " ")
-
-    result = function_input.split(" ")
-
-    result = [x for x in result if x]
-    result = set(result)
-    result = list(result)
-    result = sorted(result, key=lambda x: (x[0], -int(x[1:])))
-
-    x = get_truth_table(len(result), result, orig_func)
-    return result, x
+    return var_names, ones_indices
 
 def truth_table_Create(function_regime: str, number_of_arguments: int, number_of_sets: int, number_of_function: int, optional: list = []) -> NDArray:
 
@@ -110,9 +78,9 @@ def truth_table_Create(function_regime: str, number_of_arguments: int, number_of
 
     if function_regime == "sets":
 
-        result[0] = [f"$X_{k}$" for k in range(number_of_arguments, 0, -1)]
+        result[0] = [f"$x_{k}$" for k in range(number_of_arguments, 0, -1)]
 
-    elif function_regime == "func":
+    elif function_regime == "expression":
 
         result[0] = [f"${x}$" for x in optional]
 
@@ -168,7 +136,7 @@ def converting_string(is_operator: bool, function_regime: str, string: str, num_
 
             for i in range(1, num_of_args+1):
 
-                argument = f"X_{i}"
+                argument = f"x_{i}"
                 result = result.replace(f"not(not({argument}))", argument)
 
         return result
@@ -184,18 +152,17 @@ def converting_string(is_operator: bool, function_regime: str, string: str, num_
 
             if string[index] == '0':
 
-                result += f"not(X_{counter})"
+                result += f"not(x_{counter})"
                 counter -= 1
 
             elif string[index] == '1':
 
-                result += f"X_{counter}"
+                result += f"x_{counter}"
                 counter -= 1
 
             elif string[index] == 'X':
 
                 result += "#"
-
                 counter -= 1
 
             else:
@@ -203,7 +170,6 @@ def converting_string(is_operator: bool, function_regime: str, string: str, num_
                 result += string[index]
 
             index += 1
-
             if counter == 0: counter = num_of_args
 
         if is_operator: result = replacing(result, num_of_args)
@@ -217,7 +183,7 @@ def converting_string(is_operator: bool, function_regime: str, string: str, num_
             result = result.replace(" ∧ #", "")
             result = result.replace("#", "")
 
-    elif function_regime == "func":
+    elif function_regime == "expression":
 
         element_index = 0
 
@@ -262,18 +228,24 @@ def validate(data, type, optinal = False):
 
     if type == "function_regime":
 
-        if data == "func" or data == "sets": return True
+        if data == "expression" or data == "sets": return True
         else: print("Неправильний режим введення функцій"); return False
 
     elif type == "function_input":
 
-        if not data: print("Неправильне введення функції"); return False
+        if not data:
+
+            print("HE")
+            print("Неправильне введення функції"); return False
 
         try:
 
             temp = find_args_and_sets(data)
 
-        except: print("Неправильне введення функції"); return False
+        except Exception as e:
+
+            print(F"Error 001: {str(e)}")
+            print("Неправильне введення функції"); return False
 
         else:
 
@@ -365,8 +337,8 @@ while True:
     basis_update = []
     i = 1
 
-    print("\nДля вводу функції використовуйте func, для вводу наборів використовуйте sets")
-    function_regime = input("Введіть режим введення функцій (func або sets): ")
+    print("\nДля вводу логічного виразу використовуйте \"expression\", для вводу 1-наборів використовуйте \"sets\"")
+    function_regime = input("Введіть режим введення функцій (expression або sets): ")
     if not validate(function_regime, "function_regime"): continue
 
     if function_regime == "sets":
@@ -435,7 +407,7 @@ while True:
 
             i += 1
 
-    elif function_regime == "func":
+    elif function_regime == "expression":
 
         num_functions = input("Введіть кількість функцій, які потрібно проаналізувати (до 10): ")
         if not validate(num_functions, "num_functions"): continue
@@ -450,6 +422,9 @@ while True:
             function_data = find_args_and_sets(function_input)
 
             sets_number = function_data[1]
+
+            print(f"sets number: {sets_number}")
+
             args_list = function_data[0]
             args_list = [f"{x[0]}_{x[1]}" for x in args_list]
 
@@ -527,7 +502,7 @@ while True:
         if create_veich_schemme_pdf(temp_dir, veich_schemme_list) == False:
 
             messagebox.showerror("Помилка", "Не вдалося створити діаграми Вейча для функцій, звідси й pdf файл."); continue
-        
+
         print(f"logic_schemme_list: {logic_schemme_list}")
 
         if create_logic_diagrams_pdf(temp_dir, logic_schemme_list) == False:
