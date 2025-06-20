@@ -31,7 +31,7 @@ def largest_pdf_height_cm(folder: str | PathLike) -> int:
 
     # 3. перша сторінка → MediaBox → висота в поінтах
     reader = PdfReader(largest_pdf)
-    page = reader.pages[0]
+    page = reader.pages[0:1][0]
     mediabox = page.mediabox
     height_pt = float(mediabox.top) - float(mediabox.bottom)
 
