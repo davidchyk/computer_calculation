@@ -1,145 +1,86 @@
-def define_states(auto_type: str):
-    """
-    Повертає словник станів залежно від типу автомата.
-    """
-    if auto_type == "Мура":
-        return {
-            "A": "0",
-            "B": "1",
-            "C": "0",
-            "D": "1"
-        }
-    elif auto_type == "Мілі":
-        return {
-            "A": "-",
-            "B": "-",
-            "C": "-",
-            "D": "-"
-        }
-    else:
-        raise ValueError("Невідомий тип автомата: має бути 'Мура' або 'Мілі'")
-
-
-def define_transitions(auto_type: str):
-    """
-    Повертає словник переходів залежно від типу автомата.
-    """
-    if auto_type == "Мура":
-        return {
-            ("A", "B"): ([], ["x0"]),
-            ("B", "C"): ([], ["x1"]),
-            ("C", "A"): ([], ["x0", "x1"])
-        }
-    elif auto_type == "Мілі":
-        return {
-            ("A", "B"): (["y0"], ["x0"]),
-            ("B", "C"): (["y1"], ["x1"]),
-            ("C", "A"): (["y0"], ["x0", "x1"])
-        }
-    else:
-        raise ValueError("Невідомий тип автомата: має бути 'Мура' або 'Мілі'")
-
-
-# === Вхідні параметри ===
-auto_type = "Мура"       # або "Мілі"
-trigger_type = "T"       # або "D", "JK", "RS" — поки лише зберігається
-
-# === Завантаження структури ===
-states = define_states(auto_type)
-transitions = define_transitions(auto_type)
-
-# === Вивід даних ===
-print(f"Тип автомата: {auto_type}")
-print(f"Тип тригера: {trigger_type}")
-
-print("\nСтан → вихід:")
-for state, output in states.items():
-    print(f"  {state} → {output}")
-
-print("\nПереходи (поточний → наступний):")
-for (src, dst), (y_list, x_list) in transitions.items():
-    y_out = ', '.join(y_list) if y_list else "-"
-    x_in = ', '.join(x_list)
-    print(f"  {src} → {dst} | x: [{x_in}] → y: [{y_out}]")
-
 import pandas as pd
+from sympy import symbols, SOPform
 
-# === Вхідні параметри ===
-auto_type = "Мура"  # або "Мілі"
-trigger_type = "T"  # тип тригера — наразі підтримуються T-тригери
+# === Ввід користувача ===
+auto_type = input("Введіть тип автомата (Мура/Мілі): ").strip()
+trigger_type = input("Введіть тип тригера (T/D): ").strip()
+num_triggers = int(input("Скільки тригерів (кількість Q): ").strip())
+num_outputs = int(input("Скільки виходів Y: ").strip())
 
-# === Кодування станів у двійкову форму ===
+# === Ввід станів ===
+print("\nВведення станів:")
+states = {}
+while True:
+    state_name = input("Назва стану (наприклад Z1, Enter щоб завершити): ").strip()
+    if not state_name:
+        break
+    y_output = input(f"Вихід {state_name} (у двійковому вигляді, довжина {num_outputs}): ").strip()
+    states[state_name] = y_output.zfill(num_outputs)
+
+# === Ввід переходів ===
+print("\nВведення переходів:")
+transitions = {}
+while True:
+    src = input("З якого стану (наприклад Z1, Enter щоб завершити): ").strip()
+    if not src:
+        break
+    dst = input("У який стан (наприклад Z2): ").strip()
+    x_inputs = input("Вхідні умови (через кому, наприклад x0,x1 або -): ").strip().split(",")
+    if auto_type.lower() == "мура":
+        y_list = []
+    else:
+        y_list = input("Виходи (через кому, наприклад y0,y1): ").strip().split(",")
+    transitions[(src, dst)] = (y_list, x_inputs)
+
+# === Кодування станів ===
+unique_states = list(states.keys())
+bit_width = len(bin(len(unique_states) - 1)) - 2
 state_encoding = {
-    "A": "00",
-    "B": "01",
-    "C": "10",
-    "D": "11"
+    state: format(i, f'0{max(bit_width, num_triggers)}b') for i, state in enumerate(unique_states)
 }
 
-# === Словник вершин (станів) ===
-def define_states(auto_type: str):
-    if auto_type == "Мура":
-        return {
-            "A": "000",  # Вихід y1y2y3 для стану A
-            "B": "100",
-            "C": "010",
-            "D": "001"
-        }
-    elif auto_type == "Мілі":
-        return {
-            "A": "-",
-            "B": "-",
-            "C": "-",
-            "D": "-"
-        }
-
-# === Словник ребер ===
-def define_transitions(auto_type: str):
-    if auto_type == "Мура":
-        return {
-            ("A", "B"): ([], ["00"]),
-            ("B", "C"): ([], ["01"]),
-            ("C", "A"): ([], ["00", "01"])
-        }
-    elif auto_type == "Мілі":
-        return {
-            ("A", "B"): (["100"], ["00"]),
-            ("B", "C"): (["010"], ["01"]),
-            ("C", "A"): (["001"], ["00", "01"])
-        }
-
-# === Генерація структурної таблиці ===
-def generate_transition_table(auto_type, trigger_type):
-    states = define_states(auto_type)
-    transitions = define_transitions(auto_type)
-
-    rows = []
-
-    for (src, dst), (y_list, x_list) in transitions.items():
+# === Побудова таблиці ===
+table = []
+for (src, dst), (y_list, x_list) in transitions.items():
+    for x in x_list:
         src_code = state_encoding[src]
         dst_code = state_encoding[dst]
+        if x == "-":
+            x_val = "-"
+        elif x.startswith("x") and x[1].isdigit():
+            x_val = int(x[1])
+        else:
+            raise ValueError(f"Невірний формат вхідної умови: {x}")
 
-        for x in x_list:
-            if auto_type == "Мура":
-                y_output = states[dst]
-            else:
-                y_output = y_list[0] if y_list else "-"
+        if auto_type.lower() == "мура":
+            y_bin = states[dst].zfill(num_outputs)
+        else:
+            y_bin = y_list[0].zfill(num_outputs) if y_list else '0'*num_outputs
 
-            # T-тригери: T_i = 1, якщо біт i змінюється
-            T = [str(int(src_code[i] != dst_code[i])) for i in range(len(src_code))]
+        row = {}
 
-            row = {
-                "Z^t": src_code,
-                "X1X2": x,
-                "Z^(t+1)": dst_code,
-                "Y1Y2Y3": y_output,
-                "T1": T[0],
-                "T2": T[1]
-            }
-            rows.append(row)
+        # Поточні значення Q
+        for i in range(num_triggers):
+            row[f"Q{i+1}"] = int(src_code[i]) if i < len(src_code) else 0
+        row["X"] = x_val
 
-    return pd.DataFrame(rows)
+        # Наступні значення Q
+        for i in range(num_triggers):
+            row[f"Q{i+1}_next"] = int(dst_code[i]) if i < len(dst_code) else 0
 
-# === Побудова таблиці ===
-df = generate_transition_table(auto_type, trigger_type)
+        # Значення Y
+        for j in range(num_outputs):
+            row[f"y{j+1}"] = int(y_bin[j]) if j < len(y_bin) else 0
+
+        # Значення тригерів
+        for i in range(num_triggers):
+            q_cur = int(src_code[i]) if i < len(src_code) else 0
+            q_next = int(dst_code[i]) if i < len(dst_code) else 0
+            row[f"T{i+1}"] = int(q_cur != q_next)
+
+        table.append(row)
+
+# === Створення та вивід таблиці ===
+df = pd.DataFrame(table)
+print("\n=== Таблиця переходів та виходів ===")
 print(df.to_string(index=False))
