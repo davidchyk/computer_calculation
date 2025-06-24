@@ -27,9 +27,9 @@ def KM_function(sets_number, num_of_args, num_of_function):
         x_bit_string = ', '.join(list(format(x, f'0{num_of_args}b')))
         y_bit_string = ', '.join(list(format(y, f'0{num_of_args}b')))
 
-        return "\\text{Не монотонна: }" + f"y_{num_of_function}({x_bit_string}) > y_{num_of_function}({y_bit_string}) \\rightarrow " + "\\text{не входить в клас KM}", False
+        return "\\text{Не монотонна: }" + f"y_{num_of_function}({x_bit_string}) > y_{num_of_function}({y_bit_string}) \\longrightarrow " + "\\text{не входить в клас KM}", False
 
-    return "\\text{Монотонна" "}" "\\rightarrow" + "\\text{входить в клас KM}", True
+    return r"\text{Монотонна, оскільки припущення про існування впорядкованої пари $u \leq v$ з $f(u) = 1$ та $f(v) = 0$ веде до протиріччя $\longrightarrow$ входить в клас KM}", True
 
 def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional=""):
 
@@ -162,16 +162,15 @@ def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional="
 
     if "∧" in final_form:
 
-        return "\\text{Не лінійна, тому що поліном містить терм, ранг якого більший за 1: }" + f"{final_form} \\rightarrow " + "\\text{не входить в клас КЛ}", steps, False
+        return "\\text{Не лінійна, тому що поліном містить терм, ранг якого більший за 1: }" + f"{final_form} \\longrightarrow " + "\\text{не входить в клас КЛ}", steps, False
 
     else:
 
-        return "\\text{Лінійна:" "} " +  f"{final_form} \\rightarrow " + "\\text{входить в клас КЛ}", steps, True
+        return "\\text{Лінійна:" " } " +  f"{final_form} \\longrightarrow " + "\\text{входить в клас КЛ}", steps, True
 
 def KC_function(sets_number, num_of_args, num_of_function): #Самодвоїстість функції
 
     temp = False
-
     anti_sets_number = [x for x in range(2**num_of_args) if x not in sets_number]
 
     for num in range(2**num_of_args):
@@ -179,7 +178,7 @@ def KC_function(sets_number, num_of_args, num_of_function): #Самодвоїс�
         anti_num = 2**num_of_args - num - 1
 
         if (num in sets_number) and (anti_num in sets_number):
-            
+
             temp = (num, anti_num, 1)
 
         elif (num in anti_sets_number) and (anti_num in anti_sets_number):
@@ -193,17 +192,18 @@ def KC_function(sets_number, num_of_args, num_of_function): #Самодвоїс�
 
         if temp[2]:
 
-            return "\\text{Не самодвоїста: }" + f"y_{num_of_function}({num_bit_string}) = 1" + " \\text{ та }" f"not(y_{num_of_function}({anti_num_bit_string})) = 1" + " \\rightarrow " "\\text{не входить в клас КС}", False
-        
+            return "\\text{Не самодвоїста: }" + f"y_{num_of_function}({num_bit_string}) = 1" + " \\text{ та }" f"not(y_{num_of_function}({anti_num_bit_string})) = 1" + " \\longrightarrow " "\\text{не входить в клас КС}", False
+
         else:
 
-            return "\\text{Не самодвоїста: }" + f"y_{num_of_function}({num_bit_string}) = 0" + " \\text{ та }" f"not(y_{num_of_function}({anti_num_bit_string})) = 0" + " \\rightarrow " "\\text{не входить в клас КС}", False
+            return "\\text{Не самодвоїста: }" + f"y_{num_of_function}({num_bit_string}) = 0" + " \\text{ та }" f"not(y_{num_of_function}({anti_num_bit_string})) = 0" + " \\longrightarrow " "\\text{не входить в клас КС}", False
 
-    return r"\text{Самодвоїста} \rightarrow \text{входить в клас КС}", True
+    return r"\text{Самодвоїста, оскільки припущення про існування вектора $u$, для якого $f(u) = f(\overline{u})$, приводить до протиріччя $\longrightarrow$ входить в клас КС}", True
 
 def class_define(function_regime, sets_number, num_of_args, num_of_function, DDNF=None, optional = []):
 
     result = ""
+    funcionLatex = f"y_{num_of_function}"
 
     K0 = not(0 in sets_number) #Зберігає нуль
 
@@ -211,13 +211,13 @@ def class_define(function_regime, sets_number, num_of_args, num_of_function, DDN
 
         K0 = "\\text{" "Зберігає нуль: }" + f"y_{num_of_function}(" + "0, "*num_of_args
         K0 = K0[:-2] + ") = 0"
-        K0 = rf"{K0} \rightarrow " "\\text{входить в клас K0}", True
+        K0 = rf"{K0} \longrightarrow " "\\text{входить в клас K0}", True
 
     else:
 
         K0 = "\\text{" "Не зберігає нуль: }" + f"y_{num_of_function}(" + "0, "*num_of_args
         K0 = K0[:-2] + ") = 1"
-        K0 = rf"{K0} \rightarrow " "\\text{не входить в клас K0}", False
+        K0 = rf"{K0} \longrightarrow " "\\text{не входить в клас K0}", False
 
     K1 = 2**num_of_args - 1 in sets_number #Зберігкає одиницю
 
@@ -225,13 +225,13 @@ def class_define(function_regime, sets_number, num_of_args, num_of_function, DDN
 
         K1 = "\\text{" "Зберігає одиницю: }" + f"y_{num_of_function}(" + "1, "*num_of_args
         K1 = K1[:-2] + ") = 1"
-        K1 = rf"{K1} \rightarrow " "\\text{входить в клас K1}", True 
+        K1 = rf"{K1} \longrightarrow " "\\text{входить в клас K1}", True 
 
     else:
 
         K1 = "\\text{" "Не зберігає одиницю: }" + f"y_{num_of_function}(" + "1, "*num_of_args
         K1 = K1[:-2] + ") = 0"
-        K1 = rf"{K1} \rightarrow " "\\text{не входить в клас K1}", False 
+        K1 = rf"{K1} \longrightarrow " "\\text{не входить в клас K1}", False 
 
     KC = KC_function(sets_number, num_of_args, num_of_function)
     KM = KM_function(sets_number, num_of_args, num_of_function)
@@ -271,10 +271,10 @@ def class_define(function_regime, sets_number, num_of_args, num_of_function, DDN
 
     if all(not(x) for x in [K0[1], K1[1], KC[1], KM[1], KL[2]]):
 
-        result += "\\text{ ЯВЛЯЄТЬСЯ функціонально повною}"
+        result += r"\text{ \textcolor{GoogleGreen}{ ЯВЛЯЄТЬСЯ} функціонально повною}"
 
     else:
 
-        result += "\\text{ НЕ ЯВЛЯЄТЬСЯ функціонально повною}"
+        result += r"\text{ \textcolor{GoogleRed}{ НЕ ЯВЛЯЄТЬСЯ} функціонально повною}"
 
-    return ["\\text{Дослідження функції } " f"y_{num_of_function}" r"\text{: }","\\text{K0: " "}" + K0[0], "\\text{K1: " "}" + K1[0], "\\text{КС: " "}" + KC[0], "\\text{КМ: " "}" + KM[0], "\\text{КЛ: " "}" + KL[0]] + KL[1] + ["\\textbf{Резюме дослідження функції }" f"y_{num_of_function}" r"\text{: }", result]
+    return [r"\newline \text{Дослідження функції } " f"y_{num_of_function}" r"\text{на функціональну повноту: }","\\text{K0: " "}" + K0[0], "\\text{K1: " "}" + K1[0], "\\text{КС: " "}" + KC[0], "\\text{КМ: " "}" + KM[0], "\\text{КЛ: " "}" + KL[0]] + KL[1] + ["\\textbf{Резюме дослідження функції }" f"y_{num_of_function}" r"\text{: }", result]

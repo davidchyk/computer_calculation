@@ -211,6 +211,8 @@ def get_latex_formula(args, page_width, page_height, block_width):
 \definecolor{myteal}{RGB}{0,128,128}
 \definecolor{mysteelblue}{RGB}{70,130,180}
 \definecolor{mycoral}{RGB}{255,127,80}
+\definecolor{GoogleGreen}{HTML}{34A853}
+\definecolor{GoogleRed}{HTML}{EA4335}
 
 \usepackage{hyperref}
 \hypersetup{
