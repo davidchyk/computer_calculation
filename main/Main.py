@@ -12,7 +12,6 @@ import tempfile
 
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
 from create_pdf_output import create_pdf_main, get_true_table
-from create_logic_schemme import create_logic_diagrams_pdf
 from create_veich_schemme import create_veich_schemme_pdf
 from operator_form2 import operator_form
 from class_function import class_define
@@ -331,7 +330,6 @@ while True:
 
     global_truth_table_output = []
     number_of_arguments = int()
-    logic_schemme_list = []
     veich_schemme_list = []
     global_output = []
     basis_update = []
@@ -383,7 +381,6 @@ while True:
             minimize_normal_result = normal(minimize_result[1], type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), True)[1]
             minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
 
-            logic_schemme_list.append(converting_string(False, function_regime, minimize_result[0], number_of_arguments))
             veich_schemme_list.append((type_of, minimize_result[1], sets_number, []))
 
             # Forming Output
@@ -454,7 +451,6 @@ while True:
             minimize_normal_result = normal(minimize_result[1], type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), True)[1]
             minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
 
-            logic_schemme_list.append(converting_string(False, function_regime, minimize_result[0], number_of_arguments, args_list))
             veich_schemme_list.append((type_of, minimize_result[1], sets_number, args_list))
 
             #Forming Output
@@ -499,18 +495,11 @@ while True:
 
         print("ALL IS GOOD WITH 1 YOO")
 
-        if create_veich_schemme_pdf(temp_dir, veich_schemme_list) == False:
+        if not create_veich_schemme_pdf(temp_dir, veich_schemme_list):
 
             messagebox.showerror("Помилка", "Не вдалося створити діаграми Вейча для функцій, звідси й pdf файл."); continue
 
-        print(f"logic_schemme_list: {logic_schemme_list}")
-
-        if create_logic_diagrams_pdf(temp_dir, logic_schemme_list) == False:
-
-            messagebox.showerror("Помилка", "Не вдалося створити блок-схеми для функцій, звідси й pdf файл."); continue
-
         page_height += largest_pdf_height_cm(temp_dir)
-
         create_pdf_main(temp_dir, [global_output, global_truth_table_output], [page_width, page_height, BLOCK1_width])
 
     tmp_obj.cleanup()
