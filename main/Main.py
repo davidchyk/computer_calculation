@@ -223,7 +223,7 @@ def converting_string(is_operator: bool, function_regime: str, string: str, num_
 
     return result
 
-def validate(data, type, optinal = False):
+def validate(data, type, optinal = 0):
 
     if type == "function_regime":
 
@@ -344,7 +344,7 @@ while True:
         number_of_arguments = input("\nНаберіть кількість аргументів функції (до 10): ")
         if not validate(number_of_arguments, "number_of_arguments"): continue
         number_of_arguments = int(float(number_of_arguments))
-        number_of_sets = 2**number_of_arguments
+        number_of_sets = 1 << number_of_arguments
 
         num_functions = input("Введіть кількість функцій, які потрібно проаналізувати (до 10): ")
         if not validate(num_functions, "num_functions"): continue
@@ -357,6 +357,8 @@ while True:
             input_data = input("Наберіть числа наборів, при яких функція набуває одиниці (через кому): ").strip()
             if not validate(input_data, "input_data", number_of_sets): continue
             sets_number = [int(float(x)) for x in input_data.split(',')]
+
+            FullFactor = bool(set(sets_number).intersection(set(range(number_of_sets))))
 
             basis = input("Наберіть елементний базис через /: ").split('/')
             if not validate(basis, "basis"): continue

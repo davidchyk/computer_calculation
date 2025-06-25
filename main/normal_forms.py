@@ -167,7 +167,7 @@ def basic(sets_number, type, num_of_args):
 
 def normal(sets_number, type_of, num_of_args, basis, mini):
 
-    out_put = []
+    output = []
 
     if mini:
 
@@ -176,14 +176,14 @@ def normal(sets_number, type_of, num_of_args, basis, mini):
 
     else:
 
-        out_put.append(f"{basic(sets_number, 1, int(num_of_args))[0]}") #ДДНФ
-        out_put.append(f"{basic(sets_number, 0, int(num_of_args))[0]}") #ДКНФ
+        output.append(f"{basic(sets_number, 1, int(num_of_args))[0]}") #ДДНФ
+        output.append(f"{basic(sets_number, 0, int(num_of_args))[0]}") #ДКНФ
 
         basic_result = basic(sets_number, type_of, int(num_of_args))
 
         normal_form = NormalForm(basic_result[2], basic_result[1], basis)
         normal_form.define()
 
-        out_put.append(f"{normal_form}")
+        output.append(f"{normal_form}")
 
-    return out_put, normal_form
+    return output, normal_form

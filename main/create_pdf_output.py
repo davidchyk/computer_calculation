@@ -292,19 +292,6 @@ def get_latex_formula(args, page_width, page_height, block_width):
                 """ + temp_deep + r"""
                 \begin{flalign*}
                     &
-                    \text{\large Unstable Beta! Комбінаційна схема функції $y_""" + f"{truth_index+1}" + r"""$:}
-                    &
-                \end{flalign*}
-
-                \begin{figure}[H]
-                    \includegraphics[height=6cm]{OUTPUT_SCHEMME_Y_""" + f"{truth_index+1}" + r""".pdf}
-                    \label{fig:left_top_image}
-                \end{figure}
-
-                % Added:
-
-                \begin{flalign*}
-                    &
                     \text{\large Unstable Beta! Діаграма Вейча для $y_""" + f"{truth_index+1}" + r"""$:}
                     &
                 \end{flalign*}
