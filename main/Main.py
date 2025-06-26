@@ -383,6 +383,8 @@ while True:
             minimize_normal_result = normal(minimize_result[1], type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), True)[1]
             minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
 
+            print(f"minimize_operator_result: {minimize_operator_result}, {converting_string(True, function_regime, minimize_operator_result, number_of_arguments)}")
+
             veich_schemme_list.append((type_of, minimize_result[1], sets_number, []))
 
             # Forming Output
