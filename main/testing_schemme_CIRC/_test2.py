@@ -1,194 +1,248 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-logisim_builder.py
-Булевий вираз → .circ (видимий у верхньому-лівому куті, з toolbar).
+tidy_logisim.py
+  1. Парсить логічний вираз із  not, ∧, ∨  (N-арні AND/OR підтримуються автоматично)
+  2. Розташовує дерево за алгоритмом Reingold–Tilford (tidy tree)
+  3. Показує результат у Tk-вікні + генерує  example.circ
 """
+
+# Нехай комбінаційна схема буде будуватись за рівнями вертикальними (перший рівень вхідні дані, другий-k рівень рівень внутрішньої визначеності, k+1-n-рівень --- зовнішної)
 
 from __future__ import annotations
 import re, uuid, xml.etree.ElementTree as ET
 from xml.dom import minidom
 from dataclasses import dataclass, field
-from typing import List, Dict, Set, Tuple
+from typing import List, Dict, Tuple
+import tkinter as tk
 
-# ───────────────────────── 1. Вузол дерева
+
+# ────────────────────────────────────────── 1. Модель вузла
 @dataclass
 class Node:
     type: str                               # VAR / NOT / AND / OR
     children: List['Node'] = field(default_factory=list)
-    varname: str | None = None
+    varname: str | None = None              # лише для VAR
     id: str = field(default_factory=lambda: uuid.uuid4().hex[:8], init=False)
+    # координати «Tidy» (реальні x,y формуються пізніше)
+    prelim: float = 0.0
+    modifier: float = 0.0
     depth: int = 0
+    # кінцеві координати
     x: int = 0
     y: int = 0
 
-# ───────────────────────── 2. Лексер
+
+# ────────────────────────────────────────── 2. Лексер
 def tokenize(expr: str) -> List[str]:
     expr = expr.replace('∧', '&').replace('∨', '|')
     return re.findall(r'not|\(|\)|\&|\||[A-Za-z]\w*', expr)
 
-# ───────────────────────── 3. Парсер
+
+# ────────────────────────────────────────── 3. Рекурсивний парсер
 def parse_expr(tok: List[str]) -> Node:
-    def parse_or(i):
+    def parse_or(i):       # ... | ...
         node, i = parse_and(i)
         while i < len(tok) and tok[i] == '|':
-            i += 1; rhs, i = parse_and(i)
+            i += 1
+            rhs, i = parse_and(i)
             node = Node('OR', [node, rhs])
         return node, i
-    def parse_and(i):
+
+    def parse_and(i):      # ... & ...
         node, i = parse_not(i)
         kids = [node]
         while i < len(tok) and tok[i] == '&':
-            i += 1; nxt, i = parse_not(i); kids.append(nxt)
+            i += 1
+            nxt, i = parse_not(i)
+            kids.append(nxt)
         return (Node('AND', kids) if len(kids) > 1 else kids[0]), i
+
     def parse_not(i):
         if tok[i] == 'not':
-            i += 1; child, i = parse_atom(i)
+            i += 1
+            child, i = parse_atom(i)
             return Node('NOT', [child]), i
         return parse_atom(i)
+
     def parse_atom(i):
         t = tok[i]
         if t == '(':
-            i += 1; node, i = parse_or(i)
+            i += 1
+            node, i = parse_or(i)
             if i >= len(tok) or tok[i] != ')':
                 raise ValueError("Пропущена ')'")
             return node, i + 1
         if re.fullmatch(r'[A-Za-z]\w*', t):
             return Node('VAR', varname=t), i + 1
-        raise ValueError(f"Недійсний токен: {t}")
+        raise ValueError(f"Неприпустимий токен: {t}")
+
     root, pos = parse_or(0)
     if pos != len(tok):
         raise ValueError("Зайві токени у виразі")
     return root
 
-# ───────────────────────── 4. Глибини / координати
-def compute_depths(n: Node) -> int:
-    if n.type == 'VAR':
-        n.depth = 0; return 0
-    n.depth = max(compute_depths(c) for c in n.children) + 1
-    return n.depth
 
-def assign_coords(root: Node,
-                  dx: int = 180, dy: int = 100,
-                  ox: int = 20, oy: int = 20) -> None:
-    levels: Dict[int, List[Node]] = {}
-    def collect(v):
-        levels.setdefault(v.depth, []).append(v)
-        for c in v.children: collect(c)
-    collect(root)
-    for depth, row in levels.items():
-        for idx, n in enumerate(row):
-            n.x = ox + depth * dx
-            n.y = oy + idx * dy
+# ────────────────────────────────────────── 4. Tidy-алгоритм (Reingold–Tilford)
+def first_walk(v: Node, depth: int = 0, sibling_sep: float = 1.0) -> None:
+    v.depth = depth
+    if not v.children:               # лист
+        v.prelim = 0.0
+        return
 
-# ───────────────────────── 5. Утиліти
+    for c in v.children:
+        first_walk(c, depth + 1, sibling_sep)
+
+    # центр батька над дітьми
+    mid = (v.children[0].prelim + v.children[-1].prelim) / 2
+    v.prelim = mid
+
+    # виправити перекриття
+    shift = 0.0
+    for i in range(1, len(v.children)):
+        left = v.children[i - 1]
+        right = v.children[i]
+        while left_subtree_right(left) + sibling_sep > right_subtree_left(right):
+            d = (left_subtree_right(left) + sibling_sep) - right_subtree_left(right)
+            move_subtree(right, d)
+            shift += d
+
+    if shift:
+        mid = (v.children[0].prelim + v.children[-1].prelim) / 2
+        v.prelim = mid
+
+
+def left_subtree_right(v: Node) -> float:
+    if not v.children:
+        return v.prelim
+    return v.children[-1].prelim + v.children[-1].modifier
+
+
+def right_subtree_left(v: Node) -> float:
+    if not v.children:
+        return v.prelim
+    return v.children[0].prelim + v.children[0].modifier
+
+
+def move_subtree(v: Node, shift: float) -> None:
+    v.prelim += shift
+    v.modifier += shift
+
+
+def second_walk(v: Node, m: float = 0.0,
+                dx: int = 120, dy: int = 80,
+                ox: int = 20,  oy: int = 20) -> None:
+    v.x = int((v.prelim + m) * dx + ox)
+    v.y = v.depth * dy + oy
+    for c in v.children:
+        second_walk(c, m + v.modifier, dx, dy, ox, oy)
+
+
+def tidy_layout(root: Node,
+                dx: int = 120, dy: int = 80,
+                ox: int = 20,  oy: int = 20) -> None:
+    first_walk(root)
+    second_walk(root, dx=dx, dy=dy, ox=ox, oy=oy)
+
+
+# ────────────────────────────────────────── 5. Допоміжне
 def walk(root: Node) -> List[Node]:
     stack, out = [root], []
     while stack:
-        n = stack.pop(); out.append(n); stack.extend(n.children)
+        n = stack.pop()
+        out.append(n)
+        stack.extend(reversed(n.children))    # порядок неважливий
     return out
 
-def manhattan(a: Tuple[int,int], b: Tuple[int,int]) \
-        -> List[Tuple[Tuple[int,int], Tuple[int,int]]]:
-    (x1,y1),(x2,y2) = a,b
-    if x1==x2 or y1==y2:
-        return [((x1,y1),(x2,y2))]
-    return [((x1,y1),(x1,y2)), ((x1,y2),(x2,y2))]   # V → H
 
-def unique_out_label(used: Set[str], base="OUT") -> str:
-    if base not in used: return base
-    i = 1
-    while f"{base}{i}" in used: i += 1
-    return f"{base}{i}"
+# ────────────────────────────────────────── 6. Tk-вікно
+class TreeGUI(tk.Tk):
+    def __init__(self, root_node: Node):
+        super().__init__()
+        self.title("Tidy parse tree")
+        canvas = tk.Canvas(self, bg="white", scrollregion=(0, 0, 3000, 3000))
+        sbx = tk.Scrollbar(self, orient=tk.HORIZONTAL, command=canvas.xview)
+        sby = tk.Scrollbar(self, orient=tk.VERTICAL, command=canvas.yview)
+        canvas.config(xscrollcommand=sbx.set, yscrollcommand=sby.set)
+        sbx.pack(side=tk.BOTTOM, fill=tk.X)
+        sby.pack(side=tk.RIGHT, fill=tk.Y)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
+        r = 20
+        for n in walk(root_node):
+            canvas.create_oval(n.x - r, n.y - r, n.x + r, n.y + r,
+                               fill="#e0f0ff", outline="#000")
+            txt = n.varname if n.type == 'VAR' else n.type
+            canvas.create_text(n.x, n.y, text=txt, font=("TkDefaultFont", 9))
+            for ch in n.children:
+                canvas.create_line(n.x, n.y + r, ch.x, ch.y - r,
+                                   arrow=tk.LAST)
+
+        self.update_idletasks()
+        w, h = canvas.bbox("all")[2:4]
+        self.geometry(f"{min(800, w + 40)}x{min(600, h + 40)}")
+
+# ────────────────────────────────────────── 7. .circ-файл
 def gate_name(n: Node) -> str:
-    return {'NOT':'NOT Gate','AND':'AND Gate','OR':'OR Gate'}[n.type]
+    return {'NOT': 'NOT Gate', 'AND': 'AND Gate', 'OR': 'OR Gate'}[n.type]
 
-# ───────────────────────── 6. Генерація .circ
-def build_circ(root: Node, filename: str) -> None:
-    used = {n.varname for n in walk(root) if n.type == 'VAR'}
-    out_lbl = unique_out_label(used)
-
-    proj = ET.Element('project', {'source':'2.7.1','version':'1.0'})
+def generate_circ(root: Node, filename="example2.circ") -> None:
+    proj = ET.Element('project', {'source': '2.7.1', 'version': '1.0'})
     proj.text = ("\nThis file is intended to be loaded by Logisim "
                  "(http://www.cburch.com/logisim/).\n")
-    for n,d in [('0','#Wiring'),('1','#Gates'),('6','#Base')]:
-        ET.SubElement(proj,'lib',{'name':n,'desc':d})
-
-    # options / mappings / toolbar — як у «робочому» зразку
-    opts = ET.SubElement(proj,'options')
-    for k,v in [('gateUndefined','ignore'),('simlimit','1000'),('simrand','0')]:
-        ET.SubElement(opts,'a',{'name':k,'val':v})
-
-    maps = ET.SubElement(proj,'mappings')
-    for b in ['Button2','Button3','Ctrl Button1']:
-        ET.SubElement(maps,'tool',{'lib':'6','map':b,'name':'Menu Tool'})
-
-    tb = ET.SubElement(proj,'toolbar')
-    for t in ['Poke Tool','Edit Tool','Text Tool']:
-        tool = ET.SubElement(tb,'tool',{'lib':'6','name':t})
-        if t=='Text Tool':
-            for k,v in [('text',''),('font','SansSerif plain 12'),
-                        ('halign','center'),('valign','base')]:
-                tool.append(ET.Element('a',{'name':k,'val':v}))
-    ET.SubElement(tb,'sep')
-    pin_in  = ET.SubElement(tb,'tool',{'lib':'0','name':'Pin'})
-    pin_in.append(ET.Element('a',{'name':'tristate','val':'false'}))
-    pin_out = ET.SubElement(tb,'tool',{'lib':'0','name':'Pin'})
-    for k,v in [('facing','west'),('output','true'),('labelloc','east')]:
-        pin_out.append(ET.Element('a',{'name':k,'val':v}))
-    for g in ['NOT Gate','AND Gate','OR Gate']:
-        ET.SubElement(tb,'tool',{'lib':'1','name':g})
-
-    ET.SubElement(proj,'main',{'name':'main'})
-    circ = ET.SubElement(proj,'circuit',{'name':'main'})
-    for k,v in [('circuit','main'),('clabel',''),
-                ('clabelup','east'),('clabelfont','SansSerif plain 12')]:
-        circ.append(ET.Element('a',{'name':k,'val':v}))
+    for n, d in [('0', '#Wiring'), ('1', '#Gates')]:
+        ET.SubElement(proj, 'lib', {'name': n, 'desc': d})
+    ET.SubElement(proj, 'main', {'name': 'main'})
+    circ = ET.SubElement(proj, 'circuit', {'name': 'main'})
 
     nodes = walk(root)
-    y_pin = Node('VAR', varname=out_lbl); y_pin.x = root.x + 180; y_pin.y = root.y
-    nodes.append(y_pin)
 
-    # wires спершу (V → H маршрути)
+    # wires: спершу вертикальні, потім горизонтальні
+    def add_wire(a: Tuple[int, int], b: Tuple[int, int]):
+        ET.SubElement(circ, 'wire',
+                      {'from': f'({a[0]},{a[1]})', 'to': f'({b[0]},{b[1]})'})
+
     for p in nodes:
-        for ch in (p.children if p.type!='VAR' else []):
-            for seg in manhattan((ch.x,ch.y),(p.x,p.y)):
-                ET.SubElement(circ,'wire',
-                    {'from':f'({seg[0][0]},{seg[0][1]})',
-                     'to':  f'({seg[1][0]},{seg[1][1]})'})
-    for seg in manhattan((root.x,root.y),(y_pin.x,y_pin.y)):
-        ET.SubElement(circ,'wire',
-            {'from':f'({seg[0][0]},{seg[0][1]})',
-             'to':  f'({seg[1][0]},{seg[1][1]})'})
+        for ch in p.children:
+            add_wire((p.x, p.y + 20), (p.x, ch.y - 20))
+            add_wire((p.x, ch.y - 20), (ch.x, ch.y - 20))
+            add_wire((ch.x, ch.y - 20), (ch.x, ch.y))
 
     # компоненти
     for n in nodes:
-        lib = '0' if n.type=='VAR' else '1'
-        comp = ET.SubElement(circ,'comp',
-            {'lib':lib, 'name':'Pin' if n.type=='VAR' else gate_name(n),
-             'loc':f'({n.x},{n.y})'})
-        if n.type=='VAR':
-            comp.append(ET.Element('a',{'name':'label','val':n.varname or ''}))
-            comp.append(ET.Element('a',{'name':'tristate','val':'false'}))
-            if n is y_pin:
-                for k,v in [('output','true'),('facing','west'),('labelloc','east')]:
-                    comp.append(ET.Element('a',{'name':k,'val':v}))
-        elif n.type in ('AND','OR'):
-            comp.append(ET.Element('a',{'name':'inputs','val':str(len(n.children))}))
+        lib = '0' if n.type == 'VAR' else '1'
+        comp = ET.SubElement(circ, 'comp',
+            {'lib': lib,
+             'name': 'Pin' if n.type == 'VAR' else gate_name(n),
+             'loc': f'({n.x},{n.y})'})
+        if n.type == 'VAR':
+            ET.SubElement(comp, 'a', {'name': 'label', 'val': n.varname or ''})
+            ET.SubElement(comp, 'a', {'name': 'tristate', 'val': 'false'})
+        elif n.type in ('AND', 'OR'):
+            ET.SubElement(comp, 'a', {'name': 'inputs',
+                                       'val': str(len(n.children))})
 
-    # pretty-print
-    xml = minidom.parseString(ET.tostring(proj,'utf-8')).toprettyxml(indent='  ')
+    xml = minidom.parseString(ET.tostring(proj, 'utf-8'))\
+                 .toprettyxml(indent='  ')
     xml = '\n'.join(xml.split('\n')[1:])
-    with open(filename,'w',encoding='utf-8') as f:
+    with open(filename, 'w', encoding='utf-8') as f:
         f.write('<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n')
         f.write(xml)
-    print(f"✓ {filename} сформовано. Вихідний Pin = «{out_lbl}»")
+    print("✓ example.circ сформовано (координати — tidy layout)")
 
-# ───────────────────────── 7. Приклад запуску
-if __name__ == '__main__':
-    expr = "(X ∧ Y) ∨ not(Z)"    # підставте свій вираз
-    tree = parse_expr(tokenize(expr))
-    compute_depths(tree)
-    assign_coords(tree)          # верх-лівий кут, крок 180×100
-    build_circ(tree, 'example2.circ')
+def compute_depths(n: Node) -> int:
+    if n.type == 'VAR':          # лист (x1, x2, …)
+        n.depth = 0
+        return 0
+    # глибина = 1 + максимальна глибина серед дітей
+    n.depth = max(compute_depths(c) for c in n.children) + 1
+    return n.depth
+
+# ────────────────────────────────────────── 8. Демо-запуск
+if __name__ == "__main__":
+    expr = "(A ∧ B ∧ C) ∨ (not(D) ∧ (E ∨ F))"  # ← ваш вираз
+    ast = parse_expr(tokenize(expr))
+    compute_depths(ast)
+    tidy_layout(ast)          # новий досконалий алгоритм
+    generate_circ(ast)        # файл для Logisim-evolution
+    TreeGUI(ast).mainloop()   # вікно з деревом
