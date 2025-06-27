@@ -17,18 +17,18 @@ from typing import List, Dict, Tuple
 import tkinter as tk
 
 
-# ────────────────────────────────────────── 1. Модель вузла
+# ─────────────────────────────────────── 1. Node: поле level
 @dataclass
 class Node:
-    type: str                               # VAR / NOT / AND / OR
+    type: str
     children: List['Node'] = field(default_factory=list)
-    varname: str | None = None              # лише для VAR
+    varname: str | None = None
     id: str = field(default_factory=lambda: uuid.uuid4().hex[:8], init=False)
-    # координати «Tidy» (реальні x,y формуються пізніше)
+    # ↓ tidy-layout залишаємо, раптом знадобиться
     prelim: float = 0.0
     modifier: float = 0.0
     depth: int = 0
-    # кінцеві координати
+    level: int = 0          # ← НОВЕ поле
     x: int = 0
     y: int = 0
 
@@ -202,11 +202,12 @@ def generate_circ(root: Node, filename="example2.circ") -> None:
         ET.SubElement(circ, 'wire',
                       {'from': f'({a[0]},{a[1]})', 'to': f'({b[0]},{b[1]})'})
 
+    # дроти: горизонталь → вертикаль → коротка горизонталь
     for p in nodes:
         for ch in p.children:
-            add_wire((p.x, p.y + 20), (p.x, ch.y - 20))
-            add_wire((p.x, ch.y - 20), (ch.x, ch.y - 20))
-            add_wire((ch.x, ch.y - 20), (ch.x, ch.y))
+            add_wire((p.x + 20, p.y), (ch.x - 20, p.y))   # →
+            add_wire((ch.x - 20, p.y), (ch.x - 20, ch.y)) # ↓ / ↑
+            add_wire((ch.x - 20, ch.y), (ch.x,     ch.y)) # →
 
     # компоненти
     for n in nodes:
@@ -238,11 +239,40 @@ def compute_depths(n: Node) -> int:
     n.depth = max(compute_depths(c) for c in n.children) + 1
     return n.depth
 
+# ─────────────────────────────────────── 2. Рівні від входів до виходу
+def assign_levels(root: Node) -> None:
+    """Записує у n.level номер колонки, рахуючи від входів (0)"""
+    def dfs(v: Node) -> int:
+        if v.type == 'VAR':
+            v.level = 0
+            return 0
+        v.level = max(dfs(ch) for ch in v.children) + 1
+        return v.level
+    dfs(root)
+
+# ─────────────────────────────────────── 3. Вертикальні колонки (layout)
+def vertical_layer_layout(root: Node,
+                          dx: int = 160,  # крок між колонками
+                          dy: int = 80,   # крок між елементами у колонці
+                          ox: int = 40,   # відступ ліворуч
+                          oy: int = 40) -> None:
+    """x = колонка (level), y = позиція всередині колонки"""
+    assign_levels(root)
+
+    # ¹ стабільний обхід, щоб порядок у колонці відповідав порядку у виразі
+    levels: dict[int, list[Node]] = {}
+    for n in walk(root):                     # walk з твого коду
+        levels.setdefault(n.level, []).append(n)
+
+    for lvl, nodes in levels.items():
+        for idx, n in enumerate(nodes):
+            n.x = ox + lvl * dx
+            n.y = oy + idx * dy
+
 # ────────────────────────────────────────── 8. Демо-запуск
 if __name__ == "__main__":
-    expr = "(A ∧ B ∧ C) ∨ (not(D) ∧ (E ∨ F))"  # ← ваш вираз
-    ast = parse_expr(tokenize(expr))
-    compute_depths(ast)
-    tidy_layout(ast)          # новий досконалий алгоритм
-    generate_circ(ast)        # файл для Logisim-evolution
-    TreeGUI(ast).mainloop()   # вікно з деревом
+    expr = "(X3 ∧ X2) ∨ X1"           # ← твій приклад
+    ast  = parse_expr(tokenize(expr))
+    vertical_layer_layout(ast)        # ← ось він, новий макет
+    generate_circ(ast)                # example_layered.circ
+    TreeGUI(ast).mainloop()    
