@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 logisim_builder.py
 Булевий вираз → .circ з ортогональними (Манхеттен) дротами,

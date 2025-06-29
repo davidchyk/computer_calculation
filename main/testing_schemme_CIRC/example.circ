@@ -44,31 +44,32 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <a name="clabel" val=""/>
     <a name="clabelup" val="east"/>
     <a name="clabelfont" val="SansSerif plain 12"/>
-    <wire from="(200,0)" to="(400,0)"/>
+    <wire from="(200,-40)" to="(400,-40)"/>
+    <wire from="(400,-40)" to="(400,-10)"/>
     <wire from="(200,80)" to="(400,80)"/>
-    <wire from="(400,80)" to="(400,0)"/>
+    <wire from="(400,80)" to="(400,10)"/>
+    <wire from="(0,-80)" to="(200,-80)"/>
+    <wire from="(200,-80)" to="(200,-50)"/>
     <wire from="(0,0)" to="(200,0)"/>
+    <wire from="(200,0)" to="(200,-30)"/>
     <wire from="(0,80)" to="(200,80)"/>
-    <wire from="(200,80)" to="(200,0)"/>
-    <wire from="(0,160)" to="(200,160)"/>
-    <wire from="(200,160)" to="(200,80)"/>
     <wire from="(400,0)" to="(600,0)"/>
     <comp lib="1" name="OR Gate" loc="(400,0)">
       <a name="inputs" val="2"/>
     </comp>
-    <comp lib="1" name="AND Gate" loc="(200,0)">
+    <comp lib="1" name="AND Gate" loc="(200,-40)">
       <a name="inputs" val="2"/>
     </comp>
-    <comp lib="0" name="Pin" loc="(0,0)">
+    <comp lib="0" name="Pin" loc="(0,-80)">
       <a name="label" val="X"/>
       <a name="tristate" val="false"/>
     </comp>
-    <comp lib="0" name="Pin" loc="(0,80)">
+    <comp lib="0" name="Pin" loc="(0,0)">
       <a name="label" val="Y"/>
       <a name="tristate" val="false"/>
     </comp>
     <comp lib="1" name="NOT Gate" loc="(200,80)"/>
-    <comp lib="0" name="Pin" loc="(0,160)">
+    <comp lib="0" name="Pin" loc="(0,80)">
       <a name="label" val="Z"/>
       <a name="tristate" val="false"/>
     </comp>
