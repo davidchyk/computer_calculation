@@ -105,34 +105,50 @@ def build_circ(root: Node, filename: str):
     out_lbl = unique_out_label(vars_)
 
     # --- XML каркас ---
-    proj = ET.Element('project', {'source':'2.7.1','version':'1.0'})
-    proj.text = ("\nThis file is intended to be loaded by Logisim "
-                 "(http://www.cburch.com/logisim/).\n")
-    for name, desc in [('0','#Wiring'),('1','#Gates'),('6','#Base')]:
-        ET.SubElement(proj,'lib',{'name':name,'desc':desc})
+    proj = ET.Element('project', {'source': '2.7.1','version': '1.0'})
+    proj.text = ("\nThis file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).\n")
 
-    # options / mappings / toolbar (без змін)
-    options = ET.SubElement(proj,'options')
-    for k,v in [('gateUndefined','ignore'),('simlimit','1000'),('simrand','0')]:
-        ET.SubElement(options,'a',{'name':k,'val':v})
-    mappings = ET.SubElement(proj,'mappings')
-    for m in ['Button2','Button3','Ctrl Button1']:
-        ET.SubElement(mappings,'tool',{'lib':'6','map':m,'name':'Menu Tool'})
-    toolbar = ET.SubElement(proj,'toolbar')
-    for t in ['Poke Tool','Edit Tool','Text Tool']:
-        tool = ET.SubElement(toolbar,'tool',{'lib':'6','name':t})
-        if t=='Text Tool':
-            for k,v in [('text',''),('font','SansSerif plain 12'),
-                        ('halign','center'),('valign','base')]:
-                tool.append(ET.Element('a',{'name':k,'val':v}))
+    # Adding main libs:
+    ET.SubElement(proj, 'lib',{'name': '0', 'desc': '#Wiring'})
+    ET.SubElement(proj, 'lib',{'name': '1', 'desc': '#Gates'})
+    ET.SubElement(proj, 'lib',{'name': '6', 'desc': '#Base'})
+
+    # Adding options:
+    options = ET.SubElement(proj, 'options')
+    ET.SubElement(options,'a',{'name': 'gateUndefined', 'val': 'ignore'})
+    ET.SubElement(options,'a',{'name': 'simlimit', 'val': '1000'})
+    ET.SubElement(options,'a',{'name': 'simrand', 'val': '0'})
+
+    # Adding mappings:
+    mappings = ET.SubElement(proj, 'mappings')
+    ET.SubElement(mappings, 'tool', {'lib': '6', 'map': 'Button2', 'name': 'Menu Tool'})
+    ET.SubElement(mappings, 'tool', {'lib': '6', 'map': 'Button3', 'name': 'Menu Tool'})
+    ET.SubElement(mappings, 'tool', {'lib': '6', 'map': 'Ctrl Button1', 'name': 'Menu Tool'})
+
+    # Adding toolbar:
+    toolbar = ET.SubElement(proj, 'toolbar')
+    ET.SubElement(toolbar, 'tool',{'lib':'6','name':'Poke Tool'})
+    ET.SubElement(toolbar, 'tool',{'lib':'6','name':'Edit Tool'})
+    tool = ET.SubElement(toolbar, 'tool',{'lib':'6','name':'Text Tool'})
+
+    ET.SubElement(tool, 'a', {'name': 'text', 'val': ''})
+    ET.SubElement(tool, 'a', {'name': 'font', 'val': 'SansSerif plain 12'})
+    ET.SubElement(tool, 'a', {'name': 'halign', 'val': 'center'})
+    ET.SubElement(tool, 'a', {'name': 'valign', 'val': 'base'})
+
     ET.SubElement(toolbar,'sep')
-    pin_def = ET.SubElement(toolbar,'tool',{'lib':'0','name':'Pin'})
-    pin_def.append(ET.Element('a',{'name':'tristate','val':'false'}))
-    pin_out_tool = ET.SubElement(toolbar,'tool',{'lib':'0','name':'Pin'})
-    for k,v in [('facing','west'),('output','true'),('labelloc','east')]:
-        pin_out_tool.append(ET.Element('a',{'name':k,'val':v}))
-    for g in ['NOT Gate','AND Gate','OR Gate']:
-        ET.SubElement(toolbar,'tool',{'lib':'1','name':g})
+
+    pin_def = ET.SubElement(toolbar,'tool', {'lib': '0', 'name': 'Pin'})
+    ET.SubElement(pin_def, 'a', {'name': 'tristate', 'val': 'false'})
+
+    pin_out_tool = ET.SubElement(toolbar, 'tool', {'lib': '0','name': 'Pin'})
+    ET.SubElement(pin_out_tool, 'a',{'name': 'facing', 'val': 'west'})
+    ET.SubElement(pin_out_tool, 'a',{'name': 'output', 'val': 'true'})
+    ET.SubElement(pin_out_tool, 'a',{'name': 'labelloc', 'val': 'east'})
+
+    ET.SubElement(toolbar,'tool',{'lib':'1','name':'NOT Gate'})
+    ET.SubElement(toolbar,'tool',{'lib':'1','name':'AND Gate'})
+    ET.SubElement(toolbar,'tool',{'lib':'1','name':'OR Gate'})
 
     ET.SubElement(proj,'main',{'name':'main'})
     circ = ET.SubElement(proj,'circuit',{'name':'main'})
