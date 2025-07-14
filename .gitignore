@@ -1,8 +1,10 @@
 *.exe
 *.pyc
+*.pdb
 
 error.txt
 main.txt
 plot1.pdf
 
 d
+build
