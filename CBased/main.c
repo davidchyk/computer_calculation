@@ -11,29 +11,46 @@
 #define FUNC_REGIME_LEN 11+2
 #define NUM_ARGS_LEN 3
 #define NUM_FUNCS_LEN 3
+#define BASIS_LEN 18+2
 
 #define FUNCTION_INPUT_REGIME 0
 #define NUM_ARGS_REGIME 1
 #define NUM_FUNCS_REGIME 2
 #define ARRAY_SETS_REGIME 3
+#define BASIS_REGIME 4
 
 #define DEBUG_OUT "[DEBUG]"
 
 typedef char* String;
 typedef int* intArray;
 
+struct basisConfig {
+    int number_in;
+    String element_in;
+    int number_out;
+    String element_out;
+};
+
 String db[][2] = {
     {"AND", "OR"}, {"AND-NOT", "AND-NOT"}, {"OR", "AND-NOT"}, {"OR-NOT", "OR"},
     {"OR", "AND"}, {"OR-NOT", "OR-NOT"}, {"AND", "OR-NOT"}, {"AND-NOT", "AND"}
 };
 
+// Helpful functions:
+
+size_t count_symbols(const String str, char symbol);
+
 void clear_input_buffer();
 
-bool validateInput(const String data, int flag, int optional_max);
+// Main helpful functions:
+
+bool validateInput(const String data, const int flag, const int optional_max);
 
 String read_dynamic_line(int NumSets);
 
 intArray get_Array(const String strArray, size_t* uniqueElem);
+
+// Main
 
 int main(void) {
 
@@ -78,6 +95,35 @@ int main(void) {
 
                 // input and analyze basis than work in 
 
+                printf("Input your basis: ");
+                char strBasis[BASIS_LEN];
+                fgets(strBasis, BASIS_LEN, stdin);
+                if (!validateInput(strBasis, BASIS_REGIME, 0)) continue;
+
+                String strBasis_copy = (String)malloc(strlen(strBasis) + 1);
+                String token = strtok(strBasis_copy, "/");
+
+                struct basisConfig my_config;
+
+                // thing about malloc!
+
+                my_config.number_in = token[0] - '0';
+                my_config.element_in = token+1;
+
+                token = strtok(NULL, "/");
+
+                my_config.number_out = token[0] - '0';
+                token[strcspn(token, "\n")] = '\0';
+
+                my_config.element_out = token+1;
+
+
+
+
+                
+
+
+
 
 
 
@@ -107,7 +153,7 @@ void clear_input_buffer() {
     while ((c = getchar()) != '\n' && c != EOF);
 }
 
-bool validateInput(const String data, int flag, int optional_max) {
+bool validateInput(const String data, const int flag, const int optional_max) {
 
     switch (flag) {
 
@@ -169,15 +215,8 @@ bool validateInput(const String data, int flag, int optional_max) {
 
             else {
 
-                size_t data_len = strlen(data);
-                size_t comma_number = 1;
+                size_t comma_number = count_symbols(data, ',') + 1;
                 size_t token_number = 0;
-
-                for (size_t i = 0; data[i] != '\0'; i++) {
-
-                    if (data[i] == ',') comma_number++;
-
-                }
 
                 // 1. Створюємо копію вхідного рядка, тому що strtok модифікує оригінал
                 String data_copy = (String)malloc(strlen(data) + 1);
@@ -253,11 +292,81 @@ bool validateInput(const String data, int flag, int optional_max) {
 
             }
 
+        case BASIS_REGIME:
+
+            if (data == NULL) {
+
+                fprintf(stderr, "Error: Input data pointer is NULL. Cannot proceed.\n\n");
+                return false;
+            }
+
+            else if (strchr(data, '\n') == NULL || count_symbols(data, '/') != 1) {
+
+                fprintf(stderr, "count_symbols(data, '/') != 1 %d", count_symbols(data, '/') != 1);
+
+                fprintf(stderr, "Error: Invalid input.\n");
+                return false;
+
+            }
+
+            else {
+
+                String data_copy = (String)malloc(strlen(data) + 1);
+                String element_out;
+                String element_in;
+                strcpy(data_copy, data);
+
+                String token = strtok(data_copy, "/");
+
+                if (strlen(token) < 3 || !isdigit(token[0]) || isdigit(token[1])) {
+
+                    fprintf(stderr, "Error: Invalid IN element.\n");
+                    free(data_copy);
+                    return false;
+                }
+                element_in = token+1;
+
+                token = strtok(NULL, "/");
+
+                if (strlen(token) < 4 || !isdigit(token[0]) || isdigit(token[1])) {
+
+                    fprintf(stderr, "Error: Invalid OUT element.\n");
+                    free(data_copy);
+                    return false;
+                }
+                element_out = token+1;
+                element_out[strcspn(element_out, "\n")] = '\0';
+
+                for (int j = 0; j < 8; j++) {
+
+                    if (!strcmp(db[j][0], element_in) && !strcmp(db[j][1], element_out)) return true;
+
+                }
+
+                fprintf(stderr, "Error: Invalid basis. Review it.\n");
+                free(data_copy);
+                return false;
+
+            }
+
         default:
 
             return false;
 
         }
+
+}
+
+size_t count_symbols(const String str, char symbol) {
+
+    size_t count = 0;
+
+    for (size_t i = 0; str[i] != '\0'; i++) {
+
+        if (str[i] == symbol) count++;
+    }
+
+    return count;
 
 }
 
@@ -303,18 +412,11 @@ String read_dynamic_line(int NumSets) {
 
 intArray get_Array(const String strArray, size_t* uniqueElem) {
 
-    size_t count = 1;
-
-    for (size_t i = 0; strArray[i] != '\0'; i++) {
-
-        if (strArray[i] == ',') count++;
-    }
-
-    size_t data_len = strlen(strArray);
+    size_t count = count_symbols(strArray, ',') + 1;
 
     // Створюємо копію вхідного рядка, тому що strtok модифікує оригінал.
     // (+1 для нуль-термінатора)
-    String strArray_copy = (String)malloc(data_len + 1);
+    String strArray_copy = (String)malloc(strlen(strArray) + 1);
     intArray result_array = (intArray)malloc(count * sizeof(int));
 
     if (strArray_copy == NULL) {
