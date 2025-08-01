@@ -1269,16 +1269,13 @@ def veich_create(filename, type, minimized_term_term_list, sets_number, list_arg
     except Exception as e: print(f"Error: {e}"); return False
     else: return paint(filename, group_config)
 
-def create_veich_schemme_pdf(temp_dir, veich_schemme_list):
+def create_veich_schemme_pdf(filepath, veich_config):
 
     try:
 
-        for count, veich_config in enumerate(veich_schemme_list, start=1):
-    
-            filename = os.path.join(temp_dir, f"plot{count}.pdf")
-            if veich_create(filename, *veich_config) == False: return False
+        if veich_create(filepath, *veich_config) == False: return False
 
-    except Exception as e: return False
+    except Exception: return False
     return True
 
 if __name__ == "__main__":
