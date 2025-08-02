@@ -33,8 +33,6 @@ def KM_function(sets_number, num_of_args, num_of_function):
 
 def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional=""):
 
-    print(f"optional is {optional}")
-
     def good_looking_polynomial(polynomial):
 
         polynomial = polynomial.replace("_", "")
@@ -69,8 +67,6 @@ def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional="
         return final_str
 
     def final_form_function(indices, num_vars):
-
-        print(f"final_form_function: indices: {indices}, num_vars: {num_vars}")
 
         size = 2 ** num_vars
         # Ініціалізуємо вектор функції
@@ -143,18 +139,11 @@ def KL_function(function_regime, sets_number, num_of_args, DDNF=None, optional="
     final_form = final_form.replace("+", "⊕")
     final_form = final_form.replace("*", " ∧ ")
 
-    print(f"KL_fucntion fucntion_regome: {function_regime}")
-    print(f"list_to_replace: {list_to_replace}")
-
-    print(f"to final_form: {final_form}")
-
     for i in range(num_of_args):
 
         if function_regime == "expression":
 
             final_form = final_form.replace(list_to_replace[i], optional[i])
-
-    print(f"final form = {final_form}")
 
     final_form = good_looking_polynomial(final_form)
 

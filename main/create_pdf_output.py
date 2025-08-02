@@ -30,7 +30,6 @@ def compile_latex(temp_dir, latex_str, output_path):
     tex_file_path = os.path.join(temp_dir, "document.tex")
 
     # Записуємо LaTeX код у .txt файл
-    print("LETS GO")
     with open("main.txt", 'w', encoding='utf-8') as te: te.write(latex_str)
 
     # Записуємо LaTeX код у .tex файл

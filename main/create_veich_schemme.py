@@ -643,7 +643,6 @@ def draw_kmap_with_tight_rounded_boxes(kmap, groups, list_args, filename):
         # Збереження у файл
         plt.savefig(filename, dpi=300, bbox_inches='tight', pad_inches=0.1)
         plt.close(fig)
-        print(f"Зображення збережено у файл: {filename}")
 
     except Exception: return False
     return True
