@@ -1279,6 +1279,6 @@ def create_veich_schemme_pdf(filepath, veich_config):
 
     except Exception:
 
-        print("Fuck!")
+        print("get out fucking error")
 
     return True
