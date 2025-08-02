@@ -647,7 +647,7 @@ def draw_kmap_with_tight_rounded_boxes(kmap, groups, list_args, filename):
         plt.close(fig)
         print(f"Зображення збережено у файл: {filename}")
 
-    except Exception: return False
+    except Exception as e: print(str(e))
     return True
 
 def paint(filename, data: tuple):
@@ -1279,6 +1279,6 @@ def create_veich_schemme_pdf(filepath, veich_config):
 
     except Exception:
 
-        print("get out fucking error")
+        print("Fuck!")
 
     return True

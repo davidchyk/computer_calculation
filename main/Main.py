@@ -12,7 +12,7 @@ import tempfile
 
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
 from create_pdf_output import create_pdf_main, get_true_table
-from create_veich_schemme import create_veich_schemme_pdf
+from main.create_veich_scheme import create_veich_schemme_pdf
 from operator_form2 import operator_form
 from class_function import class_define
 from normal_forms import normal

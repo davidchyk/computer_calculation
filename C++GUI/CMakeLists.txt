@@ -1,16 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
-project(MyApp)
+project(KarnaughMap)
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Вкажи шлях до встановленого wxWidgets
-set(wxWidgets_ROOT_DIR "C:/wxWidgets-3.3.1/build_msvc/install")
-set(wxWidgets_LIB_DIR "C:/wxWidgets-3.3.1/build_msvc/install/lib")
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+qt_wrap_ui(UI_HEADERS)
+qt_wrap_cpp(MOC_SOURCES)
 
-# Знайди бібліотеки
-find_package(wxWidgets REQUIRED COMPONENTS core base)
-
-include(${wxWidgets_USE_FILE})
-
-add_executable(MyApp main.cpp)
-target_link_libraries(MyApp ${wxWidgets_LIBRARIES})
+add_executable(KarnaughMap main.cpp)
+target_link_libraries(KarnaughMap Qt6::Widgets)

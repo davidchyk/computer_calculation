@@ -3,9 +3,10 @@ from tkinter import ttk, filedialog, messagebox
 import re
 
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
-from create_veich_schemme import create_veich_schemme_pdf
+from VEICH_module.create_veich_scheme import create_veich_schemme_pdf
 
 class KarnaughGUI(tk.Tk):
+
     def __init__(self):
         super().__init__()
         self.title("Генератор схем Вейча")
@@ -18,7 +19,7 @@ class KarnaughGUI(tk.Tk):
         self.container.pack(anchor="w", padx=20, pady=10)
 
         # Тип нормальної форми (радіокнопки)
-        self.nf_type_label = ttk.Label(self.container, text="Тип нормальної форми:")
+        self.nf_type_label = ttk.Label(self.container, text="Тип мінімізованої форми:")
         self.nf_type_label.pack(anchor="w", pady=5)
 
         self.nf_type_var = tk.StringVar(value="МДНФ")
@@ -35,7 +36,7 @@ class KarnaughGUI(tk.Tk):
         self.arg_count_spinbox.pack(anchor="w", pady=5)
 
         # Набори з 1
-        self.ones_label = ttk.Label(self.container, text="Номери наборів, де функція набуває значенню 1 (через кому):")
+        self.ones_label = ttk.Label(self.container, text="Номери наборів, де функція набуває значеня 1 через кому:")
         self.ones_label.pack(anchor="w", pady=5)
 
         self.ones_entry = ttk.Entry(self.container, width=50)
@@ -45,7 +46,7 @@ class KarnaughGUI(tk.Tk):
         self.ones_error.pack(anchor="w")
 
         # Аргументи (необов'язково)
-        self.custom_args_label = ttk.Label(self.container, text="Назви аргументів (через кому, опціонально):")
+        self.custom_args_label = ttk.Label(self.container, text="Користувацькі назви аргументів через кому (опціонально):")
         self.custom_args_label.pack(anchor="w", pady=5)
 
         self.custom_args_entry = ttk.Entry(self.container, width=50)
@@ -123,10 +124,8 @@ class KarnaughGUI(tk.Tk):
             f"{x[0]}_{x[1]}" for x in [arg.strip() for arg in self.custom_args_entry.get().split(',')]
         ] if self.custom_args_entry.get().strip() else []
 
-        if type_of == 1:
-            minimize_result = minimize_dnf_as_implicants(number_of_arguments, sets_number)
-        else:
-            minimize_result = minimize_cnf_as_implicants(number_of_arguments, [x for x in range(number_of_sets) if x not in sets_number])
+        if type_of == 1: minimize_result = minimize_dnf_as_implicants(number_of_arguments, sets_number)
+        else: minimize_result = minimize_cnf_as_implicants(number_of_arguments, [x for x in range(number_of_sets) if x not in sets_number])
 
         create_veich_schemme_pdf(filepath, (type_of, minimize_result[1], sets_number, custom_args_raw))
         messagebox.showinfo("Готово", f"Схему Вейча збережено до:\n{filepath}")
@@ -137,6 +136,7 @@ class KarnaughGUI(tk.Tk):
             if self.validate_inputs():
                 filepath = self.select_output_file()
                 if filepath:
+                    print(f"filepath is {filepath}")
                     self.generate_veitch_diagram(filepath)
         except Exception:
             messagebox.showerror("Невідома помилка", "Empty")

@@ -30,7 +30,7 @@ def compile_latex(temp_dir, latex_str, output_path):
     tex_file_path = os.path.join(temp_dir, "document.tex")
 
     # Записуємо LaTeX код у .txt файл
-    with open("main.txt", 'w', encoding='utf-8') as te: te.write(latex_str)
+    # with open("main.txt", 'w', encoding='utf-8') as te: te.write(latex_str)
 
     # Записуємо LaTeX код у .tex файл
     with open(tex_file_path, 'w', encoding='utf-8') as tex_file: tex_file.write(latex_str)
@@ -47,7 +47,7 @@ def compile_latex(temp_dir, latex_str, output_path):
     except subprocess.CalledProcessError as e:
         error_message = e.stdout.decode() + "\n" + e.stderr.decode()
 
-        with open("error.txt", 'w', encoding='utf-8') as te: te.write(error_message)
+        #with open("error.txt", 'w', encoding='utf-8') as te: te.write(error_message)
 
         messagebox.showerror("Помилка компіляції", f"Сталася помилка під час компіляції LaTeX:\n{error_message}")
         #with open("error_log.txt", "w", encoding="utf-8") as f: f.write(error_message)
