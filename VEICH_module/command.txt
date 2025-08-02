@@ -1,0 +1,1 @@
+pyinstaller --onefile --hidden-import=matplotlib.backends.backend_pdf main.py
