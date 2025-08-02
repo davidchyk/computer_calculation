@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <sstream>
 #include <windows.h>
 
 #define INPUT_REGIME 0
@@ -86,7 +87,59 @@ bool validate(std::string& review, int regime, size_t optional) {
 
         case NUM_ONES:
 
-            
+            #include <iostream>
+            #include <sstream>
+            #include <string>
+            #include <limits>
+
+            bool validate_integer_list(const std::string& input, unsigned int bits) {
+                unsigned long max_value = (1UL << bits) - 1; // 2^bits - 1
+                std::istringstream ss(input);
+                std::string token;
+                bool found_any = false;
+
+                while (std::getline(ss, token, ',')) {
+                    // Видалення пробілів з початку і кінця
+                    size_t start = token.find_first_not_of(" \t");
+                    size_t end = token.find_last_not_of(" \t");
+
+                    if (start == std::string::npos || end == std::string::npos) {
+                        continue; // токен лише з пробілів
+                    }
+
+                    token = token.substr(start, end - start + 1);
+
+                    // Спроба перетворити токен у unsigned long
+                    try {
+                        size_t idx;
+                        unsigned long val = std::stoul(token, &idx, 10);
+
+                        if (idx != token.length()) {
+                            std::cerr << "❌ Некоректне число: \"" << token << "\" — зайві символи\n";
+                            return false;
+                        }
+
+                        if (val > max_value) {
+                            std::cerr << "❌ Число \"" << token << "\" > " << max_value << "\n";
+                            return false;
+                        }
+
+                        found_any = true;
+
+                    } catch (...) {
+                        std::cerr << "❌ Неможливо перетворити \"" << token << "\" у число\n";
+                        return false;
+                    }
+                }
+
+                if (!found_any) {
+                    std::cerr << "❌ Не знайдено жодного числа в межах [0, " << max_value << "]\n";
+                    return false;
+                }
+
+                return true;
+
+
 
         default:
 

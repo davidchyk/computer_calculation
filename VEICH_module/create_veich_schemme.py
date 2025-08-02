@@ -8,10 +8,6 @@ CELL_SIZE = 0.2  # Розмір клітинки
 LINE_WIDTH = 1.2  # Товщина обведення
 PADDING = 0.03  # Відступ усередині, щоб рамки не накладались
 
-plt.rcParams['text.usetex'] = True
-plt.rcParams['font.family'] = 'serif'
-plt.rcParams['text.latex.preamble'] = r'''\usepackage{amsmath}'''
-
 def draw_axis_brackets(ax, list_args: list[str]):
 
     try:
