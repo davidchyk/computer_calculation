@@ -3,7 +3,7 @@ from tkinter import ttk, filedialog, messagebox
 import re
 
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
-from VEICH_module.create_veich_scheme import create_veich_schemme_pdf
+from create_veich_scheme import create_veich_schemme_pdf
 
 class KarnaughGUI(tk.Tk):
 
@@ -136,7 +136,6 @@ class KarnaughGUI(tk.Tk):
             if self.validate_inputs():
                 filepath = self.select_output_file()
                 if filepath:
-                    print(f"filepath is {filepath}")
                     self.generate_veitch_diagram(filepath)
         except Exception:
             messagebox.showerror("Невідома помилка", "Empty")
