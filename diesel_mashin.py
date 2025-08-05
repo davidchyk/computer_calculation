@@ -18,7 +18,7 @@ while True:
     states[state_name] = y_output.zfill(num_outputs)
     state_order.append(state_name)
 
-# === Кодування станів
+# === Кодування станів Q1...Qn
 state_encoding = {
     state: format(i, f'0{num_triggers}b') for i, state in enumerate(state_order)
 }
@@ -56,7 +56,7 @@ def get_trigger_inputs(trigger, qn, qn1):
         if qn == 1 and qn1 == 1: return {'R': 0, 'S': '-'}
     return {}
 
-# === Формування таблиці
+# === Формування таблиці переходів
 table = []
 for src, dst, x_list, y_list in transitions:
     src_code = state_encoding[src]
@@ -98,7 +98,20 @@ for src, dst, x_list, y_list in transitions:
 
         table.append(row)
 
-# === Вивід
+# === Вивід таблиці переходів
 df = pd.DataFrame(table)
 print("\n=== Таблиця переходів та тригерів ===")
 print(df.to_string(index=False))
+
+# === Друк таблиці станів (Z1, Q1 Q2 Q3)
+print("\n=== Таблиця станів ===")
+state_table = []
+for state in state_order:
+    code = state_encoding[state]
+    row = {'Стан': state}  # Тільки назва стану без коду
+    for i in range(num_triggers):
+        row[f"Q{i+1}"] = int(code[i])
+    state_table.append(row)
+
+df_states = pd.DataFrame(state_table)
+print(df_states.to_string(index=False))
