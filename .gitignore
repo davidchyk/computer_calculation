@@ -1,5 +1,6 @@
 *.exe
 *.pyc
+*.circ
 
 error.txt
 main.txt

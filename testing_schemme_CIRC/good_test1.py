@@ -1,14 +1,8 @@
-"""
-logisim_builder.py
-Булевий вираз → .circ з ортогональними (Манхеттен) дротами,
-повна сумісність з Logisim-evolution та класичним Logisim 2.7.
-"""
-
-from __future__ import annotations
 import re, uuid, xml.etree.ElementTree as ET
-from xml.dom import minidom
 from dataclasses import dataclass, field
 from typing import List, Dict, Set, Tuple
+from xml.dom import minidom
+import datetime
 
 # ────────────────────────────── 1. Вузол дерева
 @dataclass
@@ -142,19 +136,21 @@ def build_circ(root: Node, filename: str):
     ET.SubElement(pin_def, 'a', {'name': 'tristate', 'val': 'false'})
 
     pin_out_tool = ET.SubElement(toolbar, 'tool', {'lib': '0','name': 'Pin'})
-    ET.SubElement(pin_out_tool, 'a',{'name': 'facing', 'val': 'west'})
-    ET.SubElement(pin_out_tool, 'a',{'name': 'output', 'val': 'true'})
-    ET.SubElement(pin_out_tool, 'a',{'name': 'labelloc', 'val': 'east'})
+    ET.SubElement(pin_out_tool, 'a', {'name': 'facing', 'val': 'west'})
+    ET.SubElement(pin_out_tool, 'a', {'name': 'output', 'val': 'true'})
+    ET.SubElement(pin_out_tool, 'a', {'name': 'labelloc', 'val': 'east'})
 
-    ET.SubElement(toolbar,'tool',{'lib':'1','name':'NOT Gate'})
-    ET.SubElement(toolbar,'tool',{'lib':'1','name':'AND Gate'})
-    ET.SubElement(toolbar,'tool',{'lib':'1','name':'OR Gate'})
+    ET.SubElement(toolbar, 'tool', {'lib':'1', 'name':'NOT Gate'})
+    ET.SubElement(toolbar, 'tool', {'lib':'1', 'name':'AND Gate'})
+    ET.SubElement(toolbar, 'tool', {'lib':'1', 'name':'OR Gate'})
 
-    ET.SubElement(proj,'main',{'name':'main'})
+    ET.SubElement(proj, 'main', {'name': 'main'})
+
     circ = ET.SubElement(proj,'circuit',{'name':'main'})
-    for k,v in [('circuit','main'),('clabel',''),
-                ('clabelup','east'),('clabelfont','SansSerif plain 12')]:
-        circ.append(ET.Element('a',{'name':k,'val':v}))
+    ET.SubElement(circ, 'a', {'name': 'circuit',    'val': 'main'})
+    ET.SubElement(circ, 'a', {'name': 'clabel',     'val': ''})
+    ET.SubElement(circ, 'a', {'name': 'clabelup',   'val': 'east'})
+    ET.SubElement(circ, 'a', {'name': 'clabelfont', 'val': 'SansSerif plain 12'})
 
     # --- список вузлів + вихідний Pin ---
     nodes: List[Node] = []
@@ -203,7 +199,8 @@ def build_circ(root: Node, filename: str):
 # ────────────────────────────── 6. Приклад
 if __name__ == '__main__':
     expr = "(X ∧ Y) ∨ not(Z)"          # змініть на свій вираз
+    basis = ""
     root = parse_expr(tokenize(expr))
     compute_depths(root)
     assign_coords(root)
-    build_circ(root,'example.circ')
+    build_circ(root,f'{str(datetime.datetime.now()).replace(":", ".")}.circ')
