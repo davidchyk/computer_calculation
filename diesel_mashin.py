@@ -70,7 +70,7 @@ for src, dst, x_list, y_list in transitions:
 
         # Наступні Q
         for i in range(num_triggers):
-            row[f"Q{i+1}_next"] = int(dst_code[i])
+            row[f"Q_{i+1}"] = int(dst_code[i])
 
         # Вхідна умова
         row["X"] = x if x != '-' else '-'
@@ -98,17 +98,47 @@ for src, dst, x_list, y_list in transitions:
 
         table.append(row)
 
-# === Вивід таблиці переходів
+# === Побудова DataFrame
 df = pd.DataFrame(table)
-print("\n=== Таблиця переходів та тригерів ===")
-print(df.to_string(index=False))
 
-# === Друк таблиці станів (Z1, Q1 Q2 Q3)
+# === Формування колонок у стилі таблиці зі скріна (без ПС і СП назв)
+q_cols = [f"Q{i+1}" for i in range(num_triggers)]
+q_next_cols = [f"Q_{i+1}" for i in range(num_triggers)]
+x_col = ["X"]
+y_cols = [col for col in df.columns if col.startswith("y")]
+trigger_cols = [col for col in df.columns if col.startswith(("D", "R", "S", "J", "K", "T"))]
+
+final_cols = q_cols + q_next_cols + x_col + y_cols + trigger_cols
+df_ordered = df[final_cols]
+
+# === Формуємо заголовки MultiIndex
+multi_columns = []
+for col in df_ordered.columns:
+    if col in q_cols:
+        multi_columns.append(("ПС Код", col))
+    elif col in q_next_cols:
+        multi_columns.append(("СП Код", col))
+    elif col == "X":
+        multi_columns.append(("Логічна умова", col))
+    elif col in y_cols:
+        multi_columns.append(("Керуючі сигнали", col))
+    elif col in trigger_cols:
+        multi_columns.append(("Функції збудження тригера", col))
+    else:
+        multi_columns.append(("", col))
+
+df_ordered.columns = pd.MultiIndex.from_tuples(multi_columns)
+
+# === Вивід таблиці переходів
+print("\n=== Таблиця переходів у стилі як на скріні, без ПС та СП ===")
+print(df_ordered.to_string(index=False))
+
+# === Таблиця станів
 print("\n=== Таблиця станів ===")
 state_table = []
 for state in state_order:
     code = state_encoding[state]
-    row = {'Стан': state}  # Тільки назва стану без коду
+    row = {'Стан': state}
     for i in range(num_triggers):
         row[f"Q{i+1}"] = int(code[i])
     state_table.append(row)
