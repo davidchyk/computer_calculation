@@ -1,22 +1,25 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
+from traceback import extract_tb
 import re
+import sys
 
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
-from create_veich_scheme import create_veich_schemme_pdf
+from create_veich_scheme import veich_create, resource_path
 
 class KarnaughGUI(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        self.title("Генератор схем Вейча")
+        self.title("VeychBuilder: Генератор діаграм Вейча")
         self.geometry("500x400")
         self.resizable(False, False)
         self.create_widgets()
 
     def create_widgets(self):
+        self.iconbitmap(resource_path("overS.ico"))
         self.container = ttk.Frame(self)
-        self.container.pack(anchor="w", padx=20, pady=10)
+        self.container.pack(anchor="w", padx=20, pady=5)
 
         # Тип нормальної форми (радіокнопки)
         self.nf_type_label = ttk.Label(self.container, text="Тип мінімізованої форми:")
@@ -56,31 +59,44 @@ class KarnaughGUI(tk.Tk):
         self.custom_args_error.pack(anchor="w")
 
         # Кнопка створення
-        self.create_btn = ttk.Button(self.container, text="Створити схему Вейча", command=self.main_going)
+        self.create_btn = ttk.Button(self.container, text="Створити діаграму Вейча", command=self.main_going)
         self.create_btn.pack(anchor="w", pady=20)
+
+        # Малий сірий текст
+        self.about = ttk.Label(
+            self.container,
+            text="Зв'язок:\nE-mail: artemdiachenko2007@gmail.com, Telegram: @f12d15",
+            foreground="gray",
+            font=("Arial", 9)
+        )
+        self.about.pack(anchor="w", pady=(10, 10))
 
     def select_output_file(self):
         self.clear_errors()
         filepath = filedialog.asksaveasfilename(
-            defaultextension=".pdf",
-            filetypes=[("PDF files", "*.pdf")],
-            title="Оберіть місце для збереження PDF"
+            defaultextension=".png",
+            filetypes=[("PNG Image", "*.png")],
+            title="Оберіть місце для збереження PNG"
         )
         return filepath
 
     def validate_inputs(self):
-        valid = True
 
-        ones_text = self.ones_entry.get()
+        valid = True
         maxArgs = 1 << int(self.arg_count_spinbox.get())
 
+        ones_text = self.ones_entry.get().strip()
+        if not ones_text:
+            self.ones_entry.configure(background="misty rose")
+            self.ones_error.configure(text="Поле не може бути порожнім")
+            return False
+
         try:
-            if ones_text:
-                values = [int(x.strip()) for x in ones_text.split(',')]
-                if any(x >= maxArgs for x in values):
-                    self.ones_entry.configure(background="misty rose")
-                    self.ones_error.configure(text="Неправильний ввід: містить неправильний набір")
-                    valid = False
+            values = [int(x.strip()) for x in ones_text.split(',') if x.strip() != '']
+            if any(x >= maxArgs for x in values):
+                self.ones_entry.configure(background="misty rose")
+                self.ones_error.configure(text="Неправильний ввід: містить неправильний набір")
+                valid = False
         except ValueError:
             self.ones_entry.configure(background="misty rose")
             self.ones_error.configure(text="Неправильний формат: тільки числа через кому")
@@ -119,6 +135,8 @@ class KarnaughGUI(tk.Tk):
         number_of_arguments = int(self.arg_count_spinbox.get())
         number_of_sets = 1 << number_of_arguments
 
+        print(f"In: type_of {type_of}, number_of_arguments {number_of_arguments}, number_of_sets {number_of_sets}")
+
         sets_number = [int(x.strip()) for x in self.ones_entry.get().split(',')]
         custom_args_raw = [
             f"{x[0]}_{x[1]}" for x in [arg.strip() for arg in self.custom_args_entry.get().split(',')]
@@ -127,7 +145,9 @@ class KarnaughGUI(tk.Tk):
         if type_of == 1: minimize_result = minimize_dnf_as_implicants(number_of_arguments, sets_number)
         else: minimize_result = minimize_cnf_as_implicants(number_of_arguments, [x for x in range(number_of_sets) if x not in sets_number])
 
-        create_veich_schemme_pdf(filepath, (type_of, minimize_result[1], sets_number, custom_args_raw))
+        print(f"minimize_result[1]: {minimize_result[1]}")
+
+        veich_create(filepath, type_of, minimize_result[1], sets_number, custom_args_raw)
         messagebox.showinfo("Готово", f"Схему Вейча збережено до:\n{filepath}")
 
     def main_going(self):
@@ -137,8 +157,10 @@ class KarnaughGUI(tk.Tk):
                 filepath = self.select_output_file()
                 if filepath:
                     self.generate_veitch_diagram(filepath)
-        except Exception:
-            messagebox.showerror("Невідома помилка", "Empty")
+        except Exception as e:
+
+            _, _, tb = sys.exc_info()
+            messagebox.showerror("Помилка створення виводу", f"Перевірте наявність введених значень\nКод помилки: {extract_tb(tb)[-1].lineno}\n{str(e)}")
 
 if __name__ == "__main__":
     app = KarnaughGUI()

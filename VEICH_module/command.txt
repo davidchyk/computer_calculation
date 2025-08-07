@@ -1,1 +1,3 @@
-pyinstaller --onefile --hidden-import=matplotlib.backends.backend_pdf main.py
+pyinstaller VeichCreating.py --onefile --hidden-import=matplotlib.backends.backend_pdf --windowed --icon=overS.ico --name=VeychBuilder --add-data "overS.ico;."
+
+pyinstaller VeichCreating.py --onefile --hidden-import=matplotlib.backends.backend_pdf --windowed --icon=overS.ico --name=VeychBuilder --add-data "overS.ico;." --add-data "cmuntt.ttf;."
