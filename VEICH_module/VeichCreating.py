@@ -107,7 +107,12 @@ class KarnaughGUI(tk.Tk):
     def validate_inputs(self):
 
         valid = True
-        maxArgs = 1 << int(self.arg_count_spinbox.get())
+
+        arity = int(self.arg_count_spinbox.get())
+
+        if arity <= 0 or arity > 9: 2/0
+
+        maxArgs = 1 << arity
 
         ones_text = self.ones_entry.get().strip()
         try:
@@ -174,10 +179,11 @@ class KarnaughGUI(tk.Tk):
                 filepath = self.select_output_file()
                 if filepath:
                     self.generate_veitch_diagram(filepath)
-        except Exception as e:
+
+        except Exception:
 
             _, _, tb = sys.exc_info()
-            messagebox.showerror("Помилка створення виводу", f"Перевірте наявність введених значень\nКод помилки: {extract_tb(tb)[-1].lineno}\n{str(e)}")
+            messagebox.showerror("Помилка створення виводу", f"Перевірте наявність введених значень!\nКод помилки: {extract_tb(tb)[-1].lineno}")
 
 if __name__ == "__main__":
     app = KarnaughGUI()
