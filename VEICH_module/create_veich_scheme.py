@@ -800,6 +800,8 @@ def veich_create(filename, type, num_of_args, minimized_term_term_list, sets_num
 
     def del_one(type, FRONT, shape: tuple) -> list:
 
+        #TODO Need review
+
         result = []
         rows, cols = shape
 
@@ -1207,7 +1209,6 @@ def veich_create(filename, type, num_of_args, minimized_term_term_list, sets_num
     updated_EXTENDED_coord_groups = []
 
     NEW_FRONT_veich_structure = np.zeros((rows+2, cols+2), dtype=int)
-    NEW_BACK_veich_structure = np.empty((rows+2, cols+2), dtype=object)
 
     """Для ФРОНТОВОЇ таблиці Вейча"""
 
@@ -1251,21 +1252,6 @@ def veich_create(filename, type, num_of_args, minimized_term_term_list, sets_num
     top_right_corner = np.array([[BACK_veich_structure[0, -1]]], dtype=object)    # Верхній правий
     bottom_left_corner = np.array([[BACK_veich_structure[-1, 0]]], dtype=object)  # Нижній лівий
     bottom_right_corner = np.array([[BACK_veich_structure[-1, -1]]], dtype=object) # Нижній правий
-
-    # Заповнюємо верхній рядок
-    NEW_BACK_veich_structure[0, 0] = bottom_right_corner[0, 0]
-    NEW_BACK_veich_structure[0, 1:cols+1] = bottom_side
-    NEW_BACK_veich_structure[0, cols+1] = bottom_left_corner[0, 0]
-
-    # Заповнюємо середні рядки (1–4)
-    NEW_BACK_veich_structure[1:rows+1, 1:cols+1] = BACK_veich_structure  # Центральна частина
-    NEW_BACK_veich_structure[1:rows+1, 0] = right_side  # Ліва сторона
-    NEW_BACK_veich_structure[1:rows+1, cols+1] = left_side  # Права сторона
-
-    # Заповнюємо нижній рядок
-    NEW_BACK_veich_structure[rows+1, 0] = top_right_corner[0, 0]
-    NEW_BACK_veich_structure[rows+1, 1:cols+1] = top_side
-    NEW_BACK_veich_structure[rows+1, cols+1] = top_left_corner[0, 0]
 
     if bool(WORK_minimized_term_list[0]) and WORK_minimized_term_list[0].count('X') == len(WORK_minimized_term_list[0]):
 
