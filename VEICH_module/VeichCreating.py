@@ -4,8 +4,9 @@ from traceback import extract_tb
 import re
 import sys
 
-from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
+#from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
 from create_veich_scheme import veich_create, resource_path
+from alternative_minimization import minimize_function 
 
 class KarnaughGUI(tk.Tk):
 
@@ -15,6 +16,23 @@ class KarnaughGUI(tk.Tk):
         self.geometry("500x400")
         self.resizable(False, False)
         self.create_widgets()
+
+    def on_ctrl_key(self, event):
+        if event.state & 0x4:  # Ctrl is held
+            keycode = event.keycode
+
+            if keycode == 86:  # V
+                try:
+                    text = self.clipboard_get()
+                    event.widget.insert("insert", text)
+                except:
+                    pass
+                return "break"
+
+            if keycode == 65:  # A
+                event.widget.select_range(0, 'end')
+                event.widget.icursor('end')
+                return "break"
 
     def create_widgets(self):
         self.iconbitmap(resource_path("overS.ico"))
@@ -43,6 +61,8 @@ class KarnaughGUI(tk.Tk):
         self.ones_label.pack(anchor="w", pady=5)
 
         self.ones_entry = ttk.Entry(self.container, width=50)
+        # Додай підтримку вставки: англ Ctrl+V та укр Ctrl+М
+        self.ones_entry.bind("<KeyPress>", self.on_ctrl_key)
         self.ones_entry.pack(anchor="w", pady=5)
 
         self.ones_error = ttk.Label(self.container, text="", foreground="red")
@@ -53,6 +73,7 @@ class KarnaughGUI(tk.Tk):
         self.custom_args_label.pack(anchor="w", pady=5)
 
         self.custom_args_entry = ttk.Entry(self.container, width=50)
+        self.custom_args_entry.bind("<KeyPress>", self.on_ctrl_key)
         self.custom_args_entry.pack(anchor="w", pady=5)
 
         self.custom_args_error = ttk.Label(self.container, text="", foreground="red")
@@ -75,8 +96,11 @@ class KarnaughGUI(tk.Tk):
         self.clear_errors()
         filepath = filedialog.asksaveasfilename(
             defaultextension=".png",
-            filetypes=[("PNG Image", "*.png")],
-            title="Оберіть місце для збереження PNG"
+            filetypes=[
+                ("PNG Image", "*.png"),
+                ("PDF File", "*.pdf")
+            ],
+            title="Оберіть місце для збереження діаграми Вейча"
         )
         return filepath
 
@@ -86,11 +110,6 @@ class KarnaughGUI(tk.Tk):
         maxArgs = 1 << int(self.arg_count_spinbox.get())
 
         ones_text = self.ones_entry.get().strip()
-        if not ones_text:
-            self.ones_entry.configure(background="misty rose")
-            self.ones_error.configure(text="Поле не може бути порожнім")
-            return False
-
         try:
             values = [int(x.strip()) for x in ones_text.split(',') if x.strip() != '']
             if any(x >= maxArgs for x in values):
@@ -133,21 +152,19 @@ class KarnaughGUI(tk.Tk):
     def generate_veitch_diagram(self, filepath):
         type_of = 1 if self.nf_type_var.get() == "МДНФ" else 0
         number_of_arguments = int(self.arg_count_spinbox.get())
-        number_of_sets = 1 << number_of_arguments
 
-        print(f"In: type_of {type_of}, number_of_arguments {number_of_arguments}, number_of_sets {number_of_sets}")
+        sets_number = []
 
-        sets_number = [int(x.strip()) for x in self.ones_entry.get().split(',')]
+        if self.ones_entry.get():
+            sets_number = [int(x.strip()) for x in self.ones_entry.get().split(',')]
         custom_args_raw = [
             f"{x[0]}_{x[1]}" for x in [arg.strip() for arg in self.custom_args_entry.get().split(',')]
         ] if self.custom_args_entry.get().strip() else []
 
-        if type_of == 1: minimize_result = minimize_dnf_as_implicants(number_of_arguments, sets_number)
-        else: minimize_result = minimize_cnf_as_implicants(number_of_arguments, [x for x in range(number_of_sets) if x not in sets_number])
+        if type_of == 1: minimize_result = minimize_function(number_of_arguments, sets_number, form="dnf")
+        else: minimize_result = minimize_function(number_of_arguments, sets_number, form="cnf")
 
-        print(f"minimize_result[1]: {minimize_result[1]}")
-
-        veich_create(filepath, type_of, minimize_result[1], sets_number, custom_args_raw)
+        veich_create(filepath, type_of, number_of_arguments, minimize_result, sets_number, custom_args_raw)
         messagebox.showinfo("Готово", f"Схему Вейча збережено до:\n{filepath}")
 
     def main_going(self):
