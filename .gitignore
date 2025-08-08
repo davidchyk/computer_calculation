@@ -1,6 +1,7 @@
 *.exe
 *.pyc
 *.pdb
+*.spec
 
 error.txt
 main.txt
