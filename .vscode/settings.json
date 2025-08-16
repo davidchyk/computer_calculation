@@ -109,7 +109,14 @@
     "xmemory": "cpp",
     "xstring": "cpp",
     "xtr1common": "cpp",
-    "xutility": "cpp"
+    "xutility": "cpp",
+    "algorithm": "cpp",
+    "optional": "cpp",
+    "set": "cpp",
+    "sstream": "cpp",
+    "xtree": "cpp",
+    "bitset": "cpp",
+    "iomanip": "cpp"
   },
   "cmake.sourceDirectory": "C:/Users/artem/OneDrive/Desktop/reps/computer_calculation/mainC++",
   "cmake.ignoreCMakeListsMissing": true
