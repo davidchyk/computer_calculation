@@ -181,7 +181,7 @@ def normal(sets_number, type_of, num_of_args, basis, mini):
 
         basic_result = basic(sets_number, type_of, int(num_of_args))
 
-        normal_form = NormalForm(basic_result[2], basic_result[1], basis)
+        normal_form = NormalForm(basic_result[2], type_of, basis)
         normal_form.define()
 
         output.append(f"{normal_form}")

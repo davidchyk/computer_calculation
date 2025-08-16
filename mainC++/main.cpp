@@ -8,13 +8,18 @@
 #include <bitset>
 #include <iomanip>
 
+#include "normal_forms.h"
+
 enum validateRegime {OP_MODE, ARITY, NUM_ONES, BASIS};
+
+enum convertingRegime {DNF_REGIME, CNF_REGIME, NORMAL_REGIME, MINIMIZED_REGIME, OPERATOR_REGIME};
 
 std::vector<std::pair<std::string, std::string>> db = {
     {"І", "АБО"},
     {"І-НЕ", "І-НЕ"},
     {"АБО", "І-НЕ"},
     {"АБО-НЕ", "АБО"},
+
     {"АБО", "І"},
     {"АБО-НЕ", "АБО-НЕ"},
     {"І", "АБО-НЕ"},
@@ -44,10 +49,15 @@ static inline bool is_natural_or_zero(const std::string& s) {
 bool validateInput(std::string& review, int regime, size_t optional = 0);
 
 std::vector<std::vector<std::string>> truth_table_Create(
-    const std::string &input_regime,
     int arity,
     int num_combinations,
     const std::vector<int> &sets_number,
+    const std::vector<std::string> &argsMarks
+);
+
+std::string userGoodForm(
+    NormalForm anf,
+    const int convertingFlag,
     const std::vector<std::string> &argsMarks = {}
 );
 
@@ -60,11 +70,11 @@ int main(void) {
 
     while (true) {
 
-        struct BASIS_CONFIG {
-            int first_num;
+        struct BasisConfig {
+            int in_num;
             std::string first_operation;
 
-            int second_num;
+            int out_num;
             std::string second_operation;
         };
 
@@ -85,6 +95,12 @@ int main(void) {
 
             int arity = std::stoi(arityInput);
             int num_combinations = 1 << arity;
+
+            std::vector<std::string> argsMarks;
+
+            for (int i = 0; i < arity; ++i) {
+                argsMarks.push_back("x_" + std::to_string(arity - i));
+            }
 
             std::cout << "Наберіть цілочисельні номери наборів (без крапок і дробових частин, наприклад: 0, 2, 5): ";
             std::string num_onesInput;
@@ -110,49 +126,40 @@ int main(void) {
             std::getline(std::cin, basisInput);
             if (!validateInput(basisInput, BASIS)) continue;
 
-            BASIS_CONFIG basis;
-            std::stringstream basisInputstream(basisInput);
-            std::string basistoken;
+            BasisConfig basis;
+            std::string left = basisInput.substr(0, basisInput.find('/'));
+            std::string right = basisInput.substr(basisInput.find('/')+1);
 
-            // first_num
-            std::getline(basisInputstream, basistoken, ',');
-            basistoken.erase(0, basistoken.find_first_not_of(" \t")); // прибираємо пробіли
-            basistoken.erase(basistoken.find_last_not_of(" \t") + 1);
-            basis.first_num = std::stoi(basistoken);
-
-            // first_operation
-            std::getline(basisInputstream, basistoken, ',');
-            basistoken.erase(0, basistoken.find_first_not_of(" \t"));
-            basistoken.erase(basistoken.find_last_not_of(" \t") + 1);
-            basis.first_operation = basistoken;
-
-            // second_num
-            std::getline(basisInputstream, basistoken, ',');
-            basistoken.erase(0, basistoken.find_first_not_of(" \t"));
-            basistoken.erase(basistoken.find_last_not_of(" \t") + 1);
-            basis.second_num = std::stoi(basistoken);
-
-            // out_operation
-            std::getline(basisInputstream, basistoken);
-            basistoken.erase(0, basistoken.find_first_not_of(" \t"));
-            basistoken.erase(basistoken.find_last_not_of(" \t") + 1);
-            basis.second_operation = basistoken;
+            basis.in_num = left[0] - '0';
+            basis.out_num = right[0] - '0';
+            basis.first_operation = left.substr(1);
+            basis.second_operation = right.substr(1);
 
             bool is_DNF = false;
 
-            if (basis.first_operation == "АБО" || basis.first_operation == "І-НЕ") {
+            if (basis.second_operation == "АБО" || basis.second_operation == "І-НЕ") 
                 is_DNF = true;
-            }
-
-            // ANALYZING INFORMAION AND CREATING OUTPUT
+            
+            // ANALYZING INPUTED INFORMAION AND CREATING OUTPUT
 
             std::vector<std::vector<std::string>> truth_table = truth_table_Create(
-                input_regime,
                 arity,
                 num_combinations,
-                num_ones
+                num_ones, 
+                argsMarks
             );
 
+            std::vector<std::string> DNFCannonForm = cannonFormCreating(num_ones, arity, true);
+            std::vector<std::string> CNFCannonForm = cannonFormCreating(num_ones, arity, false);
+
+            // getting class, that contains our STANDART normal form
+            NormalForm dnf = normalRunning(DNFCannonForm, true, "І", "АБО");
+            NormalForm cnf = normalRunning(CNFCannonForm, false, "АБО", "І");
+            NormalForm nf = normalRunning(is_DNF ? DNFCannonForm : CNFCannonForm, is_DNF, basis.first_operation, basis.second_operation);
+
+            std::string dnf_userForm = userGoodForm(dnf, DNF_REGIME, argsMarks);
+            std::string cnf_userForm = userGoodForm(cnf, CNF_REGIME, argsMarks);
+            std::string normal_userForm = userGoodForm(nf, NORMAL_REGIME, argsMarks);
 
 
 
@@ -165,6 +172,9 @@ int main(void) {
 
 
 
+            std::cout << "DNF is : " << dnf_userForm << std::endl;
+            std::cout << "CNF is : " << cnf_userForm << std::endl;
+            std::cout << "NORMAL is : " << normal_userForm << std::endl;
 
             std::cout << "table output:\n";
 
@@ -175,7 +185,7 @@ int main(void) {
                 std::cout << "\n";                      // новий рядок після кожного рядка
             }
 
-            std::cout << "Good Result\n\n";
+            // break;
 
         }
 
@@ -244,7 +254,6 @@ bool validateInput(std::string& review, int regime, size_t optional) {
 
         case BASIS: {
             std::string s = review;
-            trim(s);
 
             // 1) рівно один '/'
             const size_t slash = s.find('/');
@@ -257,7 +266,6 @@ bool validateInput(std::string& review, int regime, size_t optional) {
             // 2) ліва/права частини
             std::string left  = s.substr(0, slash);
             std::string right = s.substr(slash + 1);
-            trim(left); trim(right);
             if (left.empty() || right.empty()) {
                 std::cerr << "Неправильний базис. Приклад: 3І/2АБО\n";
                 return false;
@@ -270,7 +278,6 @@ bool validateInput(std::string& review, int regime, size_t optional) {
             }
             std::string lNum(1, left[0]);
             std::string lOp  = left.substr(1);
-            trim(lOp);
 
             if (!is_natural_or_zero(lNum) || lOp.empty()) {
                 std::cerr << "Неправильний базис. Приклад: 3І/2АБО\n";
@@ -289,7 +296,6 @@ bool validateInput(std::string& review, int regime, size_t optional) {
             }
             std::string rNum(1, right[0]);
             std::string rOp  = right.substr(1);
-            trim(rOp);
 
             if (!is_natural_or_zero(rNum) || rOp.empty()) {
                 std::cerr << "Неправильний базис. Приклад: 3І/2АБО\n";
@@ -316,7 +322,6 @@ bool validateInput(std::string& review, int regime, size_t optional) {
 }
 
 std::vector<std::vector<std::string>> truth_table_Create(
-    const std::string &input_regime,
     int arity,
     int num_combinations,
     const std::vector<int> &sets_number,
@@ -326,14 +331,8 @@ std::vector<std::vector<std::string>> truth_table_Create(
     std::vector<std::vector<std::string>> result(num_combinations + 1, std::vector<std::string>(arity));
 
     // Перший рядок
-    if (input_regime == "sets") {
-        for (int k = 0; k < arity; ++k) {
-            result[0][k] = "$x_" + std::to_string(arity - k) + "$";
-        }
-    } else if (input_regime == "expression") {
-        for (int k = 0; k < arity; ++k) {
-            result[0][k] = "$" + argsMarks[k] + "$";
-        }
+    for (int k = 0; k < arity; ++k) {
+        result[0][k] = "$" + argsMarks[k] + "$";
     }
 
     // Заповнення бінарних комбінацій
@@ -364,4 +363,107 @@ std::vector<std::vector<std::string>> truth_table_Create(
     }
 
     return result;
+}
+
+std::string userGoodForm(
+    NormalForm anf,
+    const int convertingFlag,
+    const std::vector<std::string> &argsMarks
+) {
+
+    std::string output;
+
+    switch (convertingFlag) {
+    
+        case (DNF_REGIME): {
+
+            for (size_t t = 0; t < anf.structure.size(); ++t) {
+                const std::string &term = anf.structure[t];
+
+                std::string term_str;
+                for (size_t i = 0; i < term.size(); ++i) {
+
+                    if (term[i] == '0') {
+                        term_str += "not(" + argsMarks[i] + ")";
+                    } else {
+                        term_str += argsMarks[i];
+                    }
+
+                    if (i + 1 < term.size()) term_str += " ∧ ";
+                }
+
+                term_str = "(" + term_str + ")";
+
+                if (!output.empty()) output += " ∨ ";
+                output += term_str;
+            }
+
+            return output;
+
+        }
+
+        case (CNF_REGIME): {
+
+            for (size_t t = 0; t < anf.structure.size(); ++t) {
+                const std::string &term = anf.structure[t];
+
+                std::string term_str;
+                for (size_t i = 0; i < term.size(); ++i) {
+
+                    if (term[i] == '0') {
+                        term_str += "not(" + argsMarks[i] + ")";
+                    } else {
+                        term_str += argsMarks[i];
+                    }
+
+                    if (i + 1 < term.size()) term_str += " ∨ ";
+                }
+
+                term_str = "(" + term_str + ")";
+
+                if (!output.empty()) output += " ∧ ";
+                output += term_str;
+            }
+
+            return output;
+
+        }
+
+        case (NORMAL_REGIME): {
+
+            for (size_t t = 0; t < anf.structure.size(); ++t) {
+                const std::string &term = anf.structure[t];
+
+                std::string term_str;
+                for (size_t i = 0; i < term.size(); ++i) {
+
+                    if (term[i] == '0') {
+                        term_str += "not(" + argsMarks[i] + ")";
+                    } else {
+                        term_str += argsMarks[i];
+                    }
+
+                    if (i + 1 < term.size()) term_str += " " + anf.in_sign + " ";
+                }
+
+                term_str = "(" + term_str + ")";
+                if (anf.in_not) term_str = "not" + term_str;
+
+                if (!output.empty()) output += " " + anf.out_sign + " ";
+                output += term_str;
+            }
+
+            if (anf.out_not) output = "not(" + output + ")";
+            return output;
+
+        }
+
+        default: {
+
+            return output;
+
+        }
+
+    }
+
 }
