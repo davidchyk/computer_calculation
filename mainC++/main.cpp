@@ -9,6 +9,7 @@
 #include <iomanip>
 
 #include "normal_forms.h"
+#include "operator_forms.h"
 
 enum validateRegime {OP_MODE, ARITY, NUM_ONES, BASIS};
 
@@ -161,9 +162,15 @@ int main(void) {
             std::string cnf_userForm = userGoodForm(cnf, CNF_REGIME, argsMarks);
             std::string normal_userForm = userGoodForm(nf, NORMAL_REGIME, argsMarks);
 
+            std::string operatorForm = operatorRunning(nf, basis.in_num, basis.out_num);
 
+            std::cout << "Operator form is " << operatorForm << std::endl;
 
+            // (((0 ∧ 0 ∧ 0) ∧ 1) ∨ ((0 ∧ 0 ∧ 1) ∧ 0) ∨ ((0 ∧ 0 ∧ 1) ∧ 1)) ∨ ((1 ∧ 0 ∧ 1) ∧ 0)
+            // (((0 ∧ 0 ∧ 0) ∧ 1) ∨ ((0 ∧ 0 ∧ 1) ∧ 0) ∨ ((0 ∧ 0 ∧ 1) ∧ 1)) ∨ ((1 ∧ 0 ∧ 1) ∧ 0)
 
+            // not(((not(((0 ∧ 0 ∧ 0) ∧ 1)) ∧ not(((0 ∧ 0 ∧ 1) ∧ 0)) ∧ not(((0 ∧ 0 ∧ 1) ∧ 1))) ∧ not(((1 ∧ 0 ∧ 1) ∧ 0))))
+            // not(not(not(not(not(not(0 ∧ 0 ∧ 0)) ∧ 1) ∧ not(not(not(0 ∧ 0 ∧ 1)) ∧ 0) ∧ not(not(not(0 ∧ 0 ∧ 1)) ∧ 1))) ∧ not(not(not(1 ∧ 0 ∧ 1)) ∧ 0))
 
 
 
@@ -192,6 +199,8 @@ int main(void) {
         else {}
 
     }
+
+    return 0;
 
 }
 

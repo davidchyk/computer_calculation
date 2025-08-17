@@ -21,4 +21,5 @@ endif()
 add_executable(app
     main.cpp
     normal_forms.cpp
+    operator_forms.cpp
 )

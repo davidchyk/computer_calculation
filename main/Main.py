@@ -12,7 +12,7 @@ import tempfile
 
 from minimization import minimize_dnf_as_implicants, minimize_cnf_as_implicants
 from create_pdf_output import create_pdf_main, get_true_table
-from main.create_veich_scheme import create_veich_schemme_pdf
+from create_veich_scheme import create_veich_schemme_pdf
 from operator_form2 import operator_form
 from class_function import class_define
 from normal_forms import normal
@@ -376,6 +376,8 @@ while True:
             truth_table = truth_table_Create(function_regime, number_of_arguments, number_of_sets, i)
             normal_result = normal(sets_number, type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), False)
             operator_result = operator_form(normal_result[1], in_num, out_num)
+
+            print(operator_result)
 
             if type_of: minimize_result = minimize_dnf_as_implicants(number_of_arguments, sets_number)
             else: minimize_result = minimize_cnf_as_implicants(number_of_arguments, [x for x in range(number_of_sets) if x not in sets_number])
