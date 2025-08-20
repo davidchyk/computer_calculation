@@ -84,27 +84,53 @@ def qmc_minimize(num_vars: int, on_set: list[int]) -> list[str]:
 
     return minimal_cover
 
-def minimize_function(num_vars: int, indices: list[int], form: str = 'dnf') -> list[str]:
+def minimize_function(num_vars: int, indices: list[int], form: str = 'dnf'):
 
     if form == 'dnf':
 
         if indices:
-
-            return qmc_minimize(num_vars, indices)
+            
+            result = ""
+            implicants = qmc_minimize(num_vars, indices)
         
-        return [""]
+            for t in implicants:
+
+                new_set = ""
+
+                for e in t: new_set += f"{e} ∧ "
+
+                new_set = new_set.rstrip(' ∧ ')
+                result += f"({new_set}) ∨ "
+
+            result = result.rstrip(' ∨ ')
+
+            return implicants, result, True
+        
+        return ([""], "", True)
 
     else:
 
-        result = []
+        implicants = []
+        result = ""
         indices0 = sorted(set(range(2 ** num_vars)) - set(indices))
 
         if indices0:
 
             for term in qmc_minimize(num_vars, indices0):
 
-                result.append(term.replace("0", "_").replace("1", "0").replace("_", "1"))
+                implicants.append(term.replace("0", "_").replace("1", "0").replace("_", "1"))
 
-            return result
+            for t in implicants:
 
-        else: return [""]
+                new_set = ""
+
+                for e in t: new_set += f"{e} ∨ "
+
+                new_set = new_set.rstrip(' ∨ ')
+                result += f"({new_set}) ∧ "
+
+            result = result.rstrip(' ∧ ')
+
+            return implicants, result, False
+
+        else: return ([""], "", False)

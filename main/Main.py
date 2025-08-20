@@ -16,6 +16,7 @@ from create_veich_scheme import create_veich_schemme_pdf
 from operator_form2 import operator_form
 from class_function import class_define
 from normal_forms import normal
+from alternative_minimization import minimize_function
 
 db = [['І', 'АБО'], ['І-НЕ', 'І-НЕ'], ['АБО', 'І-НЕ'], ['АБО-НЕ', 'АБО'],
       ['АБО', 'І'], ['АБО-НЕ', 'АБО-НЕ'], ['І', 'АБО-НЕ'], ['І-НЕ', 'І']]
@@ -379,8 +380,11 @@ while True:
 
             print(operator_result)
 
-            if type_of: minimize_result = minimize_dnf_as_implicants(number_of_arguments, sets_number)
-            else: minimize_result = minimize_cnf_as_implicants(number_of_arguments, [x for x in range(number_of_sets) if x not in sets_number])
+            #if type_of: minimize_result = minimize_dnf_as_implicants(number_of_arguments, sets_number)
+            #else: minimize_result = minimize_cnf_as_implicants(number_of_arguments, [x for x in range(number_of_sets) if x not in sets_number])
+
+            if type_of: minimize_result = minimize_function(number_of_arguments, sets_number, 'dnf')
+            else: minimize_result = minimize_function(number_of_arguments, sets_number, 'cnf')
 
             minimize_normal_result = normal(minimize_result[1], type_of, number_of_arguments, (basis_update[0][1], basis_update[1][1]), True)[1]
             minimize_operator_result = operator_form(minimize_normal_result, in_num, out_num)
