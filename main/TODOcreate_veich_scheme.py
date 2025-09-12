@@ -815,7 +815,7 @@ def veich_create(filename, type, num_of_args, minimized_term_term_list, sets_num
 
         return result
 
-    if type: WORK_minimized_term_list = minimized_term_term_list
+    if type: WORK_minimized_term_list = 6
     else:
 
         WORK_minimized_term_list = []

@@ -359,8 +359,6 @@ while True:
             if not validate(input_data, "input_data", number_of_sets): continue
             sets_number = [int(float(x)) for x in input_data.split(',')]
 
-            FullFactor = bool(set(sets_number).intersection(set(range(number_of_sets))))
-
             basis = input("Наберіть елементний базис через /: ").split('/')
             if not validate(basis, "basis"): continue
 
