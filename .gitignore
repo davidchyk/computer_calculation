@@ -1,5 +1,4 @@
 *.exe
-*.pyc
 *.pdb
 *.spec
 
@@ -9,4 +8,3 @@ plot1.pdf
 
 d
 build
-.vscode
