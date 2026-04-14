@@ -124,14 +124,16 @@ elif format == "8421+delta":
 
     correction_value = 13
 
-new_X_number = to_bcd8421(X_number, coding_table)
-new_Y_number = to_bcd8421(Y_number, coding_table)
+if __name__ == "__main__":
 
-print(f"Number X: {new_X_number}")
-print(f"Number Y: {new_Y_number}")
+    new_X_number = to_bcd8421(X_number, coding_table)
+    new_Y_number = to_bcd8421(Y_number, coding_table)
 
-x = summing(new_X_number, new_Y_number)
-print(f"df: {x}")
+    print(f"Number X: {new_X_number}")
+    print(f"Number Y: {new_Y_number}")
 
-print(f"bin2dec: {bin2dec("0.1001 1000 1001 1010")}")
-print(f"Absulute correct value of C: {to_bcd8421(C, coding_table)}, C = {C}")
+    x = summing(new_X_number, new_Y_number)
+    print(f"df: {x}")
+
+    print(f"bin2dec: {bin2dec("0.1001 1000 1001 1010")}")
+    print(f"Absulute correct value of C: {to_bcd8421(C, coding_table)}, C = {C}")
