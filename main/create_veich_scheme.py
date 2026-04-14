@@ -1277,7 +1277,11 @@ def create_veich_schemme_pdf(temp_dir, veich_schemme_list):
             filename = os.path.join(temp_dir, f"plot{count}.pdf")
             if veich_create(filename, *veich_config) == False: return False
 
-    except Exception as e: return False
+    except Exception as e:
+
+        print(str(e))
+        return False
+
     return True
 
 if __name__ == "__main__":

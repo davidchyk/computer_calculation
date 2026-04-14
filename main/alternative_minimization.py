@@ -104,9 +104,9 @@ def minimize_function(num_vars: int, indices: list[int], form: str = 'dnf'):
 
             result = result.rstrip(' ∨ ')
 
-            return implicants, result, True
+            return result, implicants, True
         
-        return ([""], "", True)
+        return ("", [""], True)
 
     else:
 
@@ -131,6 +131,6 @@ def minimize_function(num_vars: int, indices: list[int], form: str = 'dnf'):
 
             result = result.rstrip(' ∧ ')
 
-            return implicants, result, False
+            return result, implicants, False
 
-        else: return ([""], "", False)
+        else: return ("", [""], False)
