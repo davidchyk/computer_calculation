@@ -83,6 +83,8 @@ int main(void) {
                 return 1;
             }
 
+            uint16_t num_sets = (uint16_t)(1u << num_args);
+
             while (i <= num_functions) {
 
                 printf("Enter data for function F%u:\n", (unsigned)i);
