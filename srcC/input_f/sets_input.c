@@ -24,9 +24,28 @@ static char* trim_spaces(char *s) {
     return s;
 }
 
-static bool parse_int_list_csv(string *input, int **out_array, int *out_count) {
+static void free_args_array(char **args_array, int args_num) {
 
-    if (input == NULL || input->data == NULL || out_array == NULL || out_count == NULL) {
+    if (args_array == NULL) {
+        return;
+    }
+
+    for (int i = 0; i < args_num; i++) {
+        free(args_array[i]);
+    }
+
+    free(args_array);
+}
+
+static bool parse_int_list_csv(string *input, int max_set_value, int **out_array, int *out_count) {
+
+    if (
+        input == NULL ||
+        input->data == NULL ||
+        out_array == NULL ||
+        out_count == NULL ||
+        max_set_value <= 0
+    ) {
         return false;
     }
 
@@ -64,7 +83,7 @@ static bool parse_int_list_csv(string *input, int **out_array, int *out_count) {
             .capacity = strlen(token)
         };
 
-        if (!string_to_decimal(&token_string, &value)) {
+        if (!string_to_decimal(&token_string, &value) || value < 0 || value >= max_set_value) {
             free(array);
             return false;
         }
@@ -112,6 +131,15 @@ static bool parse_int_list_csv(string *input, int **out_array, int *out_count) {
 
 void sets_inputing(Function_Data *function) {
 
+    if (function == NULL) {
+        printf(
+            ERROR(
+                "\t[Sets Mode] [Error] Function data is not initialized.\n"
+            )
+        );
+        return;
+    }
+
     // argsNum
 
     while (true) {
@@ -127,6 +155,15 @@ void sets_inputing(Function_Data *function) {
         fflush(stdout);
 
         string num_function_args_str = string_input();
+
+        if (num_function_args_str.data == NULL) {
+            printf(
+                ERROR(
+                    "\t[Sets Mode] [Error] Failed to read number of arguments.\n"
+                )
+            );
+            return;
+        }
 
         if (
             string_to_decimal(&num_function_args_str, &function->argsNum) &&
@@ -163,18 +200,35 @@ void sets_inputing(Function_Data *function) {
         );
 
         fflush(stdout);
-
         string sets_input = string_input();
 
-        if (parse_int_list_csv(&sets_input, &function->setsArray, &function->setsNum)) {
+        if (sets_input.data == NULL) {
+            printf(
+                ERROR(
+                    "\t[Sets Mode] [Error] Failed to read sets input.\n"
+                )
+            );
+            return;
+        }
+
+        if (
+            parse_int_list_csv(
+                &sets_input,
+                1 << function->argsNum,
+                &function->setsArray,
+                &function->setsNum
+            )
+        ) {
             string_free(&sets_input);
             break;
         }
 
         printf(
             ERROR(
-                "\t[Sets Mode] [Error] Invalid sets input. Please enter valid integers separated by commas.\n"
+                "\t[Sets Mode] [Error] Invalid sets input. Please enter valid integers from 0 to %d separated by commas.\n"
             )
+            ,
+            (1 << function->argsNum) - 1
         );
 
         string_free(&sets_input);
@@ -185,12 +239,42 @@ void sets_inputing(Function_Data *function) {
 
     char **args_array = malloc((function->argsNum + 1) * sizeof(char*));
 
+    if (args_array == NULL) {
+        printf(
+            ERROR(
+                "\t[Sets Mode] [Error] Failed to allocate memory for variables.\n"
+            )
+        );
+        free(function->setsArray);
+        function->setsArray = NULL;
+        function->setsNum = 0;
+        return;
+    }
+
+    for (int i = 0; i < function->argsNum + 1; i++) {
+        args_array[i] = NULL;
+    }
+
     for (int i = 0; i < function->argsNum; i++) {
 
-        args_array[i] = malloc(3 * sizeof(char));
-        args_array[i][0] = 'x';
-        args_array[i][1] = (char)('0' + i);
-        args_array[i][2] = '\0';
+        args_array[function->argsNum-(i+1)] = malloc(3 * sizeof(char));
+        
+        if (args_array[function->argsNum-(i+1)] == NULL) {
+            printf(
+                ERROR(
+                    "\t[Sets Mode] [Error] Failed to allocate memory for variable names.\n"
+                )
+            );
+            free(function->setsArray);
+            function->setsArray = NULL;
+            function->setsNum = 0;
+            free_args_array(args_array, function->argsNum + 1);
+            return;
+        }
+
+        args_array[function->argsNum-(i+1)][0] = 'X';
+        args_array[function->argsNum-(i+1)][1] = (char)('0' + i);
+        args_array[function->argsNum-(i+1)][2] = '\0';
 
     }
 

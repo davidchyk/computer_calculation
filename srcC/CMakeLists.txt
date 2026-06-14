@@ -10,6 +10,8 @@ add_executable(app
     main.c
     typing.h
     input_f/sets_input.c
+    input_f/expression_input.c
+    input_f/basis_input.c
     input_f/total_input.c
     string_process/string_process.c
 )
