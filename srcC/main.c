@@ -55,6 +55,10 @@ int main(void) {
 
     printf("Computer Calculation Tool\nAuthor: Davydchuk Artem\n\n");
 
+    /*
+
+    FUCK CLI, FUCK TERMINAL
+
     while (true) {
 
         int num_functions = 0;
@@ -160,6 +164,8 @@ int main(void) {
         free(functionArr);
 
     }
+
+    */
 
     return 0;
 }
