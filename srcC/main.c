@@ -6,9 +6,13 @@
 #include <ctype.h>
 #include <limits.h>
 
+#include "gui/gui.h"
+
 #include "string_process/string_process.h"
 #include "input_f/total_input.h"
 #include "typing.h"
+
+/*
 
 const char *logical_form_to_string(logical_form form) {
 
@@ -51,9 +55,13 @@ static void free_function_data(Function_Data *function) {
     function->setsNum = 0;
 }
 
+*/
+
 int main(void) {
 
     printf("Computer Calculation Tool\nAuthor: Davydchuk Artem\n\n");
+
+    gui_run();
 
     /*
 
