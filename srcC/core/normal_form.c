@@ -84,9 +84,20 @@ static void append_string(string* main_string, const char* past_string) {
 
 }
 
-static string build_normal_form_v1(Function_Data* function_data, basisType basis) {
+static string build_normal_form(Function_Data* function_data, basisType basis) {
 
     string normal_form = { NULL, 0u, 0u };
+
+    bool in_not = false;
+    bool out_not = false;
+
+    bool in_or_symbol = false;
+    bool out_or_symbol = false;
+
+    bool reversing = false;
+
+    int* termArr = NULL;
+    int termArr_len = 0;
 
     if (is_from_dnf(basis)) {
 
@@ -97,225 +108,222 @@ static string build_normal_form_v1(Function_Data* function_data, basisType basis
 
         }
 
-        switch (basis) {
+        else if (function_data->setsNum == (1 << function_data->argsNum)) {
 
-            case AND_OR:
-
-                for (int i = 0; i < function_data->setsNum; i++) {
-
-                    int minterm = function_data->setsArray[i];
-                    char* mintermBits = get_bits(minterm, function_data->argsNum);
-
-                    if (function_data->setsNum > 1) {
-
-                        append_string(&normal_form, "(");
-
-                    }
-
-                    for (int j = 0; j < function_data->argsNum; j++) {
-
-                        if (mintermBits[j] == '0') {
-
-                            append_string(&normal_form, "\\overline");
-                            append_string(&normal_form, function_data->argsArray[j]);
-
-                        }
-
-                        else {
-
-                            append_string(&normal_form, function_data->argsArray[j]);
-
-                        }
-
-                    }
-
-                    if (i < function_data->setsNum - 1) {
-
-                        append_string(&normal_form, "\\vee");
-
-                    }
-
-                    free(mintermBits);
-
-                }
-
-                break;
-
-            case NAND_NAND:
-
-                append_string(&normal_form, "\\overline{");
-
-                for (int i = 0; i < function_data->setsNum; i++) {
-
-                    int minterm = function_data->setsArray[i];
-                    char* mintermBits = get_bits(minterm, function_data->argsNum);
-
-                    append_string(&normal_form, "\\overline{");
-
-                    for (int j = 0; j < function_data->argsNum; j++) {
-
-                        if (mintermBits[j] == '0') {
-
-                            append_string(&normal_form, "\\overline");
-                            append_string(&normal_form, function_data->argsArray[j]);
-
-                        }
-
-                        else {
-
-                            append_string(&normal_form, function_data->argsArray[j]);
-
-                        }
-
-                    }
-
-                    append_string(&normal_form, "}");
-
-                    if (i < function_data->setsNum - 1) {
-
-                        append_string(&normal_form, "\\wedge");
-
-                    }
-
-                    free(mintermBits);
-
-                }
-
-                append_string(&normal_form, "}");
-
-                break;
-
-            case OR_NAND:
-
-                append_string(&normal_form, "\\overline{");
-
-                for (int i = 0; i < function_data->setsNum; i++) {
-
-                    if (function_data->setsNum > 1) {
-
-                        append_string(&normal_form, "(");
-
-                    }
-
-                    int minterm = function_data->setsArray[i];
-                    char* mintermBits = get_bits(minterm, function_data->argsNum);
-
-                    for (int j = 0; j < function_data->argsNum; j++) {
-
-                        if (mintermBits[j] == '1') {
-
-                            append_string(&normal_form, "\\overline");
-                            append_string(&normal_form, function_data->argsArray[j]);
-
-                        }
-
-                        else {
-
-                            append_string(&normal_form, function_data->argsArray[j]);
-
-                        }
-
-                        if (j < function_data->argsNum - 1) {
-
-                            append_string(&normal_form, "\\vee");
-
-                        }
-
-                    }
-
-                    if (function_data->setsNum > 1) {
-
-                        append_string(&normal_form, ")");
-
-                    }
-
-                    if (i < function_data->setsNum - 1) {
-
-                        append_string(&normal_form, "\\wedge");
-
-                    }
-
-                    free(mintermBits);
-
-                }
-
-                append_string(&normal_form, "}");
-
-                break;
-
-            case NOR_OR:
-
-                for (int i = 0; i < function_data->setsNum; i++) {
-
-                    append_string(&normal_form, "\\overline{");
-
-                    int minterm = function_data->setsArray[i];
-                    char* mintermBits = get_bits(minterm, function_data->argsNum);
-
-                    for (int j = 0; j < function_data->argsNum; j++) {
-
-                        if (mintermBits[j] == '1') {
-
-                            append_string(&normal_form, "\\overline");
-                            append_string(&normal_form, function_data->argsArray[j]);
-
-                        }
-
-                        else {
-
-                            append_string(&normal_form, function_data->argsArray[j]);
-
-                        }
-
-                        if (j < function_data->argsNum - 1) {
-
-                            append_string(&normal_form, "\\vee");
-
-                        }
-
-                    }
-
-                    append_string(&normal_form, "}");
-
-                    if (i < function_data->setsNum - 1) {
-
-                        append_string(&normal_form, "\\vee");
-
-                    }
-
-                    free(mintermBits);
-
-                }
-
-                break;
-
-            default:
-
-                break;
+            append_string(&normal_form, "1");
+            return normal_form;
 
         }
+
+        termArr = function_data->setsArray;
+        termArr_len = function_data->setsNum;
 
     }
 
     else {
 
-        printf("we here");
+        int k = (1 << function_data->argsNum) - function_data->setsNum;
 
-        // generate maxterm array from setsArray
+        if (k == 0) {
 
-        int* maxterm = (int*)malloc(sizeof(int) * ((1 << function_data->argsNum) - function_data->setsNum));
+            append_string(&normal_form, "1");
+            return normal_form;
+
+        }
+
+        else if (k == (1 << function_data->argsNum)) {
+
+            append_string(&normal_form, "0");
+            return normal_form;
+
+        }
+
+        termArr = (int*)malloc(sizeof(int) * ((1 << function_data->argsNum) - function_data->setsNum));
 
         for (int i = 0, j = 0; i < (1 << function_data->argsNum); i++) {
 
             if (!is_in_array(i, function_data->setsArray, function_data->setsNum)) {
 
-                maxterm[j++] = i;
+                termArr[j++] = i;
 
             }
 
         }
 
+        termArr_len = k;
+
     }
+
+    switch (basis) {
+
+        case AND_OR:
+
+            in_not = false;
+            out_not = false;
+
+            in_or_symbol = false;
+            out_or_symbol = true;
+
+            reversing = false;
+
+            break;
+
+        case NAND_NAND:
+
+            in_not = true;
+            out_not = true;
+
+            in_or_symbol = false;
+            out_or_symbol = false;
+
+            reversing = false;
+
+            break;
+
+        case OR_NAND:
+
+            in_not = false;
+            out_not = true;
+
+            in_or_symbol = true;
+            out_or_symbol = false;
+
+            reversing = true;
+
+            break;
+        
+        case NOR_OR:
+
+            in_not = true;
+            out_not = false;
+
+            in_or_symbol = true;
+            out_or_symbol = true;
+
+            reversing = true;
+
+            break;
+
+        case OR_AND:
+        
+            in_not = false;
+            out_not = false;
+
+            in_or_symbol = true;
+            out_or_symbol = false;
+
+            reversing = true;
+
+            break;
+
+        case NOR_NOR:
+
+            in_not = true;
+            out_not = true;
+
+            in_or_symbol = true;
+            out_or_symbol = true;
+
+            reversing = true;
+
+            break;
+
+        case AND_NOR:
+
+            in_not = false;
+            out_not = true;
+
+            in_or_symbol = false;
+            out_or_symbol = true;
+
+            reversing = false;
+
+            break;
+
+        case NAND_AND:
+
+            in_not = true;
+            out_not = false;
+
+            in_or_symbol = false;
+            out_or_symbol = false;
+
+            reversing = false;
+
+            break;
+        
+        default:
+
+            break;
+
+    }
+
+    if (out_not) append_string(&normal_form, "\\overline{");
+
+    for (int i = 0; i < termArr_len; i++) {
+
+        int term = termArr[i];
+        char* termBits = get_bits(term, function_data->argsNum);
+
+        if (in_not) {
+
+            append_string(&normal_form, "\\overline{");
+
+        }
+
+        else if (!in_not && termArr_len > 1) {
+
+            append_string(&normal_form, "(");
+
+        }
+
+        for (int j = 0; j < function_data->argsNum; j++) {
+
+            if (termBits[j] == '1') {
+
+                if (reversing) append_string(&normal_form, "\\overline");
+                append_string(&normal_form, function_data->argsArray[j]);
+
+            }
+
+            else {
+                
+                if (!reversing) append_string(&normal_form, "\\overline");
+                append_string(&normal_form, function_data->argsArray[j]);
+
+            }
+
+            if (j < function_data->argsNum - 1) {
+
+                in_or_symbol ? append_string(&normal_form, "\\vee") : append_string(&normal_form, "\\wedge");
+
+            }
+
+        }
+
+        if (in_not) {
+
+            append_string(&normal_form, "}");
+
+        }
+
+        else if (!in_not && termArr_len > 1) {
+
+            append_string(&normal_form, ")");
+
+        }
+
+        if (i < termArr_len - 1) {
+
+            out_or_symbol ? append_string(&normal_form, "\\vee") : append_string(&normal_form, "\\wedge");
+
+        }
+
+        free(termBits);
+
+    }
+
+    if (out_not) append_string(&normal_form, "}");
 
     return normal_form;
 
