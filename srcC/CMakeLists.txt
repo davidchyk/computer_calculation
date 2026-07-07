@@ -25,6 +25,8 @@ add_executable(app
     input_f/basis_input.c
     input_f/total_input.c
 
+    core/normal_form.c
+
     string_process/string_process.c
 
     gui/gui.c
@@ -34,6 +36,7 @@ target_include_directories(app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/input_f
     ${CMAKE_CURRENT_SOURCE_DIR}/string_process
+    ${CMAKE_CURRENT_SOURCE_DIR}/core
     ${CMAKE_CURRENT_SOURCE_DIR}/gui
 )
 
