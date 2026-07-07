@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+#include "string_process/string_process.h"
+
 typedef enum {
 
     AND_OR,
@@ -43,6 +45,15 @@ typedef struct {
     int first_basisNumber, second_basisNumber;
 
     // function data from calculations
+
+    string dnf_form;
+    string cnf_form;
+
+    string normal_form;
+    string operator_form;
+
+    string minimized_normal_form;
+    string minimized_operator_form;
 
 } Function_Data;
 
