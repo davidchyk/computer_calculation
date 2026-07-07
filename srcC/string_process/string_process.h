@@ -1,5 +1,5 @@
-#ifndef string_process
-#define string_process
+#ifndef STRING_PROCESS_H
+#define STRING_PROCESS_H
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -19,4 +19,5 @@ string string_input(void);
 void string_free(string *s);
 
 bool string_to_decimal(const string* str, int* out_value);
-#endif // string_process
+
+#endif // STRING_PROCESS_H
