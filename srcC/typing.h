@@ -18,15 +18,6 @@ typedef enum {
 
 } basisType;
 
-typedef enum {
-
-    FORM_AND,
-    FORM_OR,
-    FORM_NOR,
-    FORM_NAND
-
-} logical_form;
-
 typedef struct {
 
     // function data from input
@@ -41,7 +32,6 @@ typedef struct {
     bool from_expression_created;
 
     basisType basis;
-    logical_form firstForm, secondForm;
     int first_basisNumber, second_basisNumber;
 
     // function data from calculations
