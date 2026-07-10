@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(MyCProject LANGUAGES C CXX)
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
@@ -20,10 +20,10 @@ add_executable(app
     main.c
     typing.h
 
-    input_f/sets_input.c
-    input_f/expression_input.c
-    input_f/basis_input.c
-    input_f/total_input.c
+    # input_f/sets_input.c
+    # input_f/expression_input.c
+    # input_f/basis_input.c
+    # input_f/total_input.c
 
     core/normal_form.c
 

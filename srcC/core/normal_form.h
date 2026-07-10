@@ -7,10 +7,10 @@
 
 #include "../typing.h"
 
-void set_normal_form(Function_Data *function_data);
+void set_normal_form(function_t *function);
 
-void set_dnf(Function_Data *function_data);
+void set_dnf(function_t *function);
 
-void set_cnf(Function_Data *function_data);
+void set_cnf(function_t *function);
 
 #endif

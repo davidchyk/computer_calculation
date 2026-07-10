@@ -10,27 +10,27 @@
 #include "gui/gui.h"
 
 #include "string_process/string_process.h"
+
 #include "core/normal_form.h"
-#include "input_f/total_input.h"
+#include "core/operator_form.h"
+
 #include "typing.h"
 
 int main(void) {
 
     printf("Computer Calculation Tool\nAuthor: Davydchuk Artem\n\n");
 
-    Function_Data test = {
+    function_t test = {
 
         .index = 0,
         .argsNum = 4,
-        .setsNum = 9,
-        .setsArray = (int[]){0, 1, 2, 3, 4, 5, 6, 7, 8},
+        .setsNum = 4,
+        .setsArray = (int[]){0, 1, 2, 3},
         .argsArray = (char*[]){"{x_4}", "{x_3}", "{x_2}", "{x_1}"},
 
         .from_expression_created = false,
 
-        .basis = AND_NOR,
-        .firstForm = FORM_NAND,
-        .secondForm = FORM_NAND,
+        .basis = NOR_NOR,
         .first_basisNumber = 2,
         .second_basisNumber = 2,
 
@@ -44,8 +44,8 @@ int main(void) {
 
     };
 
-    // set_dnf(&test);
-
+    set_dnf(&test);
+    set_cnf(&test);
     set_normal_form(&test);
 
     printf("normal_form: \n%s\n", test.normal_form.data);
