@@ -65,7 +65,7 @@ typedef struct {
     int argsNum;
     int setsNum;
 
-    int *setsArray;
+    int *setsArray; 
     char** argsArray;
 
     bool from_expression_created;
@@ -84,6 +84,8 @@ typedef struct {
     string minimized_normal_form;
     string minimized_operator_form;
 
+    // class function add
+
 } function_t;
 
 #define COLOR_RED     "\033[31m"
@@ -92,14 +94,16 @@ typedef struct {
 #define COLOR_BLUE    "\033[34m"
 #define COLOR_RESET   "\033[0m"
 
+#define TEPM_TERM -1
+
 #define ERROR(x)  COLOR_RED x COLOR_RESET
 #define TIP(x)    COLOR_YELLOW x COLOR_RESET
 #define MODE(x)   COLOR_BLUE x COLOR_RESET
 
-#define OUT_NOT(x)          (8 & x)
-#define OUT_OR_OPERATION(x) (4 & x)
-#define IN_NOT(x) (2 & x)
-#define IN_OR_OPERATION(x)  (1 & x)
+#define IN_NOT(x)           (8 & x)
+#define IN_OR_OPERATION(x)  (4 & x)
+#define OUT_NOT(x)          (2 & x)
+#define OUT_OR_OPERATION(x) (1 & x)
 
 #define IS_DNF(x)           (1 & (x ^ (x >> 1)))
 

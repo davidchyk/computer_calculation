@@ -26,6 +26,7 @@ add_executable(app
     # input_f/total_input.c
 
     core/normal_form.c
+    core/operator_form.c
 
     string_process/string_process.c
 

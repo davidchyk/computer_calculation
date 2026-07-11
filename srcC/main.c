@@ -23,14 +23,14 @@ int main(void) {
     function_t test = {
 
         .index = 0,
-        .argsNum = 4,
-        .setsNum = 4,
-        .setsArray = (int[]){0, 1, 2, 3},
-        .argsArray = (char*[]){"{x_4}", "{x_3}", "{x_2}", "{x_1}"},
+        .argsNum = 3,
+        .setsNum = 7,
+        .setsArray = (int[]){0, 1, 2, 3, 4, 5, 6},
+        .argsArray = (char*[]){"{x_3}", "{x_2}", "{x_1}"},
 
         .from_expression_created = false,
 
-        .basis = NOR_NOR,
+        .basis = AND_OR,
         .first_basisNumber = 2,
         .second_basisNumber = 2,
 
@@ -44,11 +44,13 @@ int main(void) {
 
     };
 
-    set_dnf(&test);
-    set_cnf(&test);
+    // set_dnf(&test);
+    // set_cnf(&test);
     set_normal_form(&test);
+    set_operator_form(&test);
 
     printf("normal_form: \n%s\n", test.normal_form.data);
+    printf("operator_form: \n%s\n", test.operator_form.data);
 
     test.normal_form = (string){NULL, 0u, 0u};
 

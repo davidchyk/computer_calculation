@@ -25,15 +25,23 @@ void set_normal_form(function_t* function) {
 
 static char* get_bits(int number, int bitsNum) {
 
+    if (number == TEPM_TERM) {
+
+        char* result = (char*)malloc(sizeof(char) + 1);
+
+        result[0] = 'T';
+        result[1] = '\0';
+        return result;
+
+    }
+
     char* result = (char*)malloc(sizeof(char) * bitsNum + 1);
 
-    if (!result) {
-        return NULL;
-    }
+    if (!result) return NULL;
 
     for (int i = bitsNum - 1; i >= 0; i--) {
 
-        result[bitsNum - i - 1] = (1 << i & number) ? '1' : '0';
+        result[bitsNum-i-1] = (1 << i & number) ? '1' : '0';
 
     }
 
@@ -87,7 +95,7 @@ static bool append_string(string* main_string, const char* past_string) {
 
 static string build_normal_form(function_t* function, basis_t basis) {
 
-    string normal_form = { NULL, 0u, 0u };
+    string normal_form = {NULL, 0u, 0u};
 
     bool in_not = IN_NOT(basis);
     bool out_not = OUT_NOT(basis);
@@ -95,7 +103,7 @@ static string build_normal_form(function_t* function, basis_t basis) {
     bool in_or_operation = IN_OR_OPERATION(basis);
     bool out_or_operation = OUT_OR_OPERATION(basis);
 
-    bool reversing = out_or_operation;
+    bool reversing = in_or_operation;
 
     int* termArr = NULL;
     int termArr_len = 0;
@@ -116,50 +124,78 @@ static string build_normal_form(function_t* function, basis_t basis) {
             return normal_form;
 
         }
+        
+        else if (function->setsNum == 1) {
 
-        termArr = function->setsArray;
-        termArr_len = function->setsNum;
+            int termStorage[2] = {
+                function->setsArray[0],
+                TEPM_TERM
+            };
+
+            termArr = termStorage;
+            termArr_len = 2;
+
+        }
+
+        else {
+
+            termArr = function->setsArray;
+            termArr_len = function->setsNum;
+
+        }
 
     }
 
     else {
 
-        int k = (1 << function->argsNum) - function->setsNum;
+        int zeroTerm_count = (1 << function->argsNum) - function->setsNum;
 
-        if (k == 0) {
+        if (zeroTerm_count == 0) {
 
             append_string(&normal_form, "1");
             return normal_form;
 
         }
 
-        else if (k == (1 << function->argsNum)) {
+        else if (zeroTerm_count == (1 << function->argsNum)) {
 
             append_string(&normal_form, "0");
             return normal_form;
 
         }
 
-        termArr = (int*)malloc(sizeof(int) * k);
+        termArr = (int*)malloc(sizeof(int) * zeroTerm_count);
 
-        if (!termArr) {
-
-            return normal_form;
-        }
+        if (!termArr) return normal_form;
 
         termArr_owned = true;
 
         for (int i = 0, j = 0; i < (1 << function->argsNum); i++) {
 
-            if (!is_in_array(i, function->setsArray, function->setsNum)) {
-
-                termArr[j++] = i;
-
-            }
+            if (!is_in_array(i, function->setsArray, function->setsNum)) termArr[j++] = i;
 
         }
 
-        termArr_len = k;
+        if (zeroTerm_count == 1) {
+
+            int temporary[2] = {
+                termArr[0],
+                TEPM_TERM
+            };
+
+            free(termArr);
+            termArr = temporary;
+
+            termArr_len = 2;
+            termArr_owned = false;
+
+        }
+
+        else {
+
+            termArr_len = zeroTerm_count;
+
+        }
 
     }
 
@@ -170,57 +206,51 @@ static string build_normal_form(function_t* function, basis_t basis) {
         int term = termArr[i];
         char* termBits = get_bits(term, function->argsNum);
 
-        if (!termBits) {
+        if (!termBits) break;
 
-            break;
-
+        if (termBits[0] == 'T') {
+            out_or_operation ? append_string(&normal_form, "0") : append_string(&normal_form, "1");
         }
 
-        if (in_not) {
+        else {
 
-            append_string(&normal_form, "\\overline{");
+            in_not ? append_string(&normal_form, "\\overline{") : append_string(&normal_form, "(");
 
-        }
+            for (int j = 0; j < function->argsNum; j++) {
 
-        else if (!in_not && termArr_len > 1) {
+                if (termBits[j] == '1') {
 
-            append_string(&normal_form, "(");
+                    if (reversing) append_string(&normal_form, "\\overline");
+                    append_string(&normal_form, function->argsArray[j]);
 
-        }
+                }
 
-        for (int j = 0; j < function->argsNum; j++) {
+                else if (termBits[j] == '0') {
 
-            if (termBits[j] == '1') {
+                    if (!reversing) append_string(&normal_form, "\\overline");
+                    append_string(&normal_form, function->argsArray[j]);
 
-                if (reversing) append_string(&normal_form, "\\overline");
-                append_string(&normal_form, function->argsArray[j]);
+                }
+
+                if (j < function->argsNum - 1) {
+
+                    in_or_operation ? append_string(&normal_form, "\\vee") : append_string(&normal_form, "\\wedge");
+
+                }
 
             }
 
-            else {
+            if (in_not) {
 
-                if (!reversing) append_string(&normal_form, "\\overline");
-                append_string(&normal_form, function->argsArray[j]);
-
-            }
-
-            if (j < function->argsNum - 1) {
-
-                in_or_operation ? append_string(&normal_form, "\\vee") : append_string(&normal_form, "\\wedge");
+                append_string(&normal_form, "}");
 
             }
 
-        }
+            else if (!in_not && termArr_len > 1) {
 
-        if (in_not) {
+                append_string(&normal_form, ")");
 
-            append_string(&normal_form, "}");
-
-        }
-
-        else if (!in_not && termArr_len > 1) {
-
-            append_string(&normal_form, ")");
+            }
 
         }
 
@@ -236,9 +266,7 @@ static string build_normal_form(function_t* function, basis_t basis) {
 
     if (out_not) append_string(&normal_form, "}");
 
-    if (termArr_owned) {
-        free(termArr);
-    }
+    if (termArr_owned) free(termArr);
 
     return normal_form;
 
