@@ -1,8 +1,5 @@
 #include "normal_form.h"
 
-static char* get_bits(int number, int bitsNum);
-static bool is_in_array(int number, int* array, int array_size);
-static bool append_string(string* main_string, const char* past_string);
 static string build_normal_form(function_t* function, basis_t basis);
 
 void set_dnf(function_t* function) {
@@ -23,76 +20,6 @@ void set_normal_form(function_t* function) {
 
 }
 
-static char* get_bits(int number, int bitsNum) {
-
-    if (number == TEPM_TERM) {
-
-        char* result = (char*)malloc(sizeof(char) + 1);
-
-        result[0] = 'T';
-        result[1] = '\0';
-        return result;
-
-    }
-
-    char* result = (char*)malloc(sizeof(char) * bitsNum + 1);
-
-    if (!result) return NULL;
-
-    for (int i = bitsNum - 1; i >= 0; i--) {
-
-        result[bitsNum-i-1] = (1 << i & number) ? '1' : '0';
-
-    }
-
-    result[bitsNum] = '\0';
-
-    return result;
-
-}
-
-static bool is_in_array(int number, int* array, int array_size) {
-
-    for (int i = 0; i < array_size; i++) {
-
-        if (array[i] == number) {
-
-            return true;
-
-        }
-
-    }
-
-    return false;
-
-}
-
-static bool append_string(string* main_string, const char* past_string) {
-
-    int pasting_length = strlen(past_string);
-
-    if (main_string->length + pasting_length + 1 > main_string->capacity) {
-
-        size_t new_capacity = main_string->capacity + pasting_length + 1;
-        char* new_data = (char*)realloc(main_string->data, new_capacity);
-
-        if (!new_data) {
-            return false;
-        }
-
-        main_string->data = new_data;
-        main_string->capacity = new_capacity;
-
-    }
-
-    strcpy(main_string->data + main_string->length, past_string);
-
-    main_string->length += pasting_length;
-
-    return true;
-
-}
-
 static string build_normal_form(function_t* function, basis_t basis) {
 
     string normal_form = {NULL, 0u, 0u};
@@ -106,34 +33,38 @@ static string build_normal_form(function_t* function, basis_t basis) {
     bool reversing = in_or_operation;
 
     int* termArr = NULL;
+    int temporary[2];
+
     int termArr_len = 0;
     bool termArr_owned = false;
 
-    if (IS_DNF(basis)) {
+    switch (isfunctionTrue(function)) {
 
-        if (function->setsNum == 0) {
-
-            append_string(&normal_form, "0");
-            return normal_form;
-
-        }
-
-        else if (function->setsNum == (1 << function->argsNum)) {
+        case 1:
 
             append_string(&normal_form, "1");
             return normal_form;
+            break;
 
-        }
+        case 0:
+
+            append_string(&normal_form, "0");
+            return normal_form;
+            break;
+
+    }
+
+    if (IS_DNF(basis)) {
         
-        else if (function->setsNum == 1) {
+        if (function->setsNum == 1) {
 
-            int termStorage[2] = {
-                function->setsArray[0],
-                TEPM_TERM
-            };
+            temporary[0] = function->setsArray[0];
+            temporary[1] = TEPM_TERM;
 
-            termArr = termStorage;
+            termArr = temporary;
             termArr_len = 2;
+
+            termArr_owned = false;
 
         }
 
@@ -150,40 +81,11 @@ static string build_normal_form(function_t* function, basis_t basis) {
 
         int zeroTerm_count = (1 << function->argsNum) - function->setsNum;
 
-        if (zeroTerm_count == 0) {
-
-            append_string(&normal_form, "1");
-            return normal_form;
-
-        }
-
-        else if (zeroTerm_count == (1 << function->argsNum)) {
-
-            append_string(&normal_form, "0");
-            return normal_form;
-
-        }
-
-        termArr = (int*)malloc(sizeof(int) * zeroTerm_count);
-
-        if (!termArr) return normal_form;
-
-        termArr_owned = true;
-
-        for (int i = 0, j = 0; i < (1 << function->argsNum); i++) {
-
-            if (!is_in_array(i, function->setsArray, function->setsNum)) termArr[j++] = i;
-
-        }
-
         if (zeroTerm_count == 1) {
 
-            int temporary[2] = {
-                termArr[0],
-                TEPM_TERM
-            };
+            temporary[0] = termArr[0];
+            temporary[1] = TEPM_TERM;
 
-            free(termArr);
             termArr = temporary;
 
             termArr_len = 2;
@@ -192,6 +94,18 @@ static string build_normal_form(function_t* function, basis_t basis) {
         }
 
         else {
+
+            termArr = (int*)malloc(sizeof(int) * zeroTerm_count);
+
+            if (!termArr) return normal_form;
+
+            termArr_owned = true;
+
+            for (int i = 0, j = 0; i < (1 << function->argsNum); i++) {
+
+                if (!is_in_array(i, function->setsArray, function->setsNum)) termArr[j++] = i;
+
+            }
 
             termArr_len = zeroTerm_count;
 
