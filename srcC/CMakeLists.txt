@@ -18,7 +18,6 @@ FetchContent_MakeAvailable(webview)
 
 add_executable(app
     main.c
-    typing.h
 
     # input_f/sets_input.c
     # input_f/expression_input.c
@@ -28,7 +27,9 @@ add_executable(app
     core/normal_form.c
     core/operator_form.c
 
-    string_process/string_process.c
+    utils/utils.c
+    utils/string_process.c
+    utils/typing.h
 
     gui/gui.c
 )
