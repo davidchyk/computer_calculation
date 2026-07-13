@@ -92,3 +92,29 @@ bool string_to_decimal(const string* str, int* out_value) {
     *out_value = (int)value;
     return true;
 }
+
+bool append_string(string* main_string, const char* past_string) {
+
+    int pasting_length = strlen(past_string);
+
+    if (main_string->length + pasting_length + 1 > main_string->capacity) {
+
+        size_t new_capacity = main_string->capacity + pasting_length + 1;
+        char* new_data = (char*)realloc(main_string->data, new_capacity);
+
+        if (!new_data) {
+            return false;
+        }
+
+        main_string->data = new_data;
+        main_string->capacity = new_capacity;
+
+    }
+
+    strcpy(main_string->data + main_string->length, past_string);
+
+    main_string->length += pasting_length;
+
+    return true;
+
+}

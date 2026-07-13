@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include "string_process/string_process.h"
+#include "string_process.h"
 
 typedef enum {
 
@@ -31,27 +31,6 @@ typedef enum {
     3 bit = in_or_operation
 
     true reversing for OR_NAND, NOR_OR, OR_AND, NOR_NOR
-
-    so reversing = true, if 1 bit is true
-
-    AND_OR    = 0001 = 1
-    NAND_NAND = 1010 = 10
-    OR_NAND   = 0110 = 6
-    NOR_OR    = 1101 = 13
-
-    OR_AND    = 0100 = 4
-    NOR_NOR   = 1111 = 15
-    AND_NOR   = 0011 = 3
-    NAND_AND  = 1000 = 8
-
-    out_not          = 8 & basis
-    out_or_operation = 4 & basis
-    reversing        = 4 & basis
-
-    in_not           = 2 & basis
-    in_or_operation  = 1 & basis
-    
-    is_cnf           = 1 & (basis ^ (basis >> 1))
 
     */
 
@@ -106,6 +85,5 @@ typedef struct {
 #define OUT_OR_OPERATION(x) (1 & x)
 
 #define IS_DNF(x)           (1 & (x ^ (x >> 1)))
-
 
 #endif // TYPING_H
