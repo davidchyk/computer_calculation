@@ -1,7 +1,7 @@
 #include "basis_input.h"
 
-#include "../typing.h"
-#include "../string_process/string_process.h"
+#include "../utils/typing.h"
+#include "../utils/string_process.h"
 
 #include <ctype.h>
 #include <stdio.h>

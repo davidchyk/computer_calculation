@@ -1,8 +1,8 @@
 #include "string_process.h"
 
-string string_input(void) {
+string_t string_input(void) {
 
-    string s = { NULL, 0u, 0u };
+    string_t s = { NULL, 0u, 0u };
 
     size_t buffer_size = 128u;
     char* buffer = (char*)malloc(buffer_size);
@@ -39,7 +39,7 @@ string string_input(void) {
     return s;
 }
 
-void string_free(string *s) {
+void string_free(string_t *s) {
 
     if (s == NULL) {
         return;
@@ -52,7 +52,7 @@ void string_free(string *s) {
     s->capacity = 0u;
 }
 
-bool string_to_decimal(const string* str, int* out_value) {
+bool string_to_decimal(const string_t* str, int* out_value) {
 
     char *end;
     long value;
@@ -93,7 +93,7 @@ bool string_to_decimal(const string* str, int* out_value) {
     return true;
 }
 
-bool append_string(string* main_string, const char* past_string) {
+bool append_string(string_t* main_string, const char* past_string) {
 
     int pasting_length = strlen(past_string);
 

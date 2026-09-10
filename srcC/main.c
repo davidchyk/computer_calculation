@@ -34,13 +34,13 @@ int main(void) {
         .first_basisNumber = 2,
         .second_basisNumber = 2,
 
-        .dnf_form = (string){NULL, 0u, 0u},
-        .cnf_form = (string){NULL, 0u, 0u},
+        .dnf_form = (string_t){NULL, 0u, 0u},
+        .cnf_form = (string_t){NULL, 0u, 0u},
 
-        .normal_form = (string){NULL, 0u, 0u},
-        .operator_form = (string){NULL, 0u, 0u},
-        .minimized_normal_form = (string){NULL, 0u, 0u},
-        .minimized_operator_form = (string){NULL, 0u, 0u}
+        .normal_form = (string_t){NULL, 0u, 0u},
+        .operator_form = (string_t){NULL, 0u, 0u},
+        .minimized_normal_form = (string_t){NULL, 0u, 0u},
+        .minimized_operator_form = (string_t){NULL, 0u, 0u}
 
     };
 
@@ -52,7 +52,7 @@ int main(void) {
     // printf("normal_form: \n%s\n", test.normal_form.data);
     printf("operator_form: \n%s\n", test.operator_form.data);
 
-    test.normal_form = (string){NULL, 0u, 0u};
+    test.normal_form = (string_t){NULL, 0u, 0u};
 
     // gui_run();
 

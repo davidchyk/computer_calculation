@@ -10,17 +10,19 @@
 #include <string.h>
 
 typedef struct {
+
     char* data;
     size_t length;
     size_t capacity;
-} string;
 
-string string_input(void);
+} string_t;
 
-void string_free(string *s);
+string_t string_input(void);
 
-bool string_to_decimal(const string* str, int* out_value);
+void string_free(string_t *s);
 
-bool append_string(string* main_string, const char* past_string);
+bool string_to_decimal(const string_t* str, int* out_value);
+
+bool append_string(string_t* main_string, const char* past_string);
 
 #endif // STRING_PROCESS_H

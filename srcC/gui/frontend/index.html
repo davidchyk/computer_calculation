@@ -3,9 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Computer Calculation Program</title>
+    <title>Boolean Analysis</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-Hello bitch!
+    <div class="shell">
+        <aside class="sidebar" aria-label="Primary navigation">
+            <a class="brand" href="#" aria-label="Computer Logic Helper">
+                <span class="brand-mark">Computer Logic Helper</span>
+            </a>
+
+            <nav class="navigation">
+                <a class="nav-item active" href="#">
+                    <span class="function-icon">f(x)</span>
+                    <span>Boolean Analysis</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <section class="analysis-panel" aria-labelledby="page-title">
+                <header class="page-header">
+                    <h1 id="page-title">Boolean Analysis</h1>
+                </header>
+
+                <form id="analyzer-form" class="analysis-form">
+                    <section class="field field-compact" aria-label="Input mode">
+                        <label class="field-label section-label">
+                            Input Mode
+                            <span class="info-dot" data-tooltip="Choose how the boolean function is provided.">ⓘ</span>
+                        </label>
+                        <div class="radio-row">
+                            <label class="mode-option">
+                                <input type="radio" name="mode" value="expression" checked>
+                                <span>Expression Mode</span>
+                            </label>
+
+                            <label class="mode-option">
+                                <input type="radio" name="mode" value="minterms">
+                                <span>Minterm List Mode</span>
+                            </label>
+                        </div>
+                    </section>
+
+                    <div id="expression-fields" class="field">
+                        <label class="field-label" for="expression">
+                            Expression
+                            <span class="info-dot" data-tooltip="Use operators: &, |, ! and parentheses.">ⓘ</span>
+                        </label>
+                        <input id="expression" name="expression" type="text" placeholder="Enter boolean expression (e.g., (A & B) | (!C & D))">
+                    </div>
+
+                    <div id="minterm-fields" class="field-stack">
+                        <div class="field field-narrow">
+                            <label class="field-label" for="args-count">
+                                Number of Arguments
+                                <span class="info-dot" data-tooltip="Allowed range: 1 to 9. The max minterm index depends on this value.">ⓘ</span>
+                            </label>
+                            <div class="stepper">
+                                <button type="button" data-step="-1" aria-label="Decrease argument count">-</button>
+                                <input id="args-count" name="argsCount" type="number" min="1" max="9" value="3" inputmode="numeric">
+                                <button type="button" data-step="1" aria-label="Increase argument count">+</button>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" for="minterms">
+                                Minterm Indices (where function = 1)
+                                <span id="minterm-info" class="info-dot" data-tooltip="Enter numbers from 0 to 2^n - 1.">ⓘ</span>
+                            </label>
+                            <input id="minterms" name="minterms" type="text" placeholder="Enter numbers from 0 to 2^n - 1">
+                        </div>
+                    </div>
+
+                    <section class="basis-grid" aria-label="Basis controls">
+                        <div class="field">
+                            <label class="field-label">
+                                Basis Left Operator
+                                <span class="info-dot" data-tooltip="Left side of the numbered basis, for example 2 AND.">ⓘ</span>
+                            </label>
+                            <div class="operator-row">
+                                <select id="basis-left-number" aria-label="First basis number">
+                                    <option value="2" selected>2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                </select>
+                                <select id="basis-left-op" aria-label="First basis operation">
+                                    <option value="AND" selected>AND</option>
+                                    <option value="NAND">NAND</option>
+                                    <option value="OR">OR</option>
+                                    <option value="NOR">NOR</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <span class="basis-divider">/</span>
+
+                        <div class="field">
+                            <label class="field-label">
+                                Basis Right Operator
+                                <span class="info-dot" data-tooltip="Right side of the numbered basis, for example 2 OR.">ⓘ</span>
+                            </label>
+                            <div class="operator-row">
+                                <select id="basis-right-number" aria-label="Second basis number">
+                                    <option value="2" selected>2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                </select>
+                                <select id="basis-right-op" aria-label="Second basis operation">
+                                    <option value="OR" selected>OR</option>
+                                    <option value="NAND">NAND</option>
+                                    <option value="AND">AND</option>
+                                    <option value="NOR">NOR</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="field">
+                        <label class="field-label" for="argument-names">
+                            User-defined Argument Names (optional)
+                            <span class="info-dot" data-tooltip="Comma-separated names. Leave empty to use A, B, C, ...">ⓘ</span>
+                        </label>
+                        <input id="argument-names" name="argumentNames" type="text" placeholder="e.g., A,B,C,D or x1,x2,x3">
+                    </div>
+
+                    <footer class="footer">
+                        <button class="analyze" type="submit">Analyze</button>
+                    </footer>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>

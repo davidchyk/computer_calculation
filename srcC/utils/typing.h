@@ -54,14 +54,14 @@ typedef struct {
 
     // function data from calculations
 
-    string dnf_form;
-    string cnf_form;
+    string_t dnf_form;
+    string_t cnf_form;
 
-    string normal_form;
-    string operator_form;
+    string_t normal_form;
+    string_t operator_form;
 
-    string minimized_normal_form;
-    string minimized_operator_form;
+    string_t minimized_normal_form;
+    string_t minimized_operator_form;
 
     // class function add
 
